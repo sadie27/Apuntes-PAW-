@@ -1,0 +1,105 @@
+---
+interface Props {
+  sections: { id: string; label: string }[];
+}
+const { sections } = Astro.props;
+---
+{sections.length > 0 && (
+  <nav class="sidebar" aria-label="Secciones de esta página">
+    <p class="sidebar-label">En esta página</p>
+    <ul class="sidebar-list" role="list">
+      {sections.map((section, i) => (
+        <li class="sidebar-item stagger-item-x" style={`animation-delay: ${i * 40}ms`}>
+          <a href={`#${section.id}`} class="sidebar-link" data-section={section.id}>
+            {section.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .sidebar {
+    position: sticky;
+    top: calc(var(--navbar-height) + var(--space-5));
+  }
+
+  .sidebar-label {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    margin-bottom: var(--space-3);
+    max-width: none;
+  }
+
+  .sidebar-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-item {
+    opacity: 0;
+    transform: translateX(-6px);
+    animation: slideInX 220ms var(--ease-out) forwards;
+  }
+
+  @keyframes slideInX {
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .sidebar-link {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    color: var(--color-text-2);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-3);
+    border-left: 2px solid transparent;
+    border-radius: 0 4px 4px 0;
+    transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out);
+    line-height: var(--leading-snug);
+  }
+
+  .sidebar-link.is-active {
+    color: var(--color-accent);
+    border-left-color: var(--color-accent);
+    background: var(--color-accent-light);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sidebar-link:not(.is-active):hover {
+      color: var(--color-text);
+    }
+  }
+</style>
+
+<script>
+  const links = document.querySelectorAll<HTMLAnchorElement>('.sidebar-link[data-section]');
+  if (links.length > 0) {
+    const sectionIds = Array.from(links).map(l => l.dataset.section!);
+    const sections = sectionIds
+      .map(id => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(l => l.classList.remove('is-active'));
+            const active = document.querySelector(`.sidebar-link[data-section="${entry.target.id}"]`);
+            active?.classList.add('is-active');
+          }
+        });
+      },
+      { threshold: 0.25, rootMargin: '-64px 0px -60% 0px' }
+    );
+
+    sections.forEach(s => observer.observe(s));
+  }
+</script>

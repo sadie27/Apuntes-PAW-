@@ -1,0 +1,249 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+const blocks = [
+  {
+    number: '01',
+    slug: 'fundamentos',
+    name: 'Fundamentos',
+    description: 'Conceptos base: HTTP, HTML, cliente-servidor, Java EE',
+    status: 'complete' as const,
+  },
+  {
+    number: '02',
+    slug: 'jdbc',
+    name: 'JDBC',
+    description: 'Conexión y operaciones con bases de datos desde Java',
+    status: 'pending' as const,
+  },
+  {
+    number: '03',
+    slug: 'arquitectura',
+    name: 'Arquitectura',
+    description: 'MVC, capas, separación de responsabilidades',
+    status: 'pending' as const,
+  },
+  {
+    number: '04',
+    slug: 'servlets-jsp',
+    name: 'Servlets / JSP',
+    description: 'Contenido web dinámico en el servidor con Java',
+    status: 'pending' as const,
+  },
+  {
+    number: '05',
+    slug: 'seguridad',
+    name: 'Seguridad',
+    description: 'Autenticación, autorización, sesiones',
+    status: 'pending' as const,
+  },
+  {
+    number: '06',
+    slug: 'javascript',
+    name: 'JavaScript',
+    description: 'DOM, eventos, programación cliente',
+    status: 'pending' as const,
+  },
+  {
+    number: '07',
+    slug: 'js-ajax',
+    name: 'JS + AJAX',
+    description: 'Comunicación asíncrona, fetch API, DOM dinámico',
+    status: 'pending' as const,
+  },
+];
+
+const completedCount = blocks.filter(b => b.status === 'complete').length;
+
+const statusLabel: Record<string, string> = {
+  pending:       'Pendiente',
+  'in-progress': 'En progreso',
+  complete:      'Completo',
+};
+const statusClass: Record<string, string> = {
+  pending:       'badge badge-pending',
+  'in-progress': 'badge badge-in-progress',
+  complete:      'badge badge-complete',
+};
+---
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio — PAW</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&family=Fira+Code:wght@400;500&display=swap" />
+  </head>
+  <body class="landing-page">
+    <Navbar />
+    <main class="landing-main">
+      <header class="landing-header">
+        <h1 class="landing-title">Programación de Aplicaciones WEB</h1>
+        <p class="landing-subtitle">
+          Apuntes de estudio estructurados en 7 bloques temáticos. Cada bloque
+          cubre una capa del desarrollo web con Java: desde los fundamentos del
+          protocolo hasta la comunicación asíncrona en el cliente.
+        </p>
+        <p class="landing-progress">{completedCount} / 7 bloques completados</p>
+      </header>
+
+      <section class="blocks-section" aria-label="Bloques del temario">
+        <ul class="blocks-grid" role="list">
+          {blocks.map(block => {
+            const isPending = block.status === 'pending';
+            return (
+              <li class:list={['block-card-wrapper', 'stagger-item', { 'block-card-wrapper--pending': isPending }]}>
+                {isPending ? (
+                  <div class="block-card block-card--pending" aria-disabled="true">
+                    <span class="card-number" aria-hidden="true">{block.number}</span>
+                    <h2 class="card-name">{block.name}</h2>
+                    <p class="card-description">{block.description}</p>
+                    <span class={statusClass[block.status]}>{statusLabel[block.status]}</span>
+                  </div>
+                ) : (
+                  <a href={`/${block.slug}`} class="block-card block-card--link">
+                    <span class="card-number" aria-hidden="true">{block.number}</span>
+                    <h2 class="card-name">{block.name}</h2>
+                    <p class="card-description">{block.description}</p>
+                    <span class={statusClass[block.status]}>{statusLabel[block.status]}</span>
+                  </a>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .landing-page {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .landing-main {
+    flex: 1;
+    padding: 0 var(--space-8) var(--space-9);
+  }
+
+  .landing-header {
+    padding: var(--space-9) 0 var(--space-8);
+    max-width: 60%;
+  }
+
+  .landing-title {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: var(--leading-tight);
+    color: var(--color-text);
+    margin-bottom: var(--space-5);
+  }
+
+  .landing-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    line-height: var(--leading-loose);
+    color: var(--color-text-2);
+    max-width: var(--measure);
+    margin-bottom: var(--space-5);
+  }
+
+  .landing-progress {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-text-3);
+    letter-spacing: 0.02em;
+    max-width: none;
+    margin-bottom: 0;
+  }
+
+  .blocks-section {
+    padding-bottom: var(--space-8);
+  }
+
+  .blocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-5);
+    list-style: none;
+  }
+
+  .block-card-wrapper--pending {
+    cursor: default;
+  }
+
+  .block-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px oklch(18% 0.012 264 / 0.06);
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .block-card--pending {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .block-card--link {
+    transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .block-card--link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px oklch(18% 0.012 264 / 0.08);
+    }
+  }
+
+  .block-card--link:active {
+    transform: scale(0.985);
+    transition: transform 100ms var(--ease-out);
+  }
+
+  .card-number {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--color-text-3);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    display: block;
+    margin-bottom: var(--space-1);
+  }
+
+  .card-name {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: var(--leading-snug);
+    letter-spacing: -0.01em;
+  }
+
+  .card-description {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-2);
+    line-height: var(--leading-normal);
+    flex: 1;
+    max-width: none;
+    margin-bottom: var(--space-2);
+  }
+</style>

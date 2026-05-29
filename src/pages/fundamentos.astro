@@ -1,0 +1,2091 @@
+﻿---
+import BlockLayout from '../layouts/BlockLayout.astro';
+
+const sections = [
+  { id: 'http-intro',          label: '¿Qué es HTTP?' },
+  { id: 'http-historia',       label: 'Historia y origen' },
+  { id: 'http-caracteristicas',label: 'Características' },
+  { id: 'http-versiones',      label: 'Versiones HTTP' },
+  { id: 'http-peticion',       label: 'Estructura de petición' },
+  { id: 'http-respuesta',      label: 'Estructura de respuesta' },
+  { id: 'http-status',         label: 'Códigos de estado' },
+  { id: 'http-cabeceras',      label: 'Cabeceras HTTP' },
+  { id: 'http-cache',          label: 'Control de caché' },
+  { id: 'http-url',            label: 'URL y QueryString' },
+  { id: 'http-multipart',      label: 'Peticiones multipart' },
+  { id: 'html-intro',          label: 'Introducción a HTML' },
+  { id: 'html-estructura',     label: 'Estructura del documento' },
+  { id: 'html-elementos',      label: 'Elementos esenciales' },
+  { id: 'html-formularios',    label: 'Formularios' },
+  { id: 'css-intro',           label: 'Introducción a CSS' },
+  { id: 'css-selectores',      label: 'Selectores y especificidad' },
+  { id: 'css-boxmodel',        label: 'Modelo de cajas' },
+  { id: 'css-alineamiento',    label: 'Alineamiento' },
+  { id: 'css-layout-intro',    label: 'Flujo normal y posicionamiento' },
+  { id: 'css-float',           label: 'Posicionamiento flotante' },
+  { id: 'css-flexbox',         label: 'Flexbox' },
+  { id: 'css-grid',            label: 'Grid' },
+  { id: 'css-metodologias',    label: 'Metodologías CSS' },
+];
+---
+
+<BlockLayout
+  title="Fundamentos"
+  blockNumber={1}
+  blockName="Fundamentos"
+  sections={sections}
+>
+
+<!-- ============================================================
+     BLOQUE 1 — FUNDAMENTOS: HTTP · HTML · CSS
+     ============================================================ -->
+
+<header class="block-header">
+  <span class="block-number">01</span>
+  <h1>Fundamentos</h1>
+  <p class="block-lead">
+    Protocolo HTTP, lenguaje de marcado HTML y hojas de estilo CSS.
+    La base sobre la que se construye cualquier aplicación web.
+  </p>
+</header>
+
+<!-- =========================================================== -->
+<!-- HTTP                                                         -->
+<!-- =========================================================== -->
+
+<section id="http-intro" class="content-section">
+  <h2>¿Qué es HTTP?</h2>
+  <p>
+    HTTP (HyperText Transfer Protocol) es el protocolo de comunicación que sustenta la Web.
+    Define cómo se intercambian mensajes entre un <strong>cliente</strong> (navegador) y un
+    <strong>servidor</strong> web. No es el único protocolo de aplicación, pero sí el más extendido.
+  </p>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 680 160" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Diagrama del ciclo petición-respuesta HTTP" class="diagram-svg">
+      <rect x="10" y="30" width="130" height="100" rx="8"
+            fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="75" y="72" text-anchor="middle" font-family="var(--font-display)" font-size="13"
+            fill="var(--color-text)" font-weight="600">Cliente</text>
+      <text x="75" y="92" text-anchor="middle" font-family="var(--font-body)" font-size="11"
+            fill="var(--color-text-2)">(Navegador)</text>
+      <rect x="540" y="30" width="130" height="100" rx="8"
+            fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="605" y="72" text-anchor="middle" font-family="var(--font-display)" font-size="13"
+            fill="var(--color-text)" font-weight="600">Servidor</text>
+      <text x="605" y="92" text-anchor="middle" font-family="var(--font-body)" font-size="11"
+            fill="var(--color-text-2)">Web</text>
+      <line x1="142" y1="68" x2="538" y2="68" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="534,63 543,68 534,73" fill="var(--color-accent)"/>
+      <text x="340" y="58" text-anchor="middle" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-accent)">GET /recurso HTTP/1.1</text>
+      <line x1="538" y1="112" x2="142" y2="112" stroke="var(--color-text-2)" stroke-width="1.5"/>
+      <polygon points="146,107 137,112 146,117" fill="var(--color-text-2)"/>
+      <text x="340" y="104" text-anchor="middle" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text-2)">HTTP/1.1 200 OK  &lt;html&gt;...&lt;/html&gt;</text>
+    </svg>
+    <figcaption>Ciclo petición / respuesta HTTP</figcaption>
+  </figure>
+
+  <div class="callout callout-key">
+    HTTP es un protocolo <strong>sin estado</strong>: cada petición es independiente.
+    El servidor no recuerda peticiones anteriores.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-historia" class="content-section">
+  <h2>Historia y origen</h2>
+  <p>
+    La web nace del trabajo de investigadores militares y científicos. El Departamento de Defensa
+    de EE.UU., a través de DARPA, financió ARPANET, la primera red de ordenadores interconectados
+    usando TCP/IP. Fue en el CERN donde Tim Berners-Lee inventó HTTP, HTML y el primer navegador
+    web, con el objetivo de compartir documentación científica entre investigadores.
+  </p>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 680 120" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Cronología del protocolo HTTP" class="diagram-svg">
+      <line x1="30" y1="60" x2="650" y2="60" stroke="var(--color-border-strong)" stroke-width="2"/>
+      <circle cx="80" cy="60" r="8" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="80" y="42" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">60-70</text>
+      <text x="80" y="30" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text)">DARPA</text>
+      <text x="80" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">ARPANET + TCP/IP</text>
+      <circle cx="210" cy="60" r="8" fill="var(--color-accent)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="210" y="42" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">1991</text>
+      <text x="210" y="30" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text)">CERN</text>
+      <text x="210" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">HTTP/0.9 · HTML · Browser</text>
+      <circle cx="340" cy="60" r="8" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="340" y="42" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">1996-97</text>
+      <text x="340" y="30" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text)">HTTP/1.0 / 1.1</text>
+      <text x="340" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">Cabeceras · Keep-alive</text>
+      <circle cx="470" cy="60" r="8" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="470" y="42" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">2015</text>
+      <text x="470" y="30" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text)">HTTP/2</text>
+      <text x="470" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">Multiplexado · Binario</text>
+      <circle cx="600" cy="60" r="8" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="600" y="42" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">2022</text>
+      <text x="600" y="30" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text)">HTTP/3</text>
+      <text x="600" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">QUIC · UDP</text>
+    </svg>
+    <figcaption>Cronología del protocolo HTTP: de ARPANET al estándar actual</figcaption>
+  </figure>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Año aprox.</th><th>Evento</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Años 60-70</td><td>DARPA financia ARPANET con TCP/IP</td></tr>
+      <tr><td>1991</td><td>CERN: Tim Berners-Lee inventa HTTP/0.9, HTML y el primer browser</td></tr>
+      <tr><td>1996</td><td>HTTP/1.0 — códigos de estado y cabeceras</td></tr>
+      <tr><td>1997</td><td>HTTP/1.1 — reutilización de conexiones, estándar</td></tr>
+      <tr><td>2015</td><td>HTTP/2 — multiplexado, binario, compresión de cabeceras</td></tr>
+      <tr><td>2022</td><td>HTTP/3 — basado en QUIC/UDP</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-caracteristicas" class="content-section">
+  <h2>Características</h2>
+
+  <dl class="definition-list">
+    <dt>Cliente-Servidor</dt>
+    <dd>El cliente envía una petición y espera síncronamente la respuesta. El servidor es pasivo: solo responde a peticiones.</dd>
+
+    <dt>Sin estado (Stateless)</dt>
+    <dd>HTTP no recuerda nada entre peticiones. Cada una es completamente independiente. Para mantener estado se usan mecanismos como cookies o sesiones.</dd>
+
+    <dt>Basado en texto</dt>
+    <dd>Los mensajes HTTP son texto plano legible (hasta HTTP/2 donde se vuelve binario).</dd>
+
+    <dt>Operaciones principales</dt>
+    <dd>
+      <table class="comparison-table" style="margin-top: var(--space-3)">
+        <thead>
+          <tr><th>Método</th><th>Uso principal</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>GET</code></td><td>Obtener un recurso (solo lectura)</td></tr>
+          <tr><td><code>POST</code></td><td>Enviar datos al servidor (crear recursos)</td></tr>
+          <tr><td><code>PUT</code></td><td>Actualizar un recurso completo</td></tr>
+          <tr><td><code>PATCH</code></td><td>Actualizar parcialmente un recurso</td></tr>
+          <tr><td><code>DELETE</code></td><td>Borrar un recurso</td></tr>
+          <tr><td><code>HEAD</code></td><td>Como GET pero sin cuerpo de respuesta</td></tr>
+          <tr><td><code>OPTIONS</code></td><td>Consultar métodos permitidos en un endpoint</td></tr>
+        </tbody>
+      </table>
+    </dd>
+  </dl>
+
+  <div class="callout callout-tip">
+    En páginas web estáticas el servidor simplemente lee y devuelve un fichero.
+    En páginas dinámicas, genera la respuesta en el momento según lógica de negocio.
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Comparación entre página estática y página dinámica" class="diagram-svg">
+      <text x="170" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12"
+            fill="var(--color-text)" font-weight="700">Página Estática</text>
+      <rect x="10"  y="35" width="80" height="36" rx="6" fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="50"  y="58" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Cliente</text>
+      <rect x="260" y="35" width="80" height="36" rx="6" fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="300" y="58" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Servidor</text>
+      <rect x="135" y="106" width="90" height="36" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="180" y="129" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)">Leer fichero</text>
+      <line x1="90" y1="53" x2="258" y2="53" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="254,48 263,53 254,58" fill="var(--color-accent)"/>
+      <text x="174" y="46" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-accent)">GET</text>
+      <line x1="300" y1="71" x2="300" y2="104" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <line x1="300" y1="104" x2="225" y2="104" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <polygon points="229,99 220,104 229,109" fill="var(--color-border-strong)"/>
+      <line x1="135" y1="124" x2="92" y2="124" stroke="var(--color-text-2)" stroke-width="1.5"/>
+      <line x1="92" y1="124" x2="92" y2="70" stroke="var(--color-text-2)" stroke-width="1.5"/>
+      <polygon points="87,74 96,70 87,66" fill="var(--color-text-2)"/>
+      <text x="50" y="145" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)">HTML</text>
+
+      <line x1="340" y1="10" x2="340" y2="190" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <text x="510" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12"
+            fill="var(--color-text)" font-weight="700">Página Dinámica</text>
+      <rect x="350" y="35" width="80" height="36" rx="6" fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="390" y="58" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Cliente</text>
+      <rect x="600" y="35" width="80" height="36" rx="6" fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="640" y="58" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Servidor</text>
+      <rect x="467" y="106" width="106" height="36" rx="6" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="520" y="129" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)">Generar resp.</text>
+      <line x1="430" y1="53" x2="598" y2="53" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="594,48 603,53 594,58" fill="var(--color-accent)"/>
+      <text x="514" y="46" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-accent)">GET</text>
+      <line x1="640" y1="71" x2="640" y2="104" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <line x1="640" y1="104" x2="575" y2="104" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <polygon points="579,99 570,104 579,109" fill="var(--color-border-strong)"/>
+      <line x1="467" y1="124" x2="432" y2="124" stroke="var(--color-text-2)" stroke-width="1.5"/>
+      <line x1="432" y1="124" x2="432" y2="70" stroke="var(--color-text-2)" stroke-width="1.5"/>
+      <polygon points="427,74 436,70 427,66" fill="var(--color-text-2)"/>
+      <text x="390" y="145" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)">HTML</text>
+    </svg>
+    <figcaption>Servidor estático (lee fichero) vs. servidor dinámico (genera respuesta)</figcaption>
+  </figure>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-versiones" class="content-section">
+  <h2>Versiones HTTP</h2>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Versión</th><th>Característica principal</th><th>Novedad clave</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>HTTP/0.9</code></td>
+        <td>Protocolo de una sola línea</td>
+        <td>Solo GET, sin cabeceras, sin código de estado</td>
+      </tr>
+      <tr>
+        <td><code>HTTP/1.0</code></td>
+        <td>Añade cabeceras y códigos de estado</td>
+        <td>Cada petición abre y cierra una conexión TCP</td>
+      </tr>
+      <tr>
+        <td><code>HTTP/1.1</code></td>
+        <td>Reutilización de conexiones</td>
+        <td><code>keep-alive</code>, negociación de contenido, estándar de facto</td>
+      </tr>
+      <tr>
+        <td><code>HTTP/2</code></td>
+        <td>Protocolo binario</td>
+        <td>Multiplexado, compresión de cabeceras (HPACK), Server Push</td>
+      </tr>
+      <tr>
+        <td><code>HTTP/3</code></td>
+        <td>Basado en QUIC (UDP)</td>
+        <td>Elimina head-of-line blocking, 0-RTT en reconexiones</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-relation">
+    HTTP/1.1 sigue siendo muy utilizado. HTTP/2 es el estándar moderno en producción.
+    HTTP/3 está en despliegue activo.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-peticion" class="content-section">
+  <h2>Estructura de petición HTTP</h2>
+  <p>Una petición HTTP tiene tres partes: línea de solicitud, cabeceras y cuerpo opcional.</p>
+
+  <div class="code-block">
+    <div class="code-lang">HTTP — GET real (unirioja.es)</div>
+    <pre><code>GET / HTTP/1.1
+Host: www.unirioja.es
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:147.0) Gecko/20100101 Firefox/147.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.9
+Accept-Encoding: gzip, deflate, br, zstd
+Connection: keep-alive
+Cookie: _fbp=fb.1.1770310572162.483340548557630050</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">HTTP — POST con cuerpo</div>
+    <pre><code>POST /cgi-bin/abnetopac/O7047/ID920402d9/NT1 HTTP/1.1
+Host: catalogo.unirioja.es
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 67
+Origin: https://catalogo.unirioja.es
+Connection: keep-alive
+
+ACC=131&amp;START=1&amp;FORM=1&amp;xindbt=&amp;xmismo=on&amp;FORM_DIGITAL=9&amp;xsqf01=test</code></pre>
+  </div>
+
+  <div class="callout callout-key">
+    En un GET no hay cuerpo. En un POST, los datos van en el <strong>cuerpo</strong> del mensaje,
+    separados de las cabeceras por una línea en blanco.
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Anatomía de una petición HTTP" class="diagram-svg">
+      <rect x="10" y="10" width="540" height="44" rx="6"
+            fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="20" y="28" font-family="var(--font-display)" font-size="10" font-weight="700"
+            fill="var(--color-key-text)" letter-spacing="0.06em">LÍNEA DE SOLICITUD</text>
+      <text x="20" y="45" font-family="var(--font-mono)" font-size="12"
+            fill="var(--color-key-text)">GET /recurso HTTP/1.1</text>
+      <rect x="10" y="62" width="540" height="62" rx="6"
+            fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="20" y="78" font-family="var(--font-display)" font-size="10" font-weight="700"
+            fill="var(--color-text-2)" letter-spacing="0.06em">CABECERAS</text>
+      <text x="20" y="95" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text)">Host: www.ejemplo.com</text>
+      <text x="20" y="113" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text)">Accept: text/html  ···</text>
+      <rect x="10" y="132" width="540" height="38" rx="6"
+            fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="20" y="148" font-family="var(--font-display)" font-size="10" font-weight="700"
+            fill="var(--color-text-3)" letter-spacing="0.06em">CUERPO (solo POST / PUT)</text>
+      <text x="20" y="164" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text-2)">nombre=Ana&amp;email=ana@ejemplo.com</text>
+    </svg>
+    <figcaption>Anatomía de una petición HTTP: línea de solicitud, cabeceras y cuerpo</figcaption>
+  </figure>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-respuesta" class="content-section">
+  <h2>Estructura de respuesta HTTP</h2>
+  <p>La respuesta tiene: línea de estado, cabeceras de respuesta y cuerpo.</p>
+
+  <div class="code-block">
+    <div class="code-lang">HTTP — Respuesta real</div>
+    <pre><code>HTTP/1.1 200 OK
+date: Thu, 05 Feb 2026 17:10:24 GMT
+server: Apache
+last-modified: Thu, 05 Feb 2026 17:06:47 GMT
+content-length: 108547
+content-type: text/html; charset=UTF-8
+content-encoding: gzip
+
+&lt;!doctype html&gt;
+&lt;html lang="es"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    ...
+  &lt;/head&gt;
+  &lt;body&gt;...&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Anatomía de una respuesta HTTP" class="diagram-svg">
+      <rect x="10" y="10" width="540" height="44" rx="6"
+            fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+      <text x="20" y="28" font-family="var(--font-display)" font-size="10" font-weight="700"
+            fill="var(--color-tip-text)" letter-spacing="0.06em">LÍNEA DE ESTADO</text>
+      <text x="20" y="45" font-family="var(--font-mono)" font-size="12"
+            fill="var(--color-tip-text)">HTTP/1.1 200 OK</text>
+      <rect x="10" y="62" width="540" height="62" rx="6"
+            fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="20" y="78" font-family="var(--font-display)" font-size="10" font-weight="700"
+            fill="var(--color-text-2)" letter-spacing="0.06em">CABECERAS</text>
+      <text x="20" y="95" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text)">content-type: text/html; charset=UTF-8</text>
+      <text x="20" y="113" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text)">content-length: 108547  ···</text>
+      <rect x="10" y="132" width="540" height="48" rx="6"
+            fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="20" y="150" font-family="var(--font-display)" font-size="10" font-weight="700"
+            fill="var(--color-text-3)" letter-spacing="0.06em">CUERPO</text>
+      <text x="20" y="168" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text-2)">&lt;!doctype html&gt;&lt;html&gt;...&lt;/html&gt;</text>
+    </svg>
+    <figcaption>Anatomía de una respuesta HTTP: línea de estado, cabeceras y cuerpo</figcaption>
+  </figure>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-status" class="content-section">
+  <h2>Códigos de estado</h2>
+  <p>
+    Los códigos de estado informan al cliente del resultado de su petición.
+    Se agrupan por el primer dígito.
+  </p>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 660 90" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Categorías de códigos de estado HTTP" class="diagram-svg">
+      <!-- 2xx Éxito -->
+      <rect x="10" y="11" width="148" height="68" rx="6" fill="oklch(97% 0.04 155)" stroke="oklch(30% 0.15 155)" stroke-width="1" opacity="1"/>
+      <rect x="10" y="11" width="148" height="68" rx="6" fill="none" stroke="oklch(30% 0.15 155)" stroke-width="1" style="stroke-opacity:0.35"/>
+      <text x="84" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="22" font-weight="700" fill="oklch(30% 0.15 155)">2xx</text>
+      <text x="84" y="58" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="oklch(30% 0.15 155)">Éxito</text>
+      <!-- 3xx Redirección -->
+      <rect x="170" y="11" width="148" height="68" rx="6" fill="oklch(97% 0.04 85)" stroke="oklch(35% 0.15 85)" stroke-width="1" style="stroke-opacity:0.35"/>
+      <text x="244" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="22" font-weight="700" fill="oklch(35% 0.15 85)">3xx</text>
+      <text x="244" y="58" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="oklch(35% 0.15 85)">Redirección</text>
+      <!-- 4xx Error cliente -->
+      <rect x="330" y="11" width="148" height="68" rx="6" fill="oklch(97% 0.04 25)" stroke="oklch(35% 0.15 25)" stroke-width="1" style="stroke-opacity:0.35"/>
+      <text x="404" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="22" font-weight="700" fill="oklch(35% 0.15 25)">4xx</text>
+      <text x="404" y="58" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="oklch(35% 0.15 25)">Error cliente</text>
+      <!-- 5xx Error servidor -->
+      <rect x="490" y="11" width="148" height="68" rx="6" fill="oklch(96% 0.04 0)" stroke="oklch(35% 0.15 0)" stroke-width="1" style="stroke-opacity:0.35"/>
+      <text x="564" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="22" font-weight="700" fill="oklch(35% 0.15 0)">5xx</text>
+      <text x="564" y="58" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="oklch(35% 0.15 0)">Error servidor</text>
+    </svg>
+    <figcaption>Categorías de códigos de estado HTTP agrupadas por el primer dígito</figcaption>
+  </figure>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Rango</th><th>Significado</th><th>Ejemplos clave</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>2xx</code></td>
+        <td>Éxito</td>
+        <td><code>200 OK</code>, <code>201 Created</code>, <code>204 No Content</code></td>
+      </tr>
+      <tr>
+        <td><code>3xx</code></td>
+        <td>Redirección</td>
+        <td><code>301 Moved Permanently</code>, <code>302 Found</code>, <code>304 Not Modified</code></td>
+      </tr>
+      <tr>
+        <td><code>4xx</code></td>
+        <td>Error del cliente</td>
+        <td><code>400 Bad Request</code>, <code>401 Unauthorized</code>, <code>404 Not Found</code>, <code>418 I'm a teapot</code></td>
+      </tr>
+      <tr>
+        <td><code>5xx</code></td>
+        <td>Error del servidor</td>
+        <td><code>500 Internal Server Error</code>, <code>503 Service Unavailable</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-tip">
+    <code>304 Not Modified</code> es fundamental para el rendimiento: el servidor indica que el
+    recurso no ha cambiado y el cliente puede usar su caché.
+  </div>
+
+  <div class="callout callout-warning">
+    <code>401 Unauthorized</code> significa "no autenticado".
+    <code>403 Forbidden</code> significa "autenticado pero sin permiso". Son conceptualmente diferentes.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-cabeceras" class="content-section">
+  <h2>Cabeceras HTTP</h2>
+  <p>Las cabeceras permiten enviar metadatos junto al mensaje. Las más importantes a conocer:</p>
+
+  <h3>Cabeceras de contenido</h3>
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Cabecera</th><th>Descripción</th><th>Ejemplo</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Content-Type</code></td>
+        <td>Tipo MIME del cuerpo + charset</td>
+        <td><code>text/html; charset=UTF-8</code></td>
+      </tr>
+      <tr>
+        <td><code>Content-Length</code></td>
+        <td>Tamaño del cuerpo en bytes</td>
+        <td><code>108547</code></td>
+      </tr>
+      <tr>
+        <td><code>Content-Encoding</code></td>
+        <td>Codificación aplicada al cuerpo</td>
+        <td><code>gzip</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Cabeceras de contexto</h3>
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Cabecera</th><th>Descripción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Host</code></td><td>Dominio del servidor (permite virtual hosting)</td></tr>
+      <tr><td><code>User-Agent</code></td><td>Identificación del cliente</td></tr>
+      <tr><td><code>Referer</code></td><td>URL desde la que se realizó la petición</td></tr>
+      <tr><td><code>Accept</code></td><td>Tipos de contenido que acepta el cliente</td></tr>
+      <tr><td><code>Accept-Language</code></td><td>Idiomas preferidos</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <div class="code-lang">User-Agent — ejemplos reales</div>
+    <pre><code>Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:147.0) Gecko/20100101 Firefox/147.0
+Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0</code></pre>
+  </div>
+
+  <h3>Cabecera Cookie</h3>
+  <div class="code-block">
+    <div class="code-lang">HTTP — Cookie / Set-Cookie</div>
+    <pre><code>Cookie: JSESSIONID=25A0D8A18FD28D97F7B12F6DE7FF88; yst.yeipee=0
+Set-Cookie: JSESSIONID=A441C5C2146ACF6AFA3329A1876F140F; Path=/App; Secure</code></pre>
+  </div>
+
+  <div class="callout callout-relation">
+    Las cookies son el mecanismo principal para mantener <strong>estado</strong> sobre HTTP
+    (que es stateless). Se verán en profundidad en el bloque de Seguridad.
+  </div>
+
+  <h3>MIME types más comunes</h3>
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Tipo</th><th>Descripción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>text/html</code></td><td>Documento HTML</td></tr>
+      <tr><td><code>text/plain</code></td><td>Texto plano</td></tr>
+      <tr><td><code>application/json</code></td><td>JSON</td></tr>
+      <tr><td><code>application/javascript</code></td><td>JavaScript</td></tr>
+      <tr><td><code>application/x-www-form-urlencoded</code></td><td>Formulario estándar</td></tr>
+      <tr><td><code>multipart/form-data</code></td><td>Formulario con ficheros</td></tr>
+      <tr><td><code>image/jpeg</code>, <code>image/png</code>, <code>image/gif</code></td><td>Imágenes</td></tr>
+      <tr><td><code>application/pdf</code></td><td>PDF</td></tr>
+      <tr><td><code>application/zip</code></td><td>Comprimido</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-cache" class="content-section">
+  <h2>Control de caché</h2>
+  <p>
+    La caché HTTP permite evitar descargar recursos que no han cambiado. Funciona mediante dos
+    preguntas: ¿cuándo expira el recurso? ¿al expirar, se descarga de nuevo o se revalida?
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Cabecera</th><th>Descripción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Expires</code></td><td>Fecha exacta a partir de la cual el recurso caduca</td></tr>
+      <tr><td><code>Cache-Control: max-age=N</code></td><td>El recurso es válido durante N segundos</td></tr>
+      <tr><td><code>Cache-Control: no-cache</code></td><td>No significa "no cachear": obliga a revalidar siempre</td></tr>
+      <tr><td><code>Cache-Control: private</code></td><td>Solo puede cachearlo el navegador, no proxies</td></tr>
+      <tr><td><code>Last-Modified</code></td><td>Fecha de última modificación del recurso</td></tr>
+      <tr><td><code>If-Modified-Since</code></td><td>El cliente pregunta "¿ha cambiado desde esta fecha?"</td></tr>
+      <tr><td><code>ETag</code></td><td>Identificador único del recurso para comparación</td></tr>
+      <tr><td><code>If-None-Match</code></td><td>Versión de ETag que tiene el cliente</td></tr>
+    </tbody>
+  </table>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Flujo de revalidación de caché HTTP" class="diagram-svg">
+      <rect x="10" y="70" width="110" height="60" rx="8"
+            fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="65" y="97" text-anchor="middle" font-family="var(--font-display)" font-size="12"
+            fill="var(--color-text)" font-weight="600">Cliente</text>
+      <text x="65" y="115" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-2)">(caché local)</text>
+      <rect x="540" y="70" width="110" height="60" rx="8"
+            fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="595" y="104" text-anchor="middle" font-family="var(--font-display)" font-size="12"
+            fill="var(--color-text)" font-weight="600">Servidor</text>
+      <line x1="122" y1="88" x2="538" y2="88" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="534,83 543,88 534,93" fill="var(--color-accent)"/>
+      <text x="330" y="79" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-accent)">If-None-Match: "abc123"</text>
+      <line x1="538" y1="112" x2="122" y2="112" stroke="var(--color-tip-text)" stroke-width="1.5"/>
+      <polygon points="126,107 117,112 126,117" fill="var(--color-tip-text)"/>
+      <text x="330" y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-tip-text)">304 Not Modified  (sin cuerpo)</text>
+      <text x="330" y="165" text-anchor="middle" font-family="var(--font-body)" font-size="11"
+            fill="var(--color-text-3)">Si el recurso cambió: 200 OK con nuevo cuerpo</text>
+      <line x1="10" y1="185" x2="30" y2="185" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="35" y="189" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">Petición</text>
+      <line x1="90" y1="185" x2="110" y2="185" stroke="var(--color-tip-text)" stroke-width="1.5"/>
+      <text x="115" y="189" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">Respuesta 304</text>
+    </svg>
+    <figcaption>Flujo de revalidación: el cliente envía su ETag y recibe 304 si no hay cambios</figcaption>
+  </figure>
+
+  <div class="callout callout-key">
+    <code>no-cache</code> no desactiva la caché: obliga a revalidar antes de usar la versión
+    cacheada. Para desactivar completamente, usar <code>no-store</code>.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-url" class="content-section">
+  <h2>URL y QueryString</h2>
+  <p>
+    Una URL (Uniform Resource Locator) es un caso particular de URI.
+    Su estructura para protocolos IP es:
+  </p>
+
+  <div class="code-block">
+    <div class="code-lang">Sintaxis de URL</div>
+    <pre><code>protocol :// host [: port] / path [? query] [# fragment]
+
+Ejemplo:
+http://www.tienda.net/app/verProducto?id=89&amp;lang=es#descripcion
+│      │              │              │              │
+│      host           path           query          fragment
+│
+protocol</code></pre>
+  </div>
+
+  <p>
+    La query string es una lista de parámetros separados por <code>&amp;</code>.
+    Cada parámetro es un par <code>nombre=valor</code>. Los valores deben estar
+    <strong>URL-encoded</strong> para evitar ambigüedades con caracteres especiales.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Original</th>
+        <th>URL-encoded (ISO-8859-1)</th>
+        <th>URL-encoded (UTF-8)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Pepe Pérez</code></td>
+        <td><code>Pepe+P%E9rez</code></td>
+        <td><code>Pepe+P%C3%A9rez</code></td>
+      </tr>
+      <tr>
+        <td><code>hola&amp;javi</code></td>
+        <td><code>hola%26javi</code></td>
+        <td><code>hola%26javi</code></td>
+      </tr>
+      <tr>
+        <td><code>/ruta</code></td>
+        <td><code>%2Fruta</code></td>
+        <td><code>%2Fruta</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    Los caracteres <code>/</code>, <code>#</code>, <code>=</code>, <code>&amp;</code> y <code>?</code>
+    tienen significado especial en las URLs y deben codificarse si aparecen en los valores de los parámetros.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="http-multipart" class="content-section">
+  <h2>Peticiones multipart</h2>
+  <p>
+    Cuando un formulario incluye ficheros, <code>application/x-www-form-urlencoded</code> no es
+    suficiente. Se debe usar <code>multipart/form-data</code>, que divide el cuerpo en partes
+    separadas por un <strong>boundary</strong>.
+  </p>
+
+  <div class="code-block">
+    <div class="code-lang">HTTP — Petición multipart completa</div>
+    <pre><code>POST /upload HTTP/1.1
+Host: www.ejemplo.org
+Content-Type: multipart/form-data; boundary=---------------------------28049210057886
+Content-Length: 6936370
+
+-----------------------------28049210057886
+Content-Disposition: form-data; name="nombre"
+
+Fran
+-----------------------------28049210057886
+Content-Disposition: form-data; name="archivo"; filename="documento.pdf"
+Content-Type: application/pdf
+
+%PDF-1.2
+... (contenido binario del fichero)
+-----------------------------28049210057886--</code></pre>
+  </div>
+
+  <div class="callout callout-key">
+    Cada parte tiene sus propias cabeceras (<code>Content-Disposition</code>, <code>Content-Type</code>)
+    y el boundary actúa como separador. El boundary final lleva <code>--</code> al final.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- HTML                                                         -->
+<!-- =========================================================== -->
+
+<section id="html-intro" class="content-section">
+  <h2>Introducción a HTML</h2>
+  <p>
+    HTML (HyperText Markup Language) es el lenguaje de marcado que define la
+    <strong>estructura y semántica</strong> del contenido web. No es un lenguaje de programación:
+    describe qué es cada elemento (un título, un párrafo, un enlace), no cómo se ve.
+    El navegador interpreta el HTML y construye el <strong>DOM</strong> (Document Object Model).
+  </p>
+
+  <div class="callout callout-key">
+    HTML define <strong>qué es</strong> el contenido (estructura y semántica).
+    CSS define <strong>cómo se ve</strong>.
+    JavaScript define <strong>cómo se comporta</strong>.
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 580 220" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Árbol DOM del documento HTML" class="diagram-svg">
+      <!-- Líneas de conexión -->
+      <!-- document → html -->
+      <line x1="290" y1="34" x2="290" y2="46" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- html → head -->
+      <line x1="290" y1="74" x2="145" y2="86" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- html → body -->
+      <line x1="290" y1="74" x2="435" y2="86" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- head → meta -->
+      <line x1="145" y1="114" x2="80" y2="126" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- head → title -->
+      <line x1="145" y1="114" x2="200" y2="126" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- body → header -->
+      <line x1="435" y1="114" x2="360" y2="126" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- body → main -->
+      <line x1="435" y1="114" x2="500" y2="126" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- header → h1 -->
+      <line x1="360" y1="154" x2="360" y2="166" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- main → p -->
+      <line x1="500" y1="154" x2="460" y2="166" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- main → a -->
+      <line x1="500" y1="154" x2="540" y2="166" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+
+      <!-- Nodos -->
+      <!-- document -->
+      <ellipse cx="290" cy="20" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="290" y="24" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">document</text>
+      <!-- html (destacado) -->
+      <ellipse cx="290" cy="60" rx="32" ry="14" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="290" y="64" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">html</text>
+      <!-- head -->
+      <ellipse cx="145" cy="100" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="145" y="104" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">head</text>
+      <!-- body -->
+      <ellipse cx="435" cy="100" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="435" y="104" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">body</text>
+      <!-- meta -->
+      <ellipse cx="80" cy="140" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="80" y="144" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">meta</text>
+      <!-- title -->
+      <ellipse cx="200" cy="140" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="200" y="144" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">title</text>
+      <!-- header -->
+      <ellipse cx="360" cy="140" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="360" y="144" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">header</text>
+      <!-- main -->
+      <ellipse cx="500" cy="140" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="500" y="144" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">main</text>
+      <!-- h1 -->
+      <ellipse cx="360" cy="180" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="360" y="184" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">h1</text>
+      <!-- p -->
+      <ellipse cx="460" cy="180" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="460" y="184" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">p</text>
+      <!-- a -->
+      <ellipse cx="540" cy="180" rx="32" ry="14" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="540" y="184" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">a</text>
+
+      <text x="290" y="208" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">El navegador construye este árbol al parsear el HTML — es el DOM</text>
+    </svg>
+    <figcaption>El DOM es la representación en árbol del documento HTML</figcaption>
+  </figure>
+</section>
+
+<!-- =========================================================== -->
+<section id="html-estructura" class="content-section">
+  <h2>Estructura del documento</h2>
+
+  <div class="code-block">
+    <div class="code-lang">HTML — Documento HTML5 mínimo</div>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Mi página&lt;/title&gt;
+    &lt;link rel="stylesheet" href="estilos.css"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;header&gt;
+      &lt;h1&gt;Título principal&lt;/h1&gt;
+      &lt;nav&gt;...&lt;/nav&gt;
+    &lt;/header&gt;
+    &lt;main&gt;
+      &lt;article&gt;
+        &lt;h2&gt;Artículo&lt;/h2&gt;
+        &lt;p&gt;Contenido...&lt;/p&gt;
+      &lt;/article&gt;
+      &lt;aside&gt;Barra lateral&lt;/aside&gt;
+    &lt;/main&gt;
+    &lt;footer&gt;Pie de página&lt;/footer&gt;
+    &lt;script src="app.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Elemento</th><th>Uso</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>&lt;header&gt;</code></td><td>Cabecera de página o sección</td></tr>
+      <tr><td><code>&lt;nav&gt;</code></td><td>Navegación principal</td></tr>
+      <tr><td><code>&lt;main&gt;</code></td><td>Contenido principal (único por página)</td></tr>
+      <tr><td><code>&lt;article&gt;</code></td><td>Contenido autónomo y reutilizable</td></tr>
+      <tr><td><code>&lt;section&gt;</code></td><td>Sección temática</td></tr>
+      <tr><td><code>&lt;aside&gt;</code></td><td>Contenido relacionado o barra lateral</td></tr>
+      <tr><td><code>&lt;footer&gt;</code></td><td>Pie de página o sección</td></tr>
+      <tr><td><code>&lt;figure&gt;</code> + <code>&lt;figcaption&gt;</code></td><td>Imagen con leyenda</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-tip">
+    Usar etiquetas semánticas mejora la accesibilidad (lectores de pantalla),
+    el SEO y la mantenibilidad del código.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="html-elementos" class="content-section">
+  <h2>Elementos esenciales</h2>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Elemento</th><th>Descripción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>&lt;h1&gt;</code> – <code>&lt;h6&gt;</code></td><td>Títulos jerárquicos</td></tr>
+      <tr><td><code>&lt;p&gt;</code></td><td>Párrafo</td></tr>
+      <tr><td><code>&lt;a href="..."&gt;</code></td><td>Enlace</td></tr>
+      <tr><td><code>&lt;img src="..." alt="..."&gt;</code></td><td>Imagen (elemento vacío)</td></tr>
+      <tr><td><code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>, <code>&lt;li&gt;</code></td><td>Listas desordenada/ordenada</td></tr>
+      <tr><td><code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, <code>&lt;th&gt;</code>, <code>&lt;td&gt;</code></td><td>Tabla</td></tr>
+      <tr><td><code>&lt;div&gt;</code></td><td>Contenedor de bloque genérico</td></tr>
+      <tr><td><code>&lt;span&gt;</code></td><td>Contenedor inline genérico</td></tr>
+      <tr><td><code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code></td><td>Negrita semántica, énfasis</td></tr>
+      <tr><td><code>&lt;br&gt;</code>, <code>&lt;hr&gt;</code></td><td>Salto de línea, línea horizontal</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    <code>&lt;div&gt;</code> y <code>&lt;span&gt;</code> no tienen semántica.
+    Úsalos solo cuando no exista un elemento semántico apropiado.
+  </div>
+
+  <p>
+    <strong>Atributos globales importantes:</strong> todos los elementos aceptan
+    <code>id</code> (identificador único), <code>class</code> (clases CSS),
+    <code>style</code> (CSS inline), <code>data-*</code> (datos personalizados),
+    <code>hidden</code>, <code>tabindex</code>, <code>lang</code>.
+  </p>
+</section>
+
+<!-- =========================================================== -->
+<section id="html-formularios" class="content-section">
+  <h2>Formularios</h2>
+  <p>Los formularios son el mecanismo principal para enviar datos del cliente al servidor.</p>
+
+  <div class="code-block">
+    <div class="code-lang">HTML — Formulario completo</div>
+    <pre><code>&lt;form action="/procesar" method="post" enctype="multipart/form-data"&gt;
+  &lt;!-- Texto --&gt;
+  &lt;label for="nombre"&gt;Nombre:&lt;/label&gt;
+  &lt;input type="text" id="nombre" name="nombre" required placeholder="Tu nombre"&gt;
+
+  &lt;!-- Email --&gt;
+  &lt;input type="email" name="email" required&gt;
+
+  &lt;!-- Password --&gt;
+  &lt;input type="password" name="clave" minlength="8"&gt;
+
+  &lt;!-- Select --&gt;
+  &lt;select name="pais"&gt;
+    &lt;option value="es"&gt;España&lt;/option&gt;
+    &lt;option value="mx"&gt;México&lt;/option&gt;
+  &lt;/select&gt;
+
+  &lt;!-- Radio --&gt;
+  &lt;input type="radio" name="genero" value="m" id="m"&gt;
+  &lt;label for="m"&gt;Masculino&lt;/label&gt;
+
+  &lt;!-- Checkbox --&gt;
+  &lt;input type="checkbox" name="terminos" id="terms" required&gt;
+  &lt;label for="terms"&gt;Acepto los términos&lt;/label&gt;
+
+  &lt;!-- Textarea --&gt;
+  &lt;textarea name="mensaje" rows="4" cols="50"&gt;&lt;/textarea&gt;
+
+  &lt;!-- Fichero --&gt;
+  &lt;input type="file" name="adjunto" accept=".pdf,.jpg"&gt;
+
+  &lt;!-- Botones --&gt;
+  &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+  &lt;button type="reset"&gt;Limpiar&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Tipo</th><th>Descripción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>text</code></td><td>Texto libre</td></tr>
+      <tr><td><code>email</code></td><td>Email (valida formato)</td></tr>
+      <tr><td><code>password</code></td><td>Oculta los caracteres</td></tr>
+      <tr><td><code>number</code></td><td>Numérico con validación</td></tr>
+      <tr><td><code>date</code></td><td>Selector de fecha</td></tr>
+      <tr><td><code>checkbox</code></td><td>Casilla de verificación</td></tr>
+      <tr><td><code>radio</code></td><td>Opción única del grupo</td></tr>
+      <tr><td><code>file</code></td><td>Subida de fichero</td></tr>
+      <tr><td><code>hidden</code></td><td>Campo oculto (no visible al usuario)</td></tr>
+      <tr><td><code>submit</code></td><td>Botón de envío</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-key">
+    Si el formulario incluye un <code>&lt;input type="file"&gt;</code>,
+    <strong>es obligatorio</strong> usar <code>method="post"</code> y
+    <code>enctype="multipart/form-data"</code>. Sin esto, el fichero no se envía.
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 680 160" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Diagrama de formulario HTML a petición HTTP POST" class="diagram-svg">
+      <!-- Zona izquierda: HTML Form -->
+      <rect x="10" y="5" width="270" height="145" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="145" y="20" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="700" fill="var(--color-text)">HTML Form</text>
+      <!-- pseudo-inputs -->
+      <rect x="20" y="30" width="240" height="22" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="30" y="45" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">nombre="Ana"</text>
+      <rect x="20" y="58" width="240" height="22" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="30" y="73" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">email="ana@mail.com"</text>
+      <!-- botón enviar -->
+      <rect x="20" y="88" width="100" height="24" rx="4" fill="var(--color-accent)"/>
+      <text x="70" y="104" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="oklch(100% 0 0)">Enviar</text>
+
+      <!-- Flecha central -->
+      <line x1="282" y1="80" x2="398" y2="80" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <polygon points="394,75 403,80 394,85" fill="var(--color-border-strong)"/>
+      <text x="340" y="68" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">POST /form</text>
+      <text x="340" y="97" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">application/x-www-form-urlencoded</text>
+
+      <!-- Zona derecha: HTTP Request body -->
+      <rect x="400" y="5" width="270" height="145" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="535" y="20" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="700" fill="var(--color-text)">HTTP Request body</text>
+      <text x="415" y="50" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">nombre=Ana</text>
+      <text x="415" y="68" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">&amp;email=ana%40mail.com</text>
+    </svg>
+    <figcaption>El navegador serializa el formulario como QueryString y lo envía en el cuerpo del POST</figcaption>
+  </figure>
+</section>
+
+<!-- =========================================================== -->
+<!-- CSS                                                          -->
+<!-- =========================================================== -->
+
+<section id="css-intro" class="content-section">
+  <h2>Introducción a CSS</h2>
+  <p>
+    CSS (Cascading Style Sheets) controla la presentación visual del HTML. Los estilos se pueden
+    incluir de tres formas: en un fichero externo <code>.css</code> (recomendado), en una etiqueta
+    <code>&lt;style&gt;</code> en el <code>&lt;head&gt;</code>, o inline con el atributo <code>style</code>.
+  </p>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — Sintaxis básica</div>
+    <pre><code>/* Selector &#123; propiedad: valor; &#125; */
+
+body &#123;
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+&#125;
+
+h1 &#123;
+  color: #1a1a2e;
+  font-size: 2rem;
+  font-weight: 700;
+&#125;
+
+.card &#123;
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+&#125;
+
+#hero &#123;
+  height: 100vh;
+&#125;</code></pre>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="css-selectores" class="content-section">
+  <h2>Selectores y especificidad</h2>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Selector</th><th>Ejemplo</th><th>Selecciona</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Tipo</td><td><code>p</code></td><td>Todos los <code>&lt;p&gt;</code></td></tr>
+      <tr><td>Clase</td><td><code>.card</code></td><td>Elementos con <code>class="card"</code></td></tr>
+      <tr><td>ID</td><td><code>#header</code></td><td>El elemento con <code>id="header"</code></td></tr>
+      <tr><td>Descendiente</td><td><code>nav a</code></td><td><code>&lt;a&gt;</code> dentro de <code>&lt;nav&gt;</code></td></tr>
+      <tr><td>Hijo directo</td><td><code>ul &gt; li</code></td><td><code>&lt;li&gt;</code> hijos directos de <code>&lt;ul&gt;</code></td></tr>
+      <tr><td>Adyacente</td><td><code>h2 + p</code></td><td><code>&lt;p&gt;</code> inmediatamente después de <code>&lt;h2&gt;</code></td></tr>
+      <tr><td>Atributo</td><td><code>[type="text"]</code></td><td>Inputs de tipo texto</td></tr>
+      <tr><td>Pseudo-clase</td><td><code>a:hover</code></td><td>Enlace al pasar el ratón</td></tr>
+      <tr><td>Pseudo-elemento</td><td><code>p::first-line</code></td><td>Primera línea de un párrafo</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Cuando varios estilos compiten por el mismo elemento, gana el de mayor especificidad.
+    La especificidad se calcula como <code>(a, b, c)</code>:
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Tipo</th><th>Valor</th><th>Ejemplo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Inline style</td><td><code>(1,0,0)</code></td><td><code>style="color:red"</code></td></tr>
+      <tr><td>ID</td><td><code>(0,1,0)</code></td><td><code>#header</code></td></tr>
+      <tr><td>Clase, atributo, pseudo-clase</td><td><code>(0,0,1)</code></td><td><code>.card</code>, <code>[type]</code>, <code>:hover</code></td></tr>
+      <tr><td>Tipo, pseudo-elemento</td><td><code>(0,0,1)</code></td><td><code>p</code>, <code>::before</code></td></tr>
+      <tr><td><code>!important</code></td><td>Rompe la cascada</td><td>Usar solo como último recurso</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    Evitar <code>!important</code> salvo casos extremos. Indica un problema de arquitectura CSS.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="css-boxmodel" class="content-section">
+  <h2>Modelo de cajas</h2>
+  <p>
+    En CSS cada elemento es una caja rectangular con cuatro capas:
+    contenido, padding, border y margin.
+  </p>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 560 320" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Diagrama del modelo de cajas CSS" class="diagram-svg">
+      <!-- margin -->
+      <rect x="10" y="10" width="540" height="300" rx="8"
+            fill="oklch(95% 0.02 85)" stroke="oklch(82% 0.08 85)" stroke-width="1.5"/>
+      <text x="50" y="34" font-family="var(--font-display)" font-size="11" font-weight="700"
+            fill="oklch(38% 0.12 75)" letter-spacing="0.06em">MARGIN</text>
+      <!-- border -->
+      <rect x="60" y="50" width="440" height="220" rx="6"
+            fill="oklch(88% 0.010 264)" stroke="oklch(78% 0.010 264)" stroke-width="1.5"/>
+      <text x="100" y="72" font-family="var(--font-display)" font-size="11" font-weight="700"
+            fill="var(--color-text-2)" letter-spacing="0.06em">BORDER</text>
+      <!-- padding -->
+      <rect x="100" y="85" width="360" height="150" rx="4"
+            fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1.5"/>
+      <text x="140" y="105" font-family="var(--font-display)" font-size="11" font-weight="700"
+            fill="oklch(35% 0.12 155)" letter-spacing="0.06em">PADDING</text>
+      <!-- content -->
+      <rect x="150" y="120" width="260" height="80" rx="4"
+            fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="280" y="158" text-anchor="middle" font-family="var(--font-display)" font-size="13"
+            fill="var(--color-key-text)" font-weight="600">CONTENT</text>
+      <text x="280" y="178" text-anchor="middle" font-family="var(--font-body)" font-size="11"
+            fill="var(--color-key-text)">width × height</text>
+      <!-- etiquetas -->
+      <text x="280" y="290" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="oklch(38% 0.12 75)">margin-bottom</text>
+      <text x="280" y="46" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="oklch(38% 0.12 75)">margin-top</text>
+      <text x="280" y="247" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="oklch(35% 0.12 155)">padding-bottom</text>
+      <text x="280" y="101" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="oklch(35% 0.12 155)">padding-top</text>
+    </svg>
+    <figcaption>Modelo de cajas CSS: content → padding → border → margin</figcaption>
+  </figure>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — Box model</div>
+    <pre><code>.caja &#123;
+  /* Contenido */
+  width: 300px;
+  height: 150px;
+
+  /* Padding: espacio interior */
+  padding: 20px;                      /* todos los lados */
+  padding: 10px 20px;                 /* vertical horizontal */
+  padding: 10px 20px 15px 25px;       /* top right bottom left */
+
+  /* Border */
+  border: 2px solid #ccc;
+  border-radius: 8px;
+
+  /* Margin: espacio exterior */
+  margin: 0 auto;   /* centrado horizontal */
+&#125;
+
+/* box-sizing: border-box hace que width incluya padding y border */
+* &#123;
+  box-sizing: border-box; /* Buena práctica global */
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-key">
+    Por defecto, <code>width</code> solo cuenta el contenido. Con <code>box-sizing: border-box</code>,
+    <code>width</code> incluye padding y border, lo que hace los cálculos mucho más intuitivos.
+    Es práctica estándar aplicarlo globalmente con <code>* &#123; box-sizing: border-box; &#125;</code>.
+  </div>
+
+  <h3>Valores de <code>display</code></h3>
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Valor</th><th>Comportamiento</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>block</code></td><td>Ocupa todo el ancho disponible, genera nueva línea</td></tr>
+      <tr><td><code>inline</code></td><td>Solo ocupa lo que necesita, no acepta width/height</td></tr>
+      <tr><td><code>inline-block</code></td><td>Como inline pero acepta dimensiones</td></tr>
+      <tr><td><code>none</code></td><td>No se renderiza (desaparece del flujo)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- =========================================================== -->
+<section id="css-alineamiento" class="content-section">
+  <h2>Alineamiento</h2>
+  <p>
+    CSS ofrece varias propiedades para alinear contenido. Conviene distinguir entre
+    alinear el <em>contenido dentro de una caja</em> y centrar <em>la propia caja</em>
+    dentro de su contenedor.
+  </p>
+
+  <h3>Alineación horizontal del contenido</h3>
+  <p>
+    La propiedad <code>text-align</code> alinea el contenido inline (texto, imágenes inline)
+    dentro de un contenedor de bloque. No mueve la caja en sí.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Valor</th><th>Comportamiento</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>left</code></td><td>Alinea el contenido a la izquierda (defecto en la mayoría de idiomas)</td></tr>
+      <tr><td><code>right</code></td><td>Alinea el contenido a la derecha</td></tr>
+      <tr><td><code>center</code></td><td>Centra el contenido horizontalmente</td></tr>
+      <tr><td><code>justify</code></td><td>Distribuye el texto para que ocupe todo el ancho (como en periódicos)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Centrar una caja dentro de su contenedor</h3>
+  <p>
+    Para centrar horizontalmente un elemento de bloque con ancho fijo, se usa
+    <code>margin: 0 auto</code>. Esto le indica al navegador que distribuya el margen
+    sobrante de forma equitativa a izquierda y derecha.
+  </p>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — Centrar caja con margin auto</div>
+    <pre><code>.contenido &#123;
+  width: 800px;          /* debe tener ancho fijo o max-width */
+  margin: 0 auto;        /* 0 arriba/abajo, auto izda/dcha */
+&#125;
+
+/* Más flexible con max-width */
+.contenido &#123;
+  max-width: 800px;
+  width: 100%;           /* no desborda en pantallas pequeñas */
+  margin: 0 auto;
+&#125;</code></pre>
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 580 100" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Comparación de centrado con y sin margin auto" class="diagram-svg">
+      <!-- Fila 1: sin margin auto -->
+      <rect x="10" y="10" width="560" height="35" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <rect x="10" y="15" width="200" height="25" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="110" y="31" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-key-text)">width: 200px</text>
+      <text x="430" y="31" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">sin margin: auto</text>
+
+      <!-- Fila 2: con margin auto -->
+      <rect x="10" y="55" width="560" height="35" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <rect x="190" y="60" width="200" height="25" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <!-- flecha izquierda -->
+      <line x1="15" y1="72" x2="188" y2="72" stroke="var(--color-border-strong)" stroke-width="1" stroke-dasharray="3,2"/>
+      <polygon points="184,68 193,72 184,76" fill="var(--color-border-strong)"/>
+      <!-- flecha derecha -->
+      <line x1="392" y1="72" x2="563" y2="72" stroke="var(--color-border-strong)" stroke-width="1" stroke-dasharray="3,2"/>
+      <polygon points="396,68 387,72 396,76" fill="var(--color-border-strong)"/>
+      <text x="290" y="76" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-key-text)">margin: 0 auto</text>
+      <text x="480" y="51" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">con margin: auto</text>
+    </svg>
+    <figcaption>margin: 0 auto distribuye el espacio restante a ambos lados, centrando la caja</figcaption>
+  </figure>
+
+  <h3>Alineación vertical — <code>vertical-align</code></h3>
+  <p>
+    <code>vertical-align</code> solo funciona con elementos <strong>inline</strong> e
+    <strong>inline-block</strong>. Controla cómo se alinean respecto a la línea de base
+    del texto. No sirve para centrar verticalmente elementos de bloque.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Valor</th><th>Comportamiento</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>baseline</code></td><td>Alinea con la línea de base del texto (defecto)</td></tr>
+      <tr><td><code>top</code></td><td>Alinea con la parte superior del elemento más alto de la línea</td></tr>
+      <tr><td><code>middle</code></td><td>Centra respecto a la línea de base + mitad de la altura de la "x"</td></tr>
+      <tr><td><code>bottom</code></td><td>Alinea con la parte inferior del elemento más bajo de la línea</td></tr>
+      <tr><td><code>sub</code> / <code>super</code></td><td>Subíndice y superíndice</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    Para centrar verticalmente un elemento de bloque dentro de su contenedor,
+    <code>vertical-align</code> <strong>no funciona</strong>. La solución moderna es
+    usar Flexbox (<code>align-items: center</code>) o Grid (<code>place-items: center</code>).
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="css-layout-intro" class="content-section">
+  <h2>Flujo normal y posicionamiento</h2>
+  <p>
+    El flujo normal de HTML coloca los elementos en el orden del código. Los elementos de bloque
+    se apilan verticalmente; los inline fluyen horizontalmente. La propiedad <code>position</code>
+    modifica este comportamiento.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Valor</th><th>Comportamiento</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>static</code></td>
+        <td>(Por defecto) Sigue el flujo normal. <code>top/left/right/bottom</code> no tienen efecto.</td>
+      </tr>
+      <tr>
+        <td><code>relative</code></td>
+        <td>Se desplaza respecto a su posición original. El resto de elementos no se recolocan.</td>
+      </tr>
+      <tr>
+        <td><code>absolute</code></td>
+        <td>Se posiciona respecto al primer ancestro con <code>position != static</code>. Sale del flujo.</td>
+      </tr>
+      <tr>
+        <td><code>fixed</code></td>
+        <td>Como absolute pero respecto al viewport. No se mueve al hacer scroll.</td>
+      </tr>
+      <tr>
+        <td><code>sticky</code></td>
+        <td>Combina relative y fixed: se comporta como relative hasta que llega al umbral de scroll.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — relative vs absolute</div>
+    <pre><code>/* El padre necesita position para que el hijo absolute se posicione respecto a él */
+.contenedor &#123;
+  position: relative;
+&#125;
+
+.badge &#123;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+&#125;
+
+/* Fixed: siempre en la esquina, aunque se haga scroll */
+.boton-volver-arriba &#123;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-warning">
+    <strong>Paradoja de <code>position: relative</code>:</strong>
+    <code>left: 10px</code> mueve el elemento <strong>hacia la derecha</strong> (aleja el borde izquierdo),
+    y <code>right: 10px</code> lo mueve <strong>hacia la izquierda</strong>. Es contraintuitivo pero
+    consistente: la propiedad indica el desplazamiento desde ese borde.
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 580 100" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Paradoja de left y right en position relative" class="diagram-svg">
+      <!-- Mitad izquierda: left:30px -->
+      <!-- Caja fantasma original -->
+      <rect x="20" y="30" width="100" height="40" rx="4" fill="none" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="70" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">original</text>
+      <!-- Caja desplazada left:30px -->
+      <rect x="50" y="30" width="100" height="40" rx="4" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="100" y="54" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-key-text)">left: 30px</text>
+      <!-- Flecha → derecha -->
+      <line x1="122" y1="50" x2="148" y2="50" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="144,46 153,50 144,54" fill="var(--color-accent)"/>
+      <text x="86" y="22" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-accent)">→ se mueve a la derecha</text>
+
+      <!-- Línea divisoria -->
+      <line x1="275" y1="10" x2="275" y2="90" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- Mitad derecha: right:30px -->
+      <!-- Caja fantasma original -->
+      <rect x="320" y="30" width="100" height="40" rx="4" fill="none" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="370" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">original</text>
+      <!-- Caja desplazada right:30px -->
+      <rect x="290" y="30" width="100" height="40" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="340" y="54" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">right: 30px</text>
+      <!-- Flecha ← izquierda -->
+      <line x1="318" y1="50" x2="292" y2="50" stroke="var(--color-text-2)" stroke-width="1.5"/>
+      <polygon points="296,46 287,50 296,54" fill="var(--color-text-2)"/>
+      <text x="360" y="22" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">← se mueve a la izquierda</text>
+    </svg>
+    <figcaption>Con position: relative, left empuja hacia la derecha y right hacia la izquierda</figcaption>
+  </figure>
+
+  <div class="callout callout-tip">
+    Un error común: usar <code>position: absolute</code> sin que el padre tenga
+    <code>position: relative</code>. En ese caso el elemento se posiciona respecto al
+    <code>&lt;body&gt;</code>, no al contenedor esperado.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="css-float" class="content-section">
+  <h2>Posicionamiento flotante</h2>
+  <p>
+    <code>float</code> fue el mecanismo original para layouts multicolumna (diseñado para flotar
+    imágenes en texto). Hoy en día se prefiere Flexbox o Grid, pero es importante entenderlo
+    porque sigue apareciendo en código legacy.
+  </p>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — float básico</div>
+    <pre><code>.imagen-derecha &#123;
+  float: right;
+  width: 40%;
+  margin-left: 1rem;
+&#125;
+
+/* clear: evitar que el contenido siguiente se adapte al float */
+.after-float &#123;
+  clear: both;
+&#125;</code></pre>
+  </div>
+
+  <p>
+    Un problema clásico: si todos los hijos de un contenedor son <code>float</code>,
+    el contenedor colapsa a altura 0. Soluciones:
+  </p>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — Clearfix (tres opciones)</div>
+    <pre><code>/* Opción 1: clearfix con pseudo-elemento */
+.clearfix::after &#123;
+  content: "";
+  display: block;
+  clear: both;
+&#125;
+
+/* Opción 2: overflow */
+.contenedor &#123;
+  overflow: hidden; /* o auto */
+&#125;
+
+/* Opción 3: display:flow-root (moderno) */
+.contenedor &#123;
+  display: flow-root;
+&#125;</code></pre>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Valor de <code>clear</code></th><th>Efecto</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>left</code></td><td>El elemento se baja hasta quedar libre de floats izquierdos</td></tr>
+      <tr><td><code>right</code></td><td>El elemento se baja hasta quedar libre de floats derechos</td></tr>
+      <tr><td><code>both</code></td><td>El elemento se baja hasta quedar libre de cualquier float</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    Float para layouts está considerado una práctica obsoleta. Usar Flexbox o Grid en código nuevo.
+  </div>
+
+  <h3>Layout a 2 columnas con float</h3>
+  <p>
+    Aunque hoy en día se prefiere Flexbox o Grid, el patrón de dos columnas con float
+    fue el estándar durante años. Saber leerlo es esencial para mantener código legacy.
+  </p>
+
+  <div class="code-block">
+    <div class="code-lang">HTML + CSS — Layout 2 columnas con float</div>
+    <pre><code>&lt;div id="contenedor"&gt;
+  &lt;div id="cabecera"&gt;Cabecera&lt;/div&gt;
+  &lt;div id="menu"&gt;Menú lateral&lt;/div&gt;
+  &lt;div id="contenido"&gt;Contenido principal&lt;/div&gt;
+  &lt;div id="pie"&gt;Pie de página&lt;/div&gt;
+&lt;/div&gt;
+
+/* CSS */
+#menu &#123;
+  float: left;
+  width: 15%;
+&#125;
+#contenido &#123;
+  float: left;
+  width: 85%;
+&#125;
+#pie &#123;
+  clear: both;   /* evita que el pie suba junto a los floats */
+&#125;</code></pre>
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Layout de 2 columnas con float" class="diagram-svg">
+      <!-- Cabecera -->
+      <rect x="10" y="10" width="540" height="35" rx="4" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="280" y="31" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)" font-weight="600">cabecera</text>
+      <!-- Menú 15% -->
+      <rect x="10" y="53" width="80" height="100" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="50" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">menu</text>
+      <text x="50" y="115" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-2)">float: left</text>
+      <!-- Contenido 85% -->
+      <rect x="98" y="53" width="452" height="100" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="324" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">contenido</text>
+      <text x="324" y="115" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-2)">float: left</text>
+      <!-- Pie -->
+      <rect x="10" y="161" width="540" height="30" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="280" y="180" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">pie · clear: both</text>
+    </svg>
+    <figcaption>Layout 2 columnas: menú (15%) y contenido (85%) flotando a la izquierda, pie con clear: both</figcaption>
+  </figure>
+
+  <h3>Layout a 3 columnas con float</h3>
+  <p>
+    El mismo patrón se puede anidar para crear una tercera columna dentro del área de contenido.
+  </p>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — 3 columnas (menú + principal + secundario)</div>
+    <pre><code>#menu &#123; float: left; width: 15%; &#125;
+#contenido &#123; float: left; width: 85%; &#125;
+
+/* Dentro de #contenido: */
+#principal &#123; float: left; width: 80%; &#125;
+#secundario &#123; float: left; width: 20%; &#125;
+
+#pie &#123; clear: both; &#125;</code></pre>
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Layout de 3 columnas con float" class="diagram-svg">
+      <!-- Cabecera -->
+      <rect x="10" y="10" width="540" height="35" rx="4" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="280" y="31" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)" font-weight="600">cabecera</text>
+      <!-- Menú 15% -->
+      <rect x="10" y="53" width="80" height="100" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="50" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">menu</text>
+      <text x="50" y="113" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-2)">float: left</text>
+      <!-- Contenido exterior (85%) borde solo -->
+      <rect x="98" y="53" width="452" height="100" rx="4" fill="none" stroke="var(--color-border)" stroke-width="1"/>
+      <!-- Principal (80% de 85%) -->
+      <rect x="98" y="53" width="362" height="100" rx="3" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="279" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text)">principal</text>
+      <text x="279" y="113" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-2)">float: left · 80%</text>
+      <!-- Secundario (20% de 85%) -->
+      <rect x="462" y="53" width="88" height="100" rx="3" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1.5"/>
+      <text x="506" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="oklch(35% 0.12 155)">secund.</text>
+      <text x="506" y="113" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="oklch(35% 0.12 155)">20%</text>
+      <!-- Pie -->
+      <rect x="10" y="161" width="540" height="30" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="280" y="180" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">pie · clear: both</text>
+    </svg>
+    <figcaption>Layout 3 columnas: el área de contenido se subdivide internamente con dos floats adicionales</figcaption>
+  </figure>
+</section>
+
+<!-- =========================================================== -->
+<section id="css-flexbox" class="content-section">
+  <h2>Flexbox</h2>
+  <p>
+    Flexbox es el método de diseño <strong>unidimensional</strong> de CSS: distribuye elementos
+    a lo largo de un eje (fila o columna). Ideal para alinear elementos dentro de componentes.
+  </p>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Ejes de Flexbox: main axis y cross axis" class="diagram-svg">
+      <rect x="10" y="30" width="520" height="140" rx="8"
+            fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="22" y="22" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)"
+            font-weight="700">flex-container</text>
+      <!-- ítems -->
+      <rect x="28"  y="50" width="80" height="80" rx="6" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="68"  y="95" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)">item 1</text>
+      <rect x="126" y="50" width="80" height="80" rx="6" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="166" y="95" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)">item 2</text>
+      <rect x="224" y="50" width="80" height="80" rx="6" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="264" y="95" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)">item 3</text>
+      <!-- main axis → -->
+      <line x1="10" y1="185" x2="530" y2="185" stroke="var(--color-accent)" stroke-width="2"/>
+      <polygon points="526,180 535,185 526,190" fill="var(--color-accent)"/>
+      <text x="270" y="198" text-anchor="middle" font-family="var(--font-display)" font-size="11"
+            fill="var(--color-accent)" font-weight="600">main axis — justify-content</text>
+      <!-- cross axis ↓ (a la derecha) -->
+      <line x1="555" y1="30" x2="555" y2="175" stroke="var(--color-text-2)" stroke-width="2"/>
+      <polygon points="550,171 555,180 560,171" fill="var(--color-text-2)"/>
+      <text x="563" y="105" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)"
+            font-weight="600" transform="rotate(90,563,105)">cross — align-items</text>
+    </svg>
+    <figcaption>Ejes de Flexbox: main axis (horizontal) y cross axis (vertical)</figcaption>
+  </figure>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 580 260" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Variantes de justify-content en Flexbox" class="diagram-svg">
+      <!-- Fila 1: flex-start (y=10) -->
+      <text x="7" y="33" text-anchor="end" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">flex-start</text>
+      <rect x="10" y="18" width="560" height="36" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <rect x="18" y="24" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="86" y="24" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="154" y="24" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+
+      <!-- Fila 2: flex-end (y=62) -->
+      <text x="7" y="85" text-anchor="end" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">flex-end</text>
+      <rect x="10" y="70" width="560" height="36" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <rect x="384" y="76" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="452" y="76" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="520" y="76" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+
+      <!-- Fila 3: center (y=114) -->
+      <text x="7" y="137" text-anchor="end" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">center</text>
+      <rect x="10" y="122" width="560" height="36" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <rect x="201" y="128" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="269" y="128" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="337" y="128" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+
+      <!-- Fila 4: space-between (y=166) -->
+      <text x="7" y="189" text-anchor="end" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">space-between</text>
+      <rect x="10" y="174" width="560" height="36" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <rect x="18" y="180" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="261" y="180" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="504" y="180" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+
+      <!-- Fila 5: space-evenly (y=218) -->
+      <text x="7" y="241" text-anchor="end" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">space-evenly</text>
+      <rect x="10" y="226" width="560" height="36" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <rect x="66" y="232" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="261" y="232" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+      <rect x="456" y="232" width="60" height="24" rx="3" fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1"/>
+    </svg>
+    <figcaption>Los 5 valores más usados de justify-content — cómo distribuyen los ítems en el eje principal</figcaption>
+  </figure>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — Propiedades del contenedor flex</div>
+    <pre><code>.flex-container &#123;
+  display: flex;
+
+  /* Dirección del eje principal */
+  flex-direction: row;            /* row | column | row-reverse | column-reverse */
+
+  /* Distribución en el eje principal */
+  justify-content: space-between; /* flex-start | center | space-between | space-around | space-evenly */
+
+  /* Alineación en el eje transversal */
+  align-items: center;            /* flex-start | center | flex-end | stretch | baseline */
+
+  /* Salto de línea */
+  flex-wrap: wrap;                /* nowrap | wrap | wrap-reverse */
+
+  /* Gap entre elementos */
+  gap: 1rem;
+&#125;</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — Propiedades de los hijos flex</div>
+    <pre><code>.flex-item &#123;
+  /* Cómo crece si hay espacio disponible */
+  flex-grow: 1;
+
+  /* Cómo se encoge si no hay espacio */
+  flex-shrink: 0;
+
+  /* Tamaño base antes de grow/shrink */
+  flex-basis: 200px;
+
+  /* Shorthand */
+  flex: 1 0 200px;  /* grow shrink basis */
+
+  /* Alineación individual (sobreescribe align-items del padre) */
+  align-self: flex-end;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <code>flex: 1</code> equivale a <code>flex: 1 1 0</code> — el elemento crece y se encoge
+    proporcionalmente al espacio disponible. Muy útil para columnas de igual ancho.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="css-grid" class="content-section">
+  <h2>Grid</h2>
+  <p>
+    CSS Grid es el método de diseño <strong>bidimensional</strong>: controla filas y columnas
+    simultáneamente. Ideal para layouts de página completos.
+  </p>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 560 280" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Diagrama de CSS Grid con líneas numeradas y elementos posicionados" class="diagram-svg">
+      <rect x="40" y="30" width="490" height="220" rx="6"
+            fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <!-- líneas verticales -->
+      <line x1="40"  y1="30" x2="40"  y2="250" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <line x1="203" y1="30" x2="203" y2="250" stroke="var(--color-border-strong)" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <line x1="366" y1="30" x2="366" y2="250" stroke="var(--color-border-strong)" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <line x1="530" y1="30" x2="530" y2="250" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- líneas horizontales -->
+      <line x1="40" y1="30"  x2="530" y2="30"  stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <line x1="40" y1="103" x2="530" y2="103" stroke="var(--color-border-strong)" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <line x1="40" y1="176" x2="530" y2="176" stroke="var(--color-border-strong)" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <line x1="40" y1="250" x2="530" y2="250" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <!-- números de línea de columna -->
+      <text x="40"  y="24" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">1</text>
+      <text x="203" y="24" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">2</text>
+      <text x="366" y="24" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">3</text>
+      <text x="530" y="24" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">4</text>
+      <!-- números de línea de fila -->
+      <text x="28" y="33"  text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">1</text>
+      <text x="28" y="106" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">2</text>
+      <text x="28" y="179" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">3</text>
+      <text x="28" y="253" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">4</text>
+      <!-- header: col 1/-1 row 1/2 -->
+      <rect x="44" y="34" width="482" height="65" rx="4"
+            fill="var(--color-accent-light)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="285" y="68" text-anchor="middle" font-family="var(--font-display)" font-size="12"
+            fill="var(--color-key-text)" font-weight="600">header</text>
+      <text x="285" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="9"
+            fill="var(--color-key-text)">grid-column: 1 / -1</text>
+      <!-- sidebar: col 1/2 row 2/4 -->
+      <rect x="44" y="107" width="155" height="139" rx="4"
+            fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1.5"/>
+      <text x="121" y="168" text-anchor="middle" font-family="var(--font-display)" font-size="11"
+            fill="oklch(35% 0.12 155)" font-weight="600">sidebar</text>
+      <text x="121" y="183" text-anchor="middle" font-family="var(--font-mono)" font-size="9"
+            fill="oklch(35% 0.12 155)">col: 1/2 · row: 2/4</text>
+      <!-- main: col 2/-1 -->
+      <rect x="207" y="107" width="319" height="139" rx="4"
+            fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="366" y="168" text-anchor="middle" font-family="var(--font-display)" font-size="11"
+            fill="var(--color-text)" font-weight="600">main</text>
+      <text x="366" y="183" text-anchor="middle" font-family="var(--font-mono)" font-size="9"
+            fill="var(--color-text-2)">grid-column: 2 / -1</text>
+      <!-- leyenda -->
+      <text x="285" y="270" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-3)">Líneas de columna en azul · Líneas de fila en gris</text>
+    </svg>
+    <figcaption>CSS Grid: líneas numeradas, header spanning y sidebar multi-fila</figcaption>
+  </figure>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — Propiedades del contenedor grid</div>
+    <pre><code>.grid-container &#123;
+  display: grid;
+
+  /* Define columnas: 3 iguales */
+  grid-template-columns: 1fr 1fr 1fr;
+
+  /* O con repeat */
+  grid-template-columns: repeat(3, 1fr);
+
+  /* Columnas responsivas con auto-fill */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+
+  /* Filas */
+  grid-template-rows: auto 1fr auto;
+
+  /* Gap */
+  column-gap: 1rem;
+  row-gap: 1.5rem;
+  gap: 1.5rem 1rem; /* row column */
+&#125;</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — Posicionamiento de elementos grid</div>
+    <pre><code>.header &#123;
+  grid-column: 1 / -1;  /* Ocupa todas las columnas */
+&#125;
+
+.sidebar &#123;
+  grid-column: 1 / 2;
+  grid-row: 2 / 4;      /* Ocupa dos filas */
+&#125;
+
+.main &#123;
+  grid-column: 2 / -1;
+&#125;</code></pre>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Unidad</th><th>Descripción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>fr</code></td><td>Fracción del espacio disponible (respeta el gap)</td></tr>
+      <tr><td><code>px</code></td><td>Tamaño fijo</td></tr>
+      <tr><td><code>%</code></td><td>Porcentaje del contenedor</td></tr>
+      <tr><td><code>auto</code></td><td>Tamaño según contenido</td></tr>
+      <tr><td><code>minmax(min, max)</code></td><td>Rango flexible</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-relation">
+    <strong>Grid vs Flexbox:</strong> usa Flexbox para alinear elementos <strong>dentro</strong>
+    de un componente (navbar, tarjeta, botones). Usa Grid para el <strong>layout de página</strong>
+    o cuando necesitas control en dos dimensiones.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<section id="css-metodologias" class="content-section">
+  <h2>Metodologías CSS y Sistemas de Diseño</h2>
+  <p>
+    A medida que los proyectos crecen, el CSS desorganizado se vuelve inmanejable.
+    Las metodologías aportan convenciones para estructurar, nombrar y organizar los estilos.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Metodología</th><th>Enfoque principal</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>BEM</strong> (Block Element Modifier)</td>
+        <td>Nomenclatura de clases: <code>.bloque__elemento--modificador</code></td>
+      </tr>
+      <tr>
+        <td><strong>OOCSS</strong></td>
+        <td>Separar estructura de apariencia; reutilizar objetos visuales</td>
+      </tr>
+      <tr>
+        <td><strong>SMACSS</strong></td>
+        <td>Categorizar reglas: Base, Layout, Module, State, Theme</td>
+      </tr>
+      <tr>
+        <td><strong>Atomic CSS</strong></td>
+        <td>Una clase = una propiedad (precursor de Tailwind)</td>
+      </tr>
+      <tr>
+        <td><strong>Atomic Design</strong></td>
+        <td>Organizar componentes por complejidad: átomos → moléculas → organismos</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <div class="code-lang">CSS — Ejemplo BEM</div>
+    <pre><code>/* Bloque */
+.card &#123; &#125;
+
+/* Elemento (parte del bloque) */
+.card__title &#123; &#125;
+.card__image &#123; &#125;
+.card__body  &#123; &#125;
+
+/* Modificador (variante del bloque o elemento) */
+.card--featured     &#123; &#125;
+.card__title--large &#123; &#125;</code></pre>
+  </div>
+
+  <p>
+    Un sistema de diseño va más allá de una guía de estilos. Define tokens (colores, tipografías,
+    espaciados), componentes reutilizables y principios de interacción para garantizar consistencia
+    visual en toda la aplicación. Ejemplos de referencia: Material Design (Google),
+    Polaris (Shopify), Atlassian Design System.
+  </p>
+
+  <div class="callout callout-tip">
+    En proyectos en equipo, acordar una metodología CSS desde el principio ahorra horas de
+    refactoring. BEM es la más adoptada en proyectos medianos/grandes sin framework.
+  </div>
+</section>
+
+</BlockLayout>
+
+<style>
+  /* Cabecera del bloque */
+  .block-header {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .block-number {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--color-text-3);
+    line-height: 1;
+    margin-bottom: var(--space-2);
+  }
+
+  .block-header h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--space-4);
+  }
+
+  .block-lead {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    color: var(--color-text-2);
+    line-height: var(--leading-normal);
+    max-width: var(--measure);
+    margin: 0;
+  }
+
+  /* Secciones */
+  .content-section {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .content-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .content-section h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.015em;
+    margin: 0 0 var(--space-5);
+  }
+
+  .content-section h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: var(--leading-snug);
+    margin: var(--space-6) 0 var(--space-4);
+  }
+
+  .content-section p {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text);
+    line-height: var(--leading-normal);
+    max-width: var(--measure);
+    margin: 0 0 var(--space-4);
+  }
+
+  .content-section p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Codigo inline */
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-code-border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--color-text);
+  }
+
+  /* Bloques de codigo */
+  .code-block {
+    border: 1px solid var(--color-code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: var(--space-5) 0;
+    background: var(--color-surface);
+  }
+
+  .code-lang {
+    background: var(--color-surface-2);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-2);
+    border-bottom: 1px solid var(--color-code-border);
+  }
+
+  .code-block pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    overflow-x: auto;
+  }
+
+  .code-block pre code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    background: none;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    color: var(--color-text);
+    line-height: 1.65;
+    display: block;
+    white-space: pre;
+  }
+
+  /* Tablas */
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    margin: var(--space-5) 0;
+  }
+
+  .comparison-table th {
+    background: var(--color-surface-2);
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    font-weight: 600;
+    font-family: var(--font-display);
+    border-bottom: 2px solid var(--color-border-strong);
+  }
+
+  .comparison-table td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+    line-height: var(--leading-normal);
+  }
+
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Callouts */
+  .callout {
+    padding: var(--space-4) var(--space-5);
+    border-radius: 6px;
+    border: 1px solid;
+    margin: var(--space-5) 0;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+  }
+
+  .callout::before {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+    font-family: var(--font-display);
+  }
+
+  .callout-warning {
+    background: var(--color-warning-bg);
+    border-color: var(--color-warning-border);
+    color: var(--color-warning-text);
+  }
+  .callout-warning::before { content: "Advertencia"; }
+
+  .callout-tip {
+    background: var(--color-tip-bg);
+    border-color: var(--color-tip-border);
+    color: var(--color-tip-text);
+  }
+  .callout-tip::before { content: "Tip"; }
+
+  .callout-key {
+    background: var(--color-key-bg);
+    border-color: var(--color-key-border);
+    color: var(--color-key-text);
+  }
+  .callout-key::before { content: "Concepto clave"; }
+
+  .callout-relation {
+    background: var(--color-relation-bg);
+    border-color: var(--color-relation-border);
+    color: var(--color-relation-text);
+  }
+  .callout-relation::before { content: "Relación con otro bloque"; }
+
+  /* Diagramas SVG */
+  .diagram-figure {
+    margin: var(--space-5) 0;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .diagram-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: var(--space-4);
+  }
+
+  .diagram-figure figcaption {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-3);
+    text-align: center;
+    padding: var(--space-2) var(--space-4) var(--space-3);
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface-2);
+  }
+
+  /* Definition list */
+  .definition-list {
+    margin: var(--space-4) 0;
+  }
+
+  .definition-list dt {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-top: var(--space-5);
+    margin-bottom: var(--space-2);
+  }
+
+  .definition-list dt:first-child {
+    margin-top: 0;
+  }
+
+  .definition-list dd {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text);
+    line-height: var(--leading-normal);
+    margin: 0 0 0 var(--space-5);
+    max-width: var(--measure);
+  }
+
+  /* code dentro de callouts */
+  .callout code {
+    background: transparent;
+    border-color: currentColor;
+    opacity: 0.85;
+    color: inherit;
+  }
+</style>
