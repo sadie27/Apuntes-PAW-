@@ -9,6 +9,7 @@ dist/
 # Contexto y convenciones de trabajo con Claude — son locales
 CONTEXT.md
 CONVENTIONS.md
+ERRORS.md
 
 # Skills de diseño — instrucciones internas, no son parte del código
 paw-design/

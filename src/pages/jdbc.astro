@@ -1,7 +1,1528 @@
 ---
 import BlockLayout from '../layouts/BlockLayout.astro';
-const sections: { id: string; label: string }[] = [];
+
+const sections = [
+  { id: "jdbc-intro",          label: "Qué es JDBC" },
+  { id: "mapeo-or",            label: "El problema O/R" },
+  { id: "capa-persistencia",   label: "Capa de persistencia" },
+  { id: "driver",              label: "El driver de la BD" },
+  { id: "esquema-basico",      label: "Connection · Statement · ResultSet" },
+  { id: "connection",          label: "Connection" },
+  { id: "statement",           label: "Statement" },
+  { id: "prepared-statement",  label: "PreparedStatement" },
+  { id: "resultset",           label: "ResultSet" },
+  { id: "recorrer-resultset",  label: "Recorrer filas con next()" },
+  { id: "leer-campos",         label: "Leer campos con get<Tipo>" },
+  { id: "clase-persistencia",  label: "La clase Persistencia completa" },
+  { id: "usando-persistencia", label: "Usando la capa" },
+  { id: "alternativas",        label: "Alternativas a JDBC" },
+];
 ---
-<BlockLayout title="JDBC" blockNumber={2} blockName="JDBC" sections={sections}>
-  <p>Contenido pendiente.</p>
+
+<BlockLayout
+  title="JDBC"
+  blockNumber={2}
+  blockName="JDBC"
+  sections={sections}
+>
+
+<!-- ============================================================
+     BLOQUE 2 — JDBC
+     ============================================================ -->
+
+<header class="block-header">
+  <span class="block-number">02</span>
+  <h1>JDBC</h1>
+  <p class="block-lead">
+    Java Database Connectivity: la API estándar de Java para acceder a bases de datos relacionales.
+    Fundamento de toda capa de persistencia en aplicaciones Java EE.
+  </p>
+</header>
+
+<!-- =========================================================== -->
+<!-- 1. QUÉ ES JDBC                                              -->
+<!-- =========================================================== -->
+<section id="jdbc-intro" class="content-section">
+  <h2>Qué es JDBC</h2>
+  <p class="lead-text">
+    JDBC (Java Database Connectivity) es la API estándar de Java para conectar aplicaciones
+    con bases de datos relacionales. Forma parte del paquete <code>java.sql</code> (y
+    <code>javax.sql</code> para funcionalidades avanzadas como los pools de conexiones).
+    Permite ejecutar operaciones tanto de tipo DML (consultar, insertar, modificar y borrar datos)
+    como DDL (crear o modificar la estructura de las tablas).
+  </p>
+  <p>
+    En el contexto de este curso, JDBC se usa principalmente para implementar la
+    <strong>capa de persistencia</strong>: el código que lee datos de la base de datos y construye
+    objetos de negocio (como <code>Articulo</code>, <code>Cliente</code>, etc.) que el resto de la
+    aplicación puede usar sin saber nada de cómo se almacenan.
+  </p>
+  <div class="callout callout-key">
+    JDBC actúa como puente entre el mundo orientado a objetos de Java y el mundo relacional de las
+    bases de datos. Su función es traducir entre filas/columnas y objetos/atributos.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 2. EL PROBLEMA O/R                                          -->
+<!-- =========================================================== -->
+<section id="mapeo-or" class="content-section">
+  <h2>El problema: dos mundos distintos</h2>
+  <p>
+    Las aplicaciones Java trabajan con <strong>objetos</strong> (instancias de clases con atributos y
+    métodos), mientras que las bases de datos almacenan <strong>tablas</strong> (filas y columnas).
+    Estos dos mundos no coinciden de forma natural: los nombres de los campos pueden diferir entre la
+    clase Java y la columna de la BD, los tipos de datos son distintos (Java tiene <code>String</code>,
+    <code>double</code>, <code>Date</code>; SQL tiene <code>VARCHAR</code>, <code>DECIMAL</code>,
+    <code>DATE</code>), y el orden de los datos tampoco tiene por qué coincidir. Este desajuste se
+    llama <strong>desajuste de impedancia objeto-relacional</strong>
+    (<em>object-relational impedance mismatch</em>).
+  </p>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Diagrama de los dos mundos: aplicación OO vs BD relacional" class="diagram-svg">
+      <!-- Mundo OO (izquierda) -->
+      <rect x="10" y="20" width="220" height="220" rx="10"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="120" y="48" text-anchor="middle" font-family="var(--font-display)" font-size="13"
+            fill="var(--color-text)" font-weight="600">Aplicación (OO)</text>
+      <!-- Clase Java esquemática -->
+      <rect x="30" y="62" width="180" height="130" rx="6"
+            fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+      <rect x="30" y="62" width="180" height="28" rx="6"
+            fill="var(--color-accent)" stroke="none"/>
+      <text x="120" y="80" text-anchor="middle" font-family="var(--font-mono)" font-size="12"
+            fill="var(--color-surface)" font-weight="600">Cliente</text>
+      <text x="45" y="108" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-key-text)">String nombre</text>
+      <text x="45" y="126" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-key-text)">String dir</text>
+      <text x="45" y="144" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-key-text)">String tfno</text>
+      <text x="45" y="162" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-key-text)">double dto</text>
+      <line x1="30" y1="172" x2="210" y2="172" stroke="var(--color-accent)" stroke-width="0.8" stroke-dasharray="4,3"/>
+      <text x="45" y="188" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">getters / setters</text>
+
+      <!-- Centro: etiqueta "Distintos MUNDOS" -->
+      <text x="360" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="13"
+            fill="var(--color-warning-text)" font-weight="700">Distintos</text>
+      <text x="360" y="120" text-anchor="middle" font-family="var(--font-display)" font-size="13"
+            fill="var(--color-warning-text)" font-weight="700">MUNDOS</text>
+      <!-- Flecha izq→centro (rota) -->
+      <line x1="232" y1="130" x2="285" y2="130" stroke="var(--color-warning-text)" stroke-width="2"
+            stroke-dasharray="6,4"/>
+      <polygon points="281,124 292,130 281,136" fill="var(--color-warning-text)"/>
+      <!-- Flecha centro→der (rota) -->
+      <line x1="428" y1="130" x2="485" y2="130" stroke="var(--color-warning-text)" stroke-width="2"
+            stroke-dasharray="6,4"/>
+      <polygon points="439,124 428,130 439,136" fill="var(--color-warning-text)"/>
+
+      <!-- Mundo relacional (derecha) -->
+      <rect x="490" y="20" width="220" height="220" rx="10"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="600" y="48" text-anchor="middle" font-family="var(--font-display)" font-size="13"
+            fill="var(--color-text)" font-weight="600">BD (relacional)</text>
+      <!-- Mini tabla cabecera -->
+      <rect x="505" y="60" width="190" height="28" rx="4"
+            fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+      <text x="520" y="78" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text)" font-weight="600">nombre</text>
+      <text x="575" y="78" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text)" font-weight="600">direccion</text>
+      <text x="655" y="78" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text)" font-weight="600">dto</text>
+      <!-- Fila 1 -->
+      <rect x="505" y="88" width="190" height="24"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="0.5"/>
+      <text x="520" y="103" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">García</text>
+      <text x="575" y="103" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">C/Mayor 1</text>
+      <text x="655" y="103" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">0.10</text>
+      <!-- Fila 2 -->
+      <rect x="505" y="112" width="190" height="24"
+            fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="0.5"/>
+      <text x="520" y="127" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">López</text>
+      <text x="575" y="127" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">Av. Sol 7</text>
+      <text x="655" y="127" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">0.05</text>
+
+      <!-- Diferencias bajo el centro -->
+      <text x="360" y="200" text-anchor="middle" font-family="var(--font-body)" font-size="11"
+            fill="var(--color-text-2)">Nombres distintos · Tipos distintos · Orden distinto</text>
+    </svg>
+    <figcaption>Los dos mundos que JDBC debe reconciliar</figcaption>
+  </figure>
+</section>
+
+<!-- =========================================================== -->
+<!-- 3. CAPA DE PERSISTENCIA / DAO                               -->
+<!-- =========================================================== -->
+<section id="capa-persistencia" class="content-section">
+  <h2>La solución: capa de persistencia (DAO)</h2>
+  <p>
+    La solución al problema del mapeo objeto-relacional es introducir una <strong>capa de
+    persistencia</strong> (también llamada capa DAO, de <em>Data Access Object</em>) que actúe de
+    intermediaria entre la aplicación y la base de datos. Esta capa se encarga de dos
+    responsabilidades:
+  </p>
+  <ul>
+    <li><strong>Leer</strong> de la BD y construir objetos de negocio (filas &#8594; objetos)</li>
+    <li><strong>Escribir</strong> en la BD a partir de objetos de negocio (objetos &#8594; filas)</li>
+  </ul>
+  <p>
+    El resto de la aplicación (la lógica de negocio, la capa web) trabaja únicamente con objetos
+    Java y nunca con SQL directamente. Esto permite cambiar el SGBD (por ejemplo, de MySQL a
+    PostgreSQL) sin tocar nada fuera de la capa de persistencia.
+  </p>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 420 310" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Arquitectura en 3 capas con capa DAO en el centro" class="diagram-svg">
+      <!-- Capa superior: Aplicación OO -->
+      <rect x="60" y="15" width="300" height="64" rx="8"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="210" y="44" text-anchor="middle" font-family="var(--font-display)" font-size="14"
+            fill="var(--color-text)" font-weight="600">Aplicación (OO)</text>
+      <text x="210" y="64" text-anchor="middle" font-family="var(--font-body)" font-size="11"
+            fill="var(--color-text-2)">Lógica de negocio · Servlets · JSP</text>
+
+      <!-- Flechas App ↔ DAO -->
+      <!-- Bajada: SQL queries -->
+      <line x1="230" y1="79" x2="230" y2="118" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="224,114 230,126 236,114" fill="var(--color-accent)"/>
+      <text x="248" y="105" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-2)">SQL queries</text>
+      <!-- Subida: Objetos Java -->
+      <line x1="190" y1="120" x2="190" y2="81" stroke="var(--color-text-2)" stroke-width="1.5"/>
+      <polygon points="184,85 190,73 196,85" fill="var(--color-text-2)"/>
+      <text x="102" y="105" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-2)">Objetos Java</text>
+
+      <!-- Capa media: DAO (protagonista) -->
+      <rect x="60" y="126" width="300" height="64" rx="8"
+            fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="2"/>
+      <text x="210" y="155" text-anchor="middle" font-family="var(--font-display)" font-size="14"
+            fill="var(--color-accent)" font-weight="700">Capa de persistencia / DAO</text>
+      <text x="210" y="175" text-anchor="middle" font-family="var(--font-body)" font-size="11"
+            fill="var(--color-accent)">JDBC · clase Persistencia · SQL</text>
+
+      <!-- Flechas DAO ↔ BD -->
+      <!-- Bajada: SQL -->
+      <line x1="230" y1="190" x2="230" y2="229" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="224,225 230,237 236,225" fill="var(--color-accent)"/>
+      <text x="248" y="216" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-2)">SQL</text>
+      <!-- Subida: ResultSet -->
+      <line x1="190" y1="231" x2="190" y2="192" stroke="var(--color-text-2)" stroke-width="1.5"/>
+      <polygon points="184,196 190,184 196,196" fill="var(--color-text-2)"/>
+      <text x="100" y="216" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-2)">ResultSet</text>
+
+      <!-- Capa inferior: BD -->
+      <rect x="60" y="237" width="300" height="60" rx="8"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <!-- Icono cilindro BD -->
+      <ellipse cx="100" cy="258" rx="16" ry="6"
+               fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+      <rect x="84" y="258" width="32" height="22"
+            fill="var(--color-surface-2)" stroke="none"/>
+      <line x1="84" y1="258" x2="84" y2="280" stroke="var(--color-border-strong)" stroke-width="1"/>
+      <line x1="116" y1="258" x2="116" y2="280" stroke="var(--color-border-strong)" stroke-width="1"/>
+      <ellipse cx="100" cy="280" rx="16" ry="6"
+               fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+      <text x="230" y="261" text-anchor="middle" font-family="var(--font-display)" font-size="14"
+            fill="var(--color-text)" font-weight="600">BD (relacional)</text>
+      <text x="230" y="279" text-anchor="middle" font-family="var(--font-body)" font-size="11"
+            fill="var(--color-text-2)">MySQL · PostgreSQL · Oracle…</text>
+    </svg>
+    <figcaption>Arquitectura en 3 capas: la capa DAO es la única que conoce la BD</figcaption>
+  </figure>
+
+  <div class="callout callout-tip">
+    La capa de persistencia es el único lugar del proyecto que "sabe" que existe una base de datos.
+    Todo el código de SQL vive aquí. Si mañana cambia el SGBD, solo hay que tocar esta capa.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 4. EL DRIVER DE LA BD                                       -->
+<!-- =========================================================== -->
+<section id="driver" class="content-section">
+  <h2>El driver de la BD</h2>
+  <p>
+    Para que JDBC pueda comunicarse con un SGBD concreto (MySQL, PostgreSQL, Oracle…) necesita un
+    <strong>driver</strong>: un fichero JAR que contiene las clases que implementan los interfaces
+    estándar de JDBC para ese SGBD específico. Por ejemplo, para MySQL el driver es
+    <code>mysql-connector-java</code> (o <code>mysql-connector-j</code> en versiones recientes).
+  </p>
+  <p>
+    El driver se añade al classpath del proyecto (en Maven/Gradle como dependencia). Una vez
+    disponible, JDBC lo detecta y usa automáticamente.
+  </p>
+
+  <h3>Carga explícita del driver (legacy, JDBC &lt; 4)</h3>
+  <p>
+    En versiones antiguas de JDBC (antes de la versión 4.0, circa 2006), era necesario cargar el
+    driver manualmente en un bloque <code>static</code> de la clase de persistencia:
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>public class Persistencia &#123;
+    static &#123;
+        try &#123;
+            // Carga explícita del driver — ya NO es necesaria desde JDBC 4
+            // Class.forName busca la clase del driver en el classpath
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        &#125; catch (ClassNotFoundException ex) &#123;
+            // Si el JAR del driver no está en el classpath, lanza esta excepción
+            ex.printStackTrace();
+        &#125;
+    &#125;
+    // ...
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    Desde <strong>JDBC 4.0</strong> (Java 6, 2006) el driver se registra automáticamente mediante
+    el mecanismo <em>Service Provider Interface</em> (SPI). Basta con tener el JAR en el classpath:
+    no hace falta <code>Class.forName</code>. Verás este bloque <code>static</code> en código
+    antiguo, pero en proyectos nuevos puedes ignorarlo.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 5. ESQUEMA BÁSICO: LOS 3 OBJETOS                           -->
+<!-- =========================================================== -->
+<section id="esquema-basico" class="content-section">
+  <h2>Esquema básico: Connection + Statement + ResultSet</h2>
+  <p>
+    En cualquier operación de acceso a base de datos con JDBC intervienen exactamente
+    <strong>tres objetos</strong> de tres clases distintas, siempre en este orden:
+  </p>
+  <ol>
+    <li><strong><code>Connection</code></strong> — la conexión abierta con la BD</li>
+    <li><strong><code>Statement</code></strong> — la instrucción SQL a ejecutar</li>
+    <li><strong><code>ResultSet</code></strong> — el resultado devuelto por la BD</li>
+  </ol>
+
+  <div class="callout callout-key">
+    Connection &#8594; Statement &#8594; ResultSet. Esta secuencia es el patrón JDBC fundamental.
+    Memorizarla es memorizar el 80% de JDBC.
+  </div>
+
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 720 180" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Pipeline de los tres objetos JDBC: Connection, Statement, ResultSet" class="diagram-svg">
+      <!-- Origen: Aplicación Java -->
+      <text x="8" y="82" font-family="var(--font-display)" font-size="11"
+            fill="var(--color-text-2)" font-weight="500">App</text>
+      <text x="8" y="97" font-family="var(--font-display)" font-size="11"
+            fill="var(--color-text-2)" font-weight="500">Java</text>
+      <line x1="48" y1="90" x2="96" y2="90" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="92,85 103,90 92,95" fill="var(--color-accent)"/>
+
+      <!-- Caja 1: Connection -->
+      <rect x="104" y="50" width="168" height="80" rx="8"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="188" y="38" text-anchor="middle" font-family="var(--font-display)" font-size="22"
+            fill="var(--color-accent)" font-weight="700">&#9312;</text>
+      <text x="188" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text)" font-weight="500">Connection</text>
+      <text x="188" y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">DriverManager</text>
+      <text x="188" y="121" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">.getConnection()</text>
+
+      <!-- Flecha 1&#8594;2 -->
+      <line x1="272" y1="90" x2="296" y2="90" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="292,85 303,90 292,95" fill="var(--color-accent)"/>
+
+      <!-- Caja 2: Statement -->
+      <rect x="304" y="50" width="168" height="80" rx="8"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="388" y="38" text-anchor="middle" font-family="var(--font-display)" font-size="22"
+            fill="var(--color-accent)" font-weight="700">&#9313;</text>
+      <text x="388" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text)" font-weight="500">Statement</text>
+      <text x="388" y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">con.createStatement()</text>
+      <text x="388" y="121" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">stm.executeQuery()</text>
+
+      <!-- Flecha 2&#8594;3 -->
+      <line x1="472" y1="90" x2="496" y2="90" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="492,85 503,90 492,95" fill="var(--color-accent)"/>
+
+      <!-- Caja 3: ResultSet -->
+      <rect x="504" y="50" width="168" height="80" rx="8"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="588" y="38" text-anchor="middle" font-family="var(--font-display)" font-size="22"
+            fill="var(--color-accent)" font-weight="700">&#9314;</text>
+      <text x="588" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text)" font-weight="500">ResultSet</text>
+      <text x="588" y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">res.next()</text>
+      <text x="588" y="121" text-anchor="middle" font-family="var(--font-mono)" font-size="10"
+            fill="var(--color-text-2)">res.getXxx()</text>
+
+      <!-- Flecha &#8594; BD -->
+      <line x1="672" y1="90" x2="694" y2="90" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <polygon points="690,85 701,90 690,95" fill="var(--color-accent)"/>
+      <text x="704" y="88" font-family="var(--font-display)" font-size="11"
+            fill="var(--color-text-2)" font-weight="500">BD</text>
+    </svg>
+    <figcaption>Los tres objetos JDBC y su cadena de creación</figcaption>
+  </figure>
+</section>
+
+<!-- =========================================================== -->
+<!-- 6. CONNECTION EN DETALLE                                    -->
+<!-- =========================================================== -->
+<section id="connection" class="content-section">
+  <h2>&#9312; Connection — la conexión con la BD</h2>
+  <p>
+    <code>java.sql.Connection</code> representa una conexión activa con la base de datos. A diferencia
+    de la mayoría de objetos Java, <strong>no se crea con <code>new</code></strong>: se obtiene a
+    través de la clase factoría <code>java.sql.DriverManager</code> llamando al método estático
+    <code>getConnection()</code>, que necesita tres argumentos:
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Parámetro</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+        <th>Ejemplo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>url</code></td>
+        <td><code>String</code></td>
+        <td>URL JDBC con protocolo, host, puerto y nombre de la BD</td>
+        <td><code>"jdbc:mysql://localhost:3306/electrosa?serverTimezone=UTC"</code></td>
+      </tr>
+      <tr>
+        <td><code>user</code></td>
+        <td><code>String</code></td>
+        <td>Nombre de usuario del SGBD</td>
+        <td><code>"root"</code></td>
+      </tr>
+      <tr>
+        <td><code>password</code></td>
+        <td><code>String</code></td>
+        <td>Contraseña del usuario</td>
+        <td><code>"root"</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Diagrama anatomía URL JDBC -->
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 720 145" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Anatomía de la URL JDBC desglosada en sus componentes" class="diagram-svg">
+      <!-- Caja URL -->
+      <rect x="10" y="8" width="700" height="40" rx="6"
+            fill="var(--color-code-bg)" stroke="var(--color-code-border)" stroke-width="1.5"/>
+      <!-- Segmentos coloreados -->
+      <text x="22"  y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-accent)" font-weight="600">jdbc</text>
+      <text x="57"  y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text-2)">:</text>
+      <text x="67"  y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-key-text)" font-weight="500">mysql</text>
+      <text x="111" y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text-2)">://</text>
+      <text x="138" y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text)" font-weight="500">localhost</text>
+      <text x="222" y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text-2)">:</text>
+      <text x="232" y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text)" font-weight="500">3306</text>
+      <text x="271" y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text-2)">/</text>
+      <text x="283" y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text)" font-weight="500">electrosa</text>
+      <text x="361" y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text-2)">?</text>
+      <text x="373" y="33" font-family="var(--font-mono)" font-size="14"
+            fill="var(--color-text-3)">serverTimezone=UTC</text>
+
+      <!-- Líneas y etiquetas -->
+      <line x1="40"  y1="48" x2="40"  y2="80" stroke="var(--color-accent)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="40"  y="95" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-accent)" font-weight="600">Protocolo</text>
+      <text x="40"  y="109" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-accent)">JDBC</text>
+
+      <line x1="89"  y1="48" x2="89"  y2="80" stroke="var(--color-key-text)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="89"  y="95" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-key-text)" font-weight="600">Driver</text>
+      <text x="89"  y="109" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-key-text)">MySQL</text>
+
+      <line x1="180" y1="48" x2="180" y2="80" stroke="var(--color-text-2)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="180" y="95" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-2)" font-weight="600">Host</text>
+
+      <line x1="250" y1="48" x2="250" y2="80" stroke="var(--color-text-2)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="250" y="95" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-2)" font-weight="600">Puerto</text>
+
+      <line x1="322" y1="48" x2="322" y2="80" stroke="var(--color-text-2)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="322" y="95" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-2)" font-weight="600">Nombre BD</text>
+
+      <line x1="468" y1="48" x2="468" y2="80" stroke="var(--color-text-3)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="468" y="95" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-3)" font-weight="600">Parámetro</text>
+      <text x="468" y="109" text-anchor="middle" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-3)">opcional</text>
+    </svg>
+    <figcaption>Anatomía de la URL JDBC para MySQL</figcaption>
+  </figure>
+
+  <h3>Creación básica de la conexión</h3>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>// DriverManager.getConnection devuelve una Connection — NO se usa new
+Connection con = DriverManager.getConnection(
+    "jdbc:mysql://localhost:3306/electrosa?serverTimezone=UTC",
+    "root",   // usuario
+    "root"    // contraseña
+);</code></pre>
+  </div>
+
+  <h3>Manejo obligatorio de excepciones y cierre</h3>
+  <p>
+    Todas las operaciones JDBC pueden lanzar <code>java.sql.SQLException</code>. Además, la conexión
+    es un <strong>recurso costoso</strong> (abre un socket de red, negocia la sesión con el SGBD) y
+    <strong>debe cerrarse siempre</strong>, incluso si ocurre una excepción. El cierre debe hacerse
+    en el bloque <code>finally</code> para garantizar que se ejecuta en cualquier caso.
+  </p>
+
+  <div class="callout callout-warning">
+    No cerrar la conexión es una fuga de recursos grave. En una aplicación web con muchos usuarios
+    concurrentes, las conexiones no cerradas agotan el pool y la aplicación deja de funcionar.
+    Cierra siempre en <code>finally</code>.
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>// Declarar fuera del try para poder cerrar en finally
+Connection con = null;
+try &#123;
+    con = DriverManager.getConnection(
+        "jdbc:mysql://localhost:3306/electrosa?serverTimezone=UTC",
+        "root",
+        "root"
+    );
+    // ... operaciones con la BD ...
+
+&#125; catch (SQLException ex) &#123;
+    // Manejar el error (log, relanzar como excepción de aplicación, etc.)
+    ex.printStackTrace();
+&#125; finally &#123;
+    // Este bloque se ejecuta SIEMPRE, haya o no excepción
+    if (con != null) &#123;
+        try &#123;
+            con.close(); // Cierre de la conexión — OBLIGATORIO
+        &#125; catch (SQLException ex1) &#123;
+            ex1.printStackTrace();
+        &#125;
+    &#125;
+&#125;</code></pre>
+  </div>
+
+  <h3>Pool de conexiones</h3>
+  <p>
+    Crear una <code>Connection</code> es costoso en tiempo de ejecución: abre un socket de red,
+    autentica con el SGBD y negocia parámetros de sesión. Cuando la misma operación se repite miles
+    de veces (como en una aplicación web), crear y destruir conexiones en cada petición es
+    ineficiente. La solución son los <strong>pools de conexiones</strong>: un conjunto de conexiones
+    ya abiertas que se reutilizan. La aplicación "toma prestada" una conexión del pool, la usa y la
+    "devuelve" (la marca como libre sin cerrarla realmente).
+  </p>
+
+  <div class="callout callout-relation">
+    Los pools de conexiones se configuran a nivel del servidor de aplicaciones (Tomcat, WildFly…).
+    Verás cómo se obtiene una conexión del pool mediante JNDI en el bloque de Servlets/JSP.
+  </div>
+
+  <h3>Alternativa moderna: <code>try-with-resources</code> (Java 7+)</h3>
+  <p>
+    Desde Java 7, las clases que implementan <code>AutoCloseable</code> (entre ellas
+    <code>Connection</code>, <code>Statement</code> y <code>ResultSet</code>) pueden
+    declararse en el paréntesis del <code>try</code>. El compilador genera automáticamente
+    el código de cierre: no hace falta el bloque <code>finally</code> explícito.
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java — try-with-resources (equivalente al try-finally anterior)</div>
+    <pre><code>// Los recursos declarados aquí se cierran automáticamente al salir del bloque
+try (Connection con = DriverManager.getConnection(
+         "jdbc:mysql://localhost:3306/electrosa?serverTimezone=UTC", "root", "root");
+     Statement stm = con.createStatement();
+     ResultSet res = stm.executeQuery("SELECT * FROM Cliente")) &#123;
+
+    while (res.next()) &#123;
+        // ... leer campos ...
+    &#125;
+
+&#125; catch (SQLException ex) &#123;
+    // res, stm y con se cierran antes de entrar aquí
+    throw new ExcepcionDeAplicacion(ex);
+&#125;
+// No hay finally — el compilador lo ha generado por nosotros</code></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    El código con <code>try-with-resources</code> es más corto, más legible y más seguro
+    (el cierre ocurre en orden inverso al de declaración, automáticamente, incluso si hay
+    excepciones encadenadas). En código moderno es el patrón preferido sobre el
+    <code>try-finally</code> manual.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 7. STATEMENT EN DETALLE                                     -->
+<!-- =========================================================== -->
+<section id="statement" class="content-section">
+  <h2>&#9313; Statement — la instrucción SQL</h2>
+  <p>
+    <code>java.sql.Statement</code> es el objeto que representa una instrucción SQL a ejecutar. Se
+    crea a partir de un objeto <code>Connection</code> mediante el método
+    <code>createStatement()</code>. Como la conexión, también debe cerrarse al terminar — aunque su
+    cierre se hace al final del bloque <code>try</code>, no en el <code>finally</code> (si la
+    conexión se cierra, el statement asociado también queda inválido).
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>Connection con = null;
+try &#123;
+    con = DriverManager.getConnection("jdbc:mysql://localhost:3306/electrosa", "root", "root");
+
+    // Statement se crea desde la conexión, no con new
+    Statement stm = con.createStatement();
+
+    // ... ejecutar consultas con stm ...
+
+    stm.close(); // Cierre al final del try, antes del catch
+&#125; catch (SQLException ex) &#123;
+    ex.printStackTrace();
+&#125; finally &#123;
+    if (con != null) &#123;
+        try &#123; con.close(); &#125; catch (SQLException ex1) &#123; ex1.printStackTrace(); &#125;
+    &#125;
+&#125;</code></pre>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Método</th>
+        <th>Uso</th>
+        <th>Devuelve</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>stm.executeQuery(sql)</code></td>
+        <td>Consultas SELECT</td>
+        <td><code>ResultSet</code> con los datos</td>
+      </tr>
+      <tr>
+        <td><code>stm.executeUpdate(sql)</code></td>
+        <td>INSERT, UPDATE, DELETE</td>
+        <td><code>int</code> — número de filas afectadas</td>
+      </tr>
+      <tr>
+        <td><code>stm.execute(sql)</code></td>
+        <td>Cualquier instrucción SQL</td>
+        <td><code>boolean</code> (true si devuelve ResultSet)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    <code>Statement</code> es vulnerable a <strong>SQL Injection</strong>: si concatenas valores del
+    usuario directamente en la cadena SQL, un atacante puede inyectar código malicioso. Para
+    parámetros dinámicos usa siempre <strong><code>PreparedStatement</code></strong> (subinterfaz de
+    <code>Statement</code> que usa <code>?</code> como marcadores de posición y escapa los valores
+    automáticamente).
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 7b. PREPAREDSTATEMENT                                       -->
+<!-- =========================================================== -->
+<section id="prepared-statement" class="content-section">
+  <h2><code>PreparedStatement</code> — la alternativa segura</h2>
+  <p>
+    <code>Statement</code> ejecuta SQL construido como un <code>String</code>. Si ese
+    <code>String</code> incluye valores introducidos por el usuario mediante concatenación,
+    la aplicación es vulnerable a <strong>SQL Injection</strong>: un atacante puede
+    manipular la consulta para leer, modificar o borrar datos arbitrarios.
+  </p>
+
+  <h3>El problema: concatenación de parámetros</h3>
+
+  <div class="code-block">
+    <div class="code-label">Java — VULNERABLE (no hagas esto)</div>
+    <pre><code>// El usuario introduce: admin' OR '1'='1
+String usuario = request.getParameter("usuario");
+
+// La consulta resultante: SELECT * FROM Usuario WHERE nombre = 'admin' OR '1'='1'
+// → devuelve TODOS los usuarios, saltándose la autenticación
+String sql = "SELECT * FROM Usuario WHERE nombre = '" + usuario + "'";
+ResultSet res = stm.executeQuery(sql); // PELIGROSO</code></pre>
+  </div>
+
+  <h3>La solución: <code>PreparedStatement</code> con marcadores <code>?</code></h3>
+  <p>
+    <code>PreparedStatement</code> es una subinterfaz de <code>Statement</code> que separa
+    la estructura SQL de los valores. La consulta se precompila con marcadores
+    <code>?</code> en lugar de valores literales, y los valores se asignan después con
+    métodos <code>set&lt;Tipo&gt;(posición, valor)</code>. El driver escapa los valores
+    automáticamente: ningún valor del usuario puede alterar la estructura SQL.
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java — SEGURO con PreparedStatement</div>
+    <pre><code>// La consulta usa ? como marcador de posición — nunca concatenación
+String sql = "SELECT * FROM Usuario WHERE nombre = ? AND password = ?";
+
+// PreparedStatement se crea desde la conexión igual que Statement
+PreparedStatement pstm = con.prepareStatement(sql);
+
+// Asignar valores por posición (1-based) con el método del tipo correcto
+pstm.setString(1, nombreUsuario);   // primer ?
+pstm.setString(2, passwordUsuario); // segundo ?
+
+// Ejecutar: sin parámetros, el SQL ya está preparado
+ResultSet res = pstm.executeQuery();
+
+// Cerrar igual que Statement
+res.close();
+pstm.close();</code></pre>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Método <code>set</code></th>
+        <th>Tipo Java</th>
+        <th>Tipo SQL habitual</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>pstm.setString(pos, val)</code></td>
+        <td><code>String</code></td>
+        <td><code>VARCHAR</code>, <code>CHAR</code>, <code>TEXT</code></td>
+      </tr>
+      <tr>
+        <td><code>pstm.setInt(pos, val)</code></td>
+        <td><code>int</code></td>
+        <td><code>INT</code>, <code>SMALLINT</code></td>
+      </tr>
+      <tr>
+        <td><code>pstm.setDouble(pos, val)</code></td>
+        <td><code>double</code></td>
+        <td><code>DECIMAL</code>, <code>DOUBLE</code></td>
+      </tr>
+      <tr>
+        <td><code>pstm.setDate(pos, val)</code></td>
+        <td><code>java.sql.Date</code></td>
+        <td><code>DATE</code></td>
+      </tr>
+      <tr>
+        <td><code>pstm.setNull(pos, Types.X)</code></td>
+        <td><code>null</code></td>
+        <td>Cualquier tipo nullable</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-key">
+    <strong>Regla absoluta</strong>: cualquier SQL que incluya valores externos (del usuario,
+    de un fichero, de otra BD…) debe usar <code>PreparedStatement</code>.
+    <code>Statement</code> solo es aceptable para SQL completamente fijo sin parámetros variables.
+  </div>
+
+  <div class="callout callout-tip">
+    Además de la seguridad, <code>PreparedStatement</code> tiene una ventaja de rendimiento:
+    la BD precompila el plan de ejecución la primera vez y lo reutiliza en llamadas sucesivas
+    con distintos valores. En bucles que repiten la misma operación (INSERT masivo, etc.)
+    esto marca una diferencia medible.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 8. RESULTSET EN DETALLE                                     -->
+<!-- =========================================================== -->
+<section id="resultset" class="content-section">
+  <h2>&#9314; ResultSet — el resultado de la consulta</h2>
+  <p>
+    <code>java.sql.ResultSet</code> es el objeto que contiene los datos devueltos por una consulta
+    SELECT. Lo devuelve el método <code>executeQuery()</code> del <code>Statement</code>.
+    Internamente funciona como un <strong>cursor</strong> que apunta a una posición antes de la
+    primera fila al crearse, y que va avanzando fila a fila mediante el método <code>next()</code>.
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>Statement stm = con.createStatement();
+
+// executeQuery ejecuta la consulta y devuelve el ResultSet
+ResultSet res = stm.executeQuery("SELECT * FROM Cliente");
+
+// ... procesar res ...
+
+// Cerrar en orden inverso al de apertura: primero res, luego stm
+res.close();
+stm.close();</code></pre>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 9. RECORRER RESULTSET CON next()                           -->
+<!-- =========================================================== -->
+<section id="recorrer-resultset" class="content-section">
+  <h2>Recorrer el ResultSet con <code>next()</code></h2>
+  <p>
+    El método <code>next()</code> del <code>ResultSet</code> avanza el cursor interno a la siguiente
+    fila disponible. Devuelve <code>true</code> si existe una fila de datos, o <code>false</code>
+    si se han agotado todas las filas. El cursor empieza antes de la primera fila: hay que llamar
+    a <code>next()</code> al menos una vez antes de poder leer datos.
+  </p>
+  <p>Hay dos patrones de uso según cuántas filas se esperan:</p>
+
+  <h3>Varias filas: bucle <code>while</code></h3>
+  <p>
+    Cuando la consulta puede devolver cero, una o muchas filas (por ejemplo,
+    <code>SELECT * FROM Cliente</code>), se usa un bucle <code>while</code>:
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>ResultSet res = stm.executeQuery("SELECT id, nombre, pvp FROM Articulo");
+
+// while itera hasta que next() devuelve false (no hay más filas)
+while (res.next()) &#123;
+    // Aquí el cursor apunta a una fila válida — se pueden leer sus campos
+    // ...
+&#125;</code></pre>
+  </div>
+
+  <h3>Una sola fila: bloque <code>if</code></h3>
+  <p>
+    Cuando la consulta filtra por clave primaria y se espera como máximo una fila, un
+    <code>while</code> no tiene sentido. Usa <code>if</code>:
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>ResultSet res = stm.executeQuery("SELECT * FROM Cliente WHERE id = 123");
+
+// if: o hay una fila o no hay ninguna
+if (res.next()) &#123;
+    // Existe el cliente con id=123 — leer sus campos
+    // ...
+&#125; else &#123;
+    // No se encontró ningún cliente con ese id
+&#125;</code></pre>
+  </div>
+
+  <!-- Diagrama puntero ResultSet -->
+  <figure class="diagram-figure">
+    <svg viewBox="0 0 680 285" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Visualización del cursor del ResultSet avanzando fila a fila" class="diagram-svg">
+      <!-- Panel izquierdo: código -->
+      <rect x="10" y="15" width="215" height="240" rx="8"
+            fill="var(--color-code-bg)" stroke="var(--color-code-border)" stroke-width="1"/>
+      <text x="22" y="42" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text)">while (res.next())</text>
+      <text x="22" y="80"  font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">res.next() &#8594; true</text>
+      <text x="22" y="117" font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">res.next() &#8594; true</text>
+      <text x="22" y="154" font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">res.next() &#8594; true</text>
+      <text x="22" y="191" font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">res.next() &#8594; true</text>
+      <text x="22" y="228" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">res.next() &#8594; false</text>
+
+      <!-- Tabla ResultSet -->
+      <!-- Cabecera -->
+      <rect x="270" y="15" width="390" height="30" rx="4"
+            fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+      <text x="290" y="34" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text)" font-weight="600">id</text>
+      <text x="335" y="34" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text)" font-weight="600">nombre</text>
+      <text x="460" y="34" font-family="var(--font-mono)" font-size="11"
+            fill="var(--color-text)" font-weight="600">pvp</text>
+      <!-- Fila 1 (activa) -->
+      <rect x="270" y="45" width="390" height="38"
+            fill="var(--color-accent-light)" stroke="var(--color-border)" stroke-width="0.5"/>
+      <text x="290" y="68" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">a12</text>
+      <text x="335" y="68" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">Lápiz rojo</text>
+      <text x="460" y="68" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">1,25</text>
+      <!-- Fila 2 -->
+      <rect x="270" y="83" width="390" height="38"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="0.5"/>
+      <text x="290" y="106" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">a13</text>
+      <text x="335" y="106" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">Lápiz azul</text>
+      <text x="460" y="106" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">1,25</text>
+      <!-- Fila 3 -->
+      <rect x="270" y="121" width="390" height="38"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="0.5"/>
+      <text x="290" y="144" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">a14</text>
+      <text x="335" y="144" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">Lápiz negro</text>
+      <text x="460" y="144" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">1,25</text>
+      <!-- Fila 4 -->
+      <rect x="270" y="159" width="390" height="38"
+            fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="0.5"/>
+      <text x="290" y="182" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">a15</text>
+      <text x="335" y="182" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">Lápiz verde</text>
+      <text x="460" y="182" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">1,25</text>
+
+      <!-- Cursor (triángulo apuntando a fila 1) -->
+      <polygon points="244,56 258,64 244,72" fill="var(--color-accent)"/>
+
+      <!-- Nota -->
+      <text x="270" y="222" font-family="var(--font-body)" font-size="10"
+            fill="var(--color-text-2)">Cursor empieza ANTES de la fila 1 — next() lo avanza</text>
+    </svg>
+    <figcaption>El cursor del ResultSet avanza con cada llamada a <code>next()</code></figcaption>
+  </figure>
+
+  <div class="callout callout-tip">
+    Regla rápida: ¿Tu SQL tiene <code>WHERE</code> por clave primaria o unique? Usa <code>if</code>.
+    ¿Puede devolver varias filas? Usa <code>while</code>.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 10. LEER CAMPOS CON getXxx()                                -->
+<!-- =========================================================== -->
+<section id="leer-campos" class="content-section">
+  <h2>Leer los campos de cada fila</h2>
+  <p>
+    Una vez que <code>next()</code> ha posicionado el cursor en una fila, se leen los valores de cada
+    columna mediante métodos de la forma <code>get&lt;Tipo&gt;()</code>. Se elige el método según el
+    <strong>tipo Java</strong> que se quiere obtener, y se pasa como argumento el
+    <strong>nombre exacto de la columna</strong> tal como aparece en la BD (o tal como se ha aliasado
+    en el SELECT).
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Método</th>
+        <th>Tipo Java devuelto</th>
+        <th>Tipo SQL habitual</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>res.getString("col")</code></td>
+        <td><code>String</code></td>
+        <td><code>VARCHAR</code>, <code>CHAR</code>, <code>TEXT</code></td>
+      </tr>
+      <tr>
+        <td><code>res.getInt("col")</code></td>
+        <td><code>int</code></td>
+        <td><code>INT</code>, <code>SMALLINT</code></td>
+      </tr>
+      <tr>
+        <td><code>res.getLong("col")</code></td>
+        <td><code>long</code></td>
+        <td><code>BIGINT</code></td>
+      </tr>
+      <tr>
+        <td><code>res.getDouble("col")</code></td>
+        <td><code>double</code></td>
+        <td><code>DECIMAL</code>, <code>DOUBLE</code>, <code>FLOAT</code></td>
+      </tr>
+      <tr>
+        <td><code>res.getFloat("col")</code></td>
+        <td><code>float</code></td>
+        <td><code>FLOAT</code></td>
+      </tr>
+      <tr>
+        <td><code>res.getBoolean("col")</code></td>
+        <td><code>boolean</code></td>
+        <td><code>BOOLEAN</code>, <code>TINYINT(1)</code></td>
+      </tr>
+      <tr>
+        <td><code>res.getDate("col")</code></td>
+        <td><code>java.sql.Date</code></td>
+        <td><code>DATE</code></td>
+      </tr>
+      <tr>
+        <td><code>res.getTimestamp("col")</code></td>
+        <td><code>java.sql.Timestamp</code></td>
+        <td><code>DATETIME</code>, <code>TIMESTAMP</code></td>
+      </tr>
+      <tr>
+        <td><code>res.getObject("col")</code></td>
+        <td><code>Object</code></td>
+        <td>Cualquier tipo (cast manual)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>while (res.next()) &#123;
+    // Cada llamada getXxx lee el campo con ese nombre de la fila actual
+    String nombre    = res.getString("nombre");      // columna VARCHAR
+    String direccion = res.getString("direccion");
+    String telefono  = res.getString("tfno");
+    double descuento = res.getDouble("dto");         // columna DECIMAL
+
+    // Con los valores leídos se construye un objeto de negocio
+    Cliente c = new Cliente(nombre, direccion, telefono, descuento);
+    clientes.add(c);
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-warning">
+    El nombre de columna pasado a <code>getXxx()</code> debe coincidir exactamente con el nombre de
+    la columna en la BD (o el alias del SELECT). Un nombre incorrecto lanza
+    <code>SQLException</code>. Si usas <code>SELECT *</code>, los nombres son los de las columnas
+    tal como están definidas en la tabla.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 11. LA CLASE PERSISTENCIA COMPLETA                          -->
+<!-- =========================================================== -->
+<section id="clase-persistencia" class="content-section">
+  <h2>La clase <code>Persistencia</code>: todo junto</h2>
+  <p class="lead-text">
+    La clase de persistencia reúne todo el código JDBC en un único lugar. Sigue este patrón:
+  </p>
+
+  <h3>La clase <code>ExcepcionDeAplicacion</code></h3>
+  <p>
+    A lo largo de la capa de persistencia se lanza <code>ExcepcionDeAplicacion</code>
+    en lugar de propagar <code>SQLException</code> directamente. Esta clase es un
+    simple <strong>wrapper</strong> (envoltorio) que encapsula la excepción técnica de
+    JDBC en una excepción propia del dominio de la aplicación. Así, ninguna clase
+    fuera del paquete <code>paw.bd</code> necesita importar <code>java.sql</code>.
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java — paw/model/ExcepcionDeAplicacion.java</div>
+    <pre><code>package paw.model;
+
+public class ExcepcionDeAplicacion extends Exception &#123;
+
+    public ExcepcionDeAplicacion(String mensaje) &#123;
+        super(mensaje);
+    &#125;
+
+    // Constructor que preserva la causa original (la SQLException de JDBC)
+    public ExcepcionDeAplicacion(Throwable causa) &#123;
+        super(causa);
+    &#125;
+
+    public ExcepcionDeAplicacion(String mensaje, Throwable causa) &#123;
+        super(mensaje, causa);
+    &#125;
+&#125;</code></pre>
+  </div>
+
+  <ul>
+    <li>Es una clase Java normal en el paquete <code>paw.bd</code> (o similar)</li>
+    <li>Tiene métodos por cada operación CRUD: <code>getClientes()</code>, <code>getArticulos()</code>, <code>addCliente()</code>, etc.</li>
+    <li>Cada método devuelve el resultado adecuado (un objeto, una lista, un <code>boolean</code>…)</li>
+    <li>Si ocurre una <code>SQLException</code>, la <strong>convierte</strong> en una <code>ExcepcionDeAplicacion</code> y la relanza: quien usa la capa no necesita importar <code>java.sql</code></li>
+  </ul>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>package paw.bd;
+
+import java.sql.*;
+import java.util.*;
+import paw.model.Cliente;
+import paw.model.ExcepcionDeAplicacion;
+
+public class Persistencia &#123;
+
+    // Bloque static — carga del driver; solo necesario en JDBC &lt; 4
+    static &#123;
+        try &#123;
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        &#125; catch (ClassNotFoundException ex) &#123;
+            ex.printStackTrace();
+        &#125;
+    &#125;
+
+    public List&lt;Cliente&gt; getClientes() throws ExcepcionDeAplicacion &#123;
+        List&lt;Cliente&gt; clientes = new ArrayList&lt;&gt;(); // Lista que se devolverá
+        Connection con = null;
+        try &#123;
+            // ① Conexión
+            con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/electrosa?serverTimezone=UTC",
+                "root", "root"
+            );
+            // ② Statement + consulta
+            Statement stm = con.createStatement();
+            ResultSet res = stm.executeQuery("SELECT * FROM Cliente");
+
+            // ③ Recorrer ResultSet y construir objetos
+            while (res.next()) &#123;
+                String nombre    = res.getString("nombre");
+                String dir       = res.getString("direccion");
+                String telefono  = res.getString("tfno");
+                double descuento = res.getDouble("dto");
+
+                Cliente c = new Cliente(nombre, dir, telefono, descuento);
+                clientes.add(c); // Añadir a la lista de resultado
+            &#125;
+            res.close();  // Cerrar ResultSet antes que el Statement
+            stm.close();  // Cerrar Statement
+
+        &#125; catch (SQLException ex) &#123;
+            // Convertir SQLException en excepción de dominio — nunca exponer java.sql
+            throw new ExcepcionDeAplicacion(ex);
+        &#125; finally &#123;
+            // La conexión se cierra SIEMPRE en el finally
+            if (con != null) &#123;
+                try &#123;
+                    con.close();
+                &#125; catch (SQLException ex1) &#123;
+                    ex1.printStackTrace();
+                &#125;
+            &#125;
+        &#125;
+        return clientes; // Devolver la lista (vacía si no hay datos)
+    &#125;
+&#125;</code></pre>
+  </div>
+
+  <h3>Ejemplo CRUD: insertar un cliente (<code>executeUpdate</code>)</h3>
+  <p>
+    Para operaciones de escritura (INSERT, UPDATE, DELETE) se usa
+    <code>executeUpdate()</code> en lugar de <code>executeQuery()</code>.
+    Devuelve un <code>int</code> con el número de filas afectadas.
+    Al incluir valores dinámicos, se usa <code>PreparedStatement</code>
+    con marcadores <code>?</code>.
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java — método addCliente() en la clase Persistencia</div>
+    <pre><code>public void addCliente(Cliente c) throws ExcepcionDeAplicacion &#123;
+    Connection con = null;
+    try &#123;
+        // ① Conexión
+        con = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/electrosa?serverTimezone=UTC",
+            "root", "root"
+        );
+
+        // ② PreparedStatement con ? — NUNCA concatenar valores del cliente
+        String sql = "INSERT INTO Cliente (nombre, direccion, tfno, dto) VALUES (?, ?, ?, ?)";
+        PreparedStatement pstm = con.prepareStatement(sql);
+
+        // Asignar valores en el orden en que aparecen los ? (1-based)
+        pstm.setString(1, c.getNombre());
+        pstm.setString(2, c.getDireccion());
+        pstm.setString(3, c.getTfno());
+        pstm.setDouble(4, c.getDto());
+
+        // ③ executeUpdate — devuelve filas afectadas (esperamos 1)
+        int filasInsertadas = pstm.executeUpdate();
+        pstm.close();
+
+        if (filasInsertadas != 1) &#123;
+            throw new ExcepcionDeAplicacion("El INSERT no afectó exactamente 1 fila");
+        &#125;
+
+    &#125; catch (SQLException ex) &#123;
+        throw new ExcepcionDeAplicacion(ex);
+    &#125; finally &#123;
+        if (con != null) &#123;
+            try &#123; con.close(); &#125; catch (SQLException ex1) &#123; ex1.printStackTrace(); &#125;
+        &#125;
+    &#125;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-warning">
+    <code>executeUpdate()</code> <strong>no devuelve un <code>ResultSet</code></strong>:
+    devuelve un <code>int</code>. Llamar a <code>executeQuery()</code> en un INSERT/UPDATE/DELETE
+    lanza una excepción. Y al revés: llamar a <code>executeUpdate()</code> en un SELECT también
+    falla. Elige el método según el tipo de operación SQL.
+  </div>
+
+  <div class="callout callout-key">
+    Patrón de cierre: <code>res.close()</code> &#8594; <code>stm.close()</code> (dentro del
+    <code>try</code>) &#8594; <code>con.close()</code> (en el <code>finally</code>). El orden es
+    inverso a la apertura. La conexión siempre va al <code>finally</code>; los demás recursos van
+    al final del <code>try</code>.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 12. USANDO LA CAPA DE PERSISTENCIA                          -->
+<!-- =========================================================== -->
+<section id="usando-persistencia" class="content-section">
+  <h2>Usando la capa de persistencia</h2>
+  <p>
+    Quien usa la clase <code>Persistencia</code> no necesita saber nada de SQL ni de JDBC.
+    Simplemente instancia la clase, llama al método que necesita y trabaja con los objetos devueltos.
+    Si algo va mal, captura <code>ExcepcionDeAplicacion</code>.
+  </p>
+
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code>public static void main(String[] args) &#123;
+    try &#123;
+        // Instanciar la capa de persistencia
+        Persistencia pers = new Persistencia();
+
+        // Obtener la lista de clientes — sin saber nada de SQL
+        List&lt;Cliente&gt; clientes = pers.getClientes();
+
+        // Trabajar con los objetos devueltos
+        for (Cliente c : clientes) &#123;
+            System.out.println(c);
+        &#125;
+
+    &#125; catch (ExcepcionDeAplicacion ex) &#123;
+        // Error de acceso a BD — no es una SQLException aquí
+        ex.printStackTrace();
+    &#125;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    Este es el principio de <strong>abstracción por capas</strong>: la capa de presentación
+    (Servlets, JSP) llama a la capa de persistencia igual que este <code>main</code>, sin conocer
+    una sola línea de SQL.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 13. ALTERNATIVAS A JDBC PURO                                -->
+<!-- =========================================================== -->
+<section id="alternativas" class="content-section">
+  <h2>Alternativas a JDBC puro</h2>
+  <p>
+    JDBC es la base sobre la que se construyen todos los frameworks de persistencia de Java. En
+    proyectos reales, usar JDBC puro implica mucho código repetitivo (el patrón try-catch-finally se
+    replica en cada método). Por eso existen frameworks que lo abstraen.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Framework</th>
+        <th>Nivel</th>
+        <th>Descripción</th>
+        <th>Cuándo usarlo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>JDBC puro</strong></td>
+        <td>Bajo</td>
+        <td>API estándar Java. Control total. Mucho código boilerplate.</td>
+        <td>Aprendizaje, proyectos pequeños, máximo control</td>
+      </tr>
+      <tr>
+        <td><strong>Spring JDBC</strong></td>
+        <td>Medio</td>
+        <td>Elimina el boilerplate de JDBC con <code>JdbcTemplate</code>. SQL explícito.</td>
+        <td>Proyectos Spring que necesitan SQL fino</td>
+      </tr>
+      <tr>
+        <td><strong>MyBatis</strong></td>
+        <td>Medio</td>
+        <td>Mapea métodos Java a sentencias SQL en XML o anotaciones.</td>
+        <td>Cuando el SQL es complejo y se quiere control sobre él</td>
+      </tr>
+      <tr>
+        <td><strong>JPA</strong></td>
+        <td>Alto</td>
+        <td>Estándar Java EE/Jakarta. Mapeo objeto-relacional declarativo con anotaciones.</td>
+        <td>Proyectos empresariales, portabilidad entre SGBD</td>
+      </tr>
+      <tr>
+        <td><strong>Hibernate</strong></td>
+        <td>Alto</td>
+        <td>Implementación de JPA más popular. Genera SQL automáticamente.</td>
+        <td>Proyectos donde el modelo de dominio es la fuente de verdad</td>
+      </tr>
+      <tr>
+        <td><strong>Spring Data JPA</strong></td>
+        <td>Muy alto</td>
+        <td>Capa encima de JPA. Repositories con métodos derivados del nombre.</td>
+        <td>Spring Boot, máxima productividad</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-relation">
+    En esta asignatura se usa JDBC puro para entender los fundamentos. Los frameworks de nivel alto
+    (JPA, Hibernate) se estudian en asignaturas posteriores. Todo lo que aprendes aquí es la base
+    que usan todos ellos internamente.
+  </div>
+</section>
+
 </BlockLayout>
+
+<style>
+  /* ── Cabecera del bloque ─────────────────────────────────────── */
+  .block-header {
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-7);
+  }
+
+  .block-number {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--color-text-3);
+    line-height: 1;
+    margin-bottom: var(--space-2);
+  }
+
+  .block-header h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+    margin: 0 0 var(--space-4);
+  }
+
+  .block-lead {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    color: var(--color-text-2);
+    line-height: var(--leading-normal);
+    max-width: var(--measure);
+    margin: 0;
+  }
+
+  /* ── Secciones ───────────────────────────────────────────────── */
+  .content-section {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .content-section:last-child {
+    border-bottom: none;
+  }
+
+  .content-section h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--space-5);
+  }
+
+  .content-section h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: var(--leading-snug);
+    margin: var(--space-6) 0 var(--space-4);
+  }
+
+  .content-section p {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--color-text);
+    max-width: var(--measure);
+    margin: 0 0 var(--space-4);
+  }
+
+  .lead-text {
+    font-size: var(--text-md) !important;
+    color: var(--color-text-2) !important;
+  }
+
+  .content-section ul,
+  .content-section ol {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--color-text);
+    max-width: var(--measure);
+    margin: 0 0 var(--space-4);
+    padding-left: var(--space-5);
+  }
+
+  .content-section li {
+    margin-bottom: var(--space-2);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-code-border);
+    border-radius: 3px;
+    padding: 1px 5px;
+  }
+
+  /* ── Bloques de código ───────────────────────────────────────── */
+  .code-block {
+    border: 1px solid var(--color-code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: var(--space-5) 0;
+    max-width: var(--measure-wide);
+  }
+
+  .code-label {
+    background: var(--color-surface-2);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-2);
+    border-bottom: 1px solid var(--color-code-border);
+    font-weight: 500;
+  }
+
+  .code-block pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    overflow-x: auto;
+    background: var(--color-code-bg);
+  }
+
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    color: var(--color-text);
+    line-height: var(--leading-normal);
+  }
+
+  /* ── Tablas ──────────────────────────────────────────────────── */
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    margin: var(--space-5) 0;
+  }
+
+  .comparison-table th {
+    background: var(--color-surface-2);
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    font-weight: 600;
+    font-family: var(--font-display);
+    border-bottom: 2px solid var(--color-border-strong);
+  }
+
+  .comparison-table td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+    line-height: var(--leading-normal);
+  }
+
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* ── Callouts ────────────────────────────────────────────────── */
+  .callout {
+    padding: var(--space-4) var(--space-5);
+    border-radius: 6px;
+    border: 1px solid;
+    margin: var(--space-5) 0;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    max-width: var(--measure);
+  }
+
+  .callout::before {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+    font-family: var(--font-display);
+  }
+
+  .callout-warning {
+    background: var(--color-warning-bg);
+    border-color: var(--color-warning-border);
+    color: var(--color-warning-text);
+  }
+  .callout-warning::before { content: "Advertencia"; }
+
+  .callout-tip {
+    background: var(--color-tip-bg);
+    border-color: var(--color-tip-border);
+    color: var(--color-tip-text);
+  }
+  .callout-tip::before { content: "Tip"; }
+
+  .callout-key {
+    background: var(--color-key-bg);
+    border-color: var(--color-key-border);
+    color: var(--color-key-text);
+  }
+  .callout-key::before { content: "Concepto clave"; }
+
+  .callout-relation {
+    background: var(--color-relation-bg);
+    border-color: var(--color-relation-border);
+    color: var(--color-relation-text);
+  }
+  .callout-relation::before { content: "Relación con otro bloque"; }
+
+  /* ── Figuras y diagramas SVG ─────────────────────────────────── */
+  .diagram-figure {
+    margin: var(--space-6) 0;
+  }
+
+  .diagram-svg {
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+    display: block;
+  }
+
+  .diagram-figure figcaption {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-2);
+    margin-top: var(--space-2);
+    font-style: italic;
+  }
+</style>
