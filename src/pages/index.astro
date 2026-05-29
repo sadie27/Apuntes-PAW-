@@ -104,7 +104,7 @@ const statusClass: Record<string, string> = {
                     <span class={statusClass[block.status]}>{statusLabel[block.status]}</span>
                   </div>
                 ) : (
-                  <a href={`/${block.slug}`} class="block-card block-card--link">
+                  <a href={`${import.meta.env.BASE_URL}${block.slug}`} class="block-card block-card--link">
                     <span class="card-number" aria-hidden="true">{block.number}</span>
                     <h2 class="card-name">{block.name}</h2>
                     <p class="card-description">{block.description}</p>

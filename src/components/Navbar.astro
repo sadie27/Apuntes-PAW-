@@ -1,25 +1,26 @@
 ---
 const currentPath = Astro.url.pathname;
+const base = import.meta.env.BASE_URL;
 
 const links = [
-  { href: '/',             label: 'Inicio' },
-  { href: '/fundamentos',  label: 'Fundamentos' },
-  { href: '/jdbc',         label: 'JDBC' },
-  { href: '/arquitectura', label: 'Arquitectura' },
-  { href: '/servlets-jsp', label: 'Servlets/JSP' },
-  { href: '/seguridad',    label: 'Seguridad' },
-  { href: '/javascript',   label: 'JavaScript' },
-  { href: '/js-ajax',      label: 'JS + AJAX' },
+  { href: base,                          label: 'Inicio' },
+  { href: `${base}fundamentos`,          label: 'Fundamentos' },
+  { href: `${base}jdbc`,                 label: 'JDBC' },
+  { href: `${base}arquitectura`,         label: 'Arquitectura' },
+  { href: `${base}servlets-jsp`,         label: 'Servlets/JSP' },
+  { href: `${base}seguridad`,            label: 'Seguridad' },
+  { href: `${base}javascript`,           label: 'JavaScript' },
+  { href: `${base}js-ajax`,             label: 'JS + AJAX' },
 ];
 
 function isActive(href: string): boolean {
-  if (href === '/') return currentPath === '/';
+  if (href === base) return currentPath === base || currentPath === base.slice(0, -1);
   return currentPath.startsWith(href);
 }
 ---
 <nav class="navbar" aria-label="Navegación principal">
   <div class="navbar-inner">
-    <a href="/" class="navbar-brand">PAW</a>
+    <a href={base} class="navbar-brand">PAW</a>
     <ul class="navbar-links" role="list">
       {links.map(link => (
         <li>
