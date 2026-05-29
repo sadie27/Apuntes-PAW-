@@ -1,0 +1,1027 @@
+---
+import BlockLayout from '../layouts/BlockLayout.astro';
+
+const sections = [
+  { id: "formato",        label: "Formato del examen" },
+  { id: "conv-2026",      label: "Convocatoria 2026" },
+  { id: "filtro-auth",    label: "Ej. 1 — Filtro de autenticación" },
+  { id: "api-rest",       label: "Ej. 2 — API REST usuarios" },
+  { id: "html-multipart", label: "Ej. 3 — HTML multipart + JS DOM" },
+];
+---
+
+<BlockLayout
+  title="Examen"
+  blockNumber={8}
+  blockName="Examen"
+  sections={sections}
+>
+
+<!-- ============================================================
+     BLOQUE EXAMEN — Convocatorias y ejercicios resueltos
+     ============================================================ -->
+
+<header class="block-header">
+  <span class="block-number">08</span>
+  <h1>Examen</h1>
+  <p class="block-lead">
+    Convocatorias anteriores con ejercicios resueltos, pseudocódigo comentado,
+    diagramas y análisis de errores frecuentes.
+  </p>
+</header>
+
+<!-- =========================================================== -->
+<!-- 1. FORMATO DEL EXAMEN                                       -->
+<!-- =========================================================== -->
+<section id="formato" class="content-section">
+  <h2>Formato del examen</h2>
+  <p>
+    La asignatura evalúa dos partes diferenciadas con peso aproximado del 50% cada una.
+    La parte teórica puede ser tipo test, preguntas de desarrollo, o ambas según la convocatoria.
+    La parte práctica consiste en 3–4 ejercicios en los que se pide diseñar e implementar
+    en pseudocódigo: no es necesario que el código compile, pero sí que demuestre conocer
+    la estructura, las clases involucradas y el flujo correcto.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Parte</th>
+        <th>Formato</th>
+        <th>Contenido</th>
+        <th>Peso aproximado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Teoría</td>
+        <td>Test o desarrollo (varía por convocatoria)</td>
+        <td>Conceptos de todos los bloques del temario</td>
+        <td>~50%</td>
+      </tr>
+      <tr>
+        <td>Práctica</td>
+        <td>3–4 ejercicios</td>
+        <td>Pseudocódigo: Servlets, filtros, JDBC, API REST, JS, HTML</td>
+        <td>~50%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    CSS prácticamente no aparece en los ejercicios del examen (o con peso muy reducido).
+    Priorizar el estudio de: Filtros/Servlets, JDBC, API REST con Spring, JS DOM y seguridad.
+  </div>
+
+  <div class="callout callout-tip">
+    En los ejercicios prácticos, el profesor valora que se conozcan las clases correctas
+    (<code>HttpServletRequest</code>, <code>HttpSession</code>, <code>Filter</code>,
+    <code>@RestController</code>…), el flujo lógico y las comprobaciones de seguridad.
+    El código no necesita ser 100% sintácticamente correcto.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 2. CONVOCATORIA 2026                                         -->
+<!-- =========================================================== -->
+<section id="conv-2026" class="content-section">
+  <h2>Convocatoria 2026</h2>
+  <p>
+    Examen de la convocatoria ordinaria 2026. Parte teórica no reproducida.
+    A continuación, los tres ejercicios prácticos con solución modelo comentada.
+  </p>
+
+  <!-- SVG: mapa visual del examen -->
+  <svg viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg" aria-label="Estructura visual del examen PAW 2026" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <style>
+        .svg-title { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+        .svg-label { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+        .svg-body  { font-family: 'Literata', Georgia, serif; }
+      </style>
+    </defs>
+    <!-- Marco exterior -->
+    <rect x="1" y="1" width="758" height="178" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <!-- Fila superior: título -->
+    <rect x="1" y="1" width="758" height="38" rx="6" fill="oklch(96% 0.006 264)" stroke="none"/>
+    <rect x="1" y="30" width="758" height="9" fill="oklch(96% 0.006 264)" stroke="none"/>
+    <line x1="1" y1="39" x2="759" y2="39" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="380" y="26" text-anchor="middle" class="svg-title" font-size="14" font-weight="700" fill="oklch(18% 0.012 264)">EXAMEN PAW 2026</text>
+    <!-- División vertical central -->
+    <line x1="380" y1="39" x2="380" y2="179" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <!-- Columna izquierda: TEORÍA -->
+    <text x="190" y="64" text-anchor="middle" class="svg-label" font-size="13" font-weight="700" fill="oklch(18% 0.012 264)">TEORÍA</text>
+    <text x="190" y="82" text-anchor="middle" class="svg-label" font-size="11" fill="oklch(62% 0.010 264)">(~50% de la nota)</text>
+    <text x="190" y="108" text-anchor="middle" class="svg-body" font-size="12" fill="oklch(42% 0.012 264)">Test / Desarrollo</text>
+    <text x="190" y="126" text-anchor="middle" class="svg-body" font-size="12" fill="oklch(42% 0.012 264)">(todos los bloques)</text>
+    <!-- Columna derecha: PRÁCTICA -->
+    <text x="570" y="64" text-anchor="middle" class="svg-label" font-size="13" font-weight="700" fill="oklch(18% 0.012 264)">PRÁCTICA</text>
+    <text x="570" y="82" text-anchor="middle" class="svg-label" font-size="11" fill="oklch(62% 0.010 264)">(~50% de la nota)</text>
+    <text x="570" y="108" text-anchor="middle" class="svg-body" font-size="12" fill="oklch(42% 0.012 264)">Ej. 1  Filtro de autenticación</text>
+    <text x="570" y="126" text-anchor="middle" class="svg-body" font-size="12" fill="oklch(42% 0.012 264)">Ej. 2  API REST — usuarios</text>
+    <text x="570" y="144" text-anchor="middle" class="svg-body" font-size="12" fill="oklch(42% 0.012 264)">Ej. 3  HTML multipart + JS DOM</text>
+  </svg>
+</section>
+
+<!-- =========================================================== -->
+<!-- 3. EJERCICIO 1 — FILTRO DE AUTENTICACIÓN                    -->
+<!-- =========================================================== -->
+<section id="filtro-auth" class="content-section">
+  <h3>Ejercicio 1 — Filtro de autenticación en Jakarta EE / Tomcat</h3>
+
+  <div class="enunciado">
+    ¿Cómo implementar un filtro de autenticación en Jakarta EE/Tomcat? ¿Qué responsabilidades tiene?
+    Implementa el método <code>doFilter()</code> con pseudocódigo y explica cada decisión.
+  </div>
+
+  <p>
+    Un filtro en Jakarta EE implementa la interfaz <code>Filter</code> y se ejecuta antes de que
+    la petición llegue al recurso protegido. Es el punto centralizado para verificar si existe una
+    sesión activa, sin necesidad de repetir esa comprobación en cada Servlet. Si no hay sesión,
+    redirige al login y guarda la URL de retorno para poder redirigir al usuario tras autenticarse.
+  </p>
+
+  <!-- SVG: flujo doFilter() -->
+  <svg viewBox="0 0 520 440" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de flujo del método doFilter" role="img" style="max-width:480px;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <marker id="arrow-auth" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="oklch(62% 0.010 264)"/>
+      </marker>
+      <style>
+        .svg-df { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+        .svg-df-body { font-family: 'Literata', Georgia, serif; }
+      </style>
+    </defs>
+
+    <!-- Petición HTTP -->
+    <rect x="170" y="10" width="180" height="40" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="260" y="35" text-anchor="middle" class="svg-df" font-size="13" fill="oklch(18% 0.012 264)">Petición HTTP</text>
+
+    <!-- flecha -->
+    <line x1="260" y1="50" x2="260" y2="78" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-auth)"/>
+
+    <!-- AuthFilter doFilter() -->
+    <rect x="150" y="80" width="220" height="40" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="260" y="105" text-anchor="middle" class="svg-df" font-size="13" font-weight="600" fill="oklch(35% 0.14 264)">AuthFilter — doFilter()</text>
+
+    <!-- flecha -->
+    <line x1="260" y1="120" x2="260" y2="148" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-auth)"/>
+
+    <!-- Rombo de decisión -->
+    <polygon points="260,152 370,192 260,232 150,192" fill="oklch(100% 0 0)" stroke="oklch(78% 0.010 264)" stroke-width="1.5"/>
+    <text x="260" y="188" text-anchor="middle" class="svg-df" font-size="11" fill="oklch(18% 0.012 264)">session.getAttribute</text>
+    <text x="260" y="202" text-anchor="middle" class="svg-df" font-size="11" fill="oklch(18% 0.012 264)">("usr") == null?</text>
+
+    <!-- Etiqueta SÍ (izquierda) -->
+    <text x="138" y="210" text-anchor="middle" class="svg-df" font-size="11" font-weight="700" fill="oklch(38% 0.12 75)">SÍ</text>
+    <!-- Etiqueta NO (derecha) -->
+    <text x="382" y="210" text-anchor="middle" class="svg-df" font-size="11" font-weight="700" fill="oklch(35% 0.12 155)">NO</text>
+
+    <!-- Rama SÍ — izquierda -->
+    <line x1="150" y1="192" x2="80" y2="192" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-auth)"/>
+    <line x1="80" y1="192" x2="80" y2="258" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-auth)"/>
+
+    <!-- Guardar URL de retorno -->
+    <rect x="10" y="260" width="140" height="50" rx="6" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="80" y="281" text-anchor="middle" class="svg-df" font-size="11" fill="oklch(38% 0.12 75)">Guardar URL retorno</text>
+    <text x="80" y="296" text-anchor="middle" class="svg-df" font-size="10" fill="oklch(38% 0.12 75)">setAttribute("return")</text>
+
+    <!-- flecha hacia redirect -->
+    <line x1="80" y1="310" x2="80" y2="368" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-auth)"/>
+
+    <!-- redirect login -->
+    <rect x="10" y="370" width="140" height="50" rx="6" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="80" y="391" text-anchor="middle" class="svg-df" font-size="11" fill="oklch(38% 0.12 75)">redirect → /login</text>
+    <text x="80" y="407" text-anchor="middle" class="svg-df" font-size="11" font-weight="700" fill="oklch(38% 0.12 75)">return ← CRÍTICO</text>
+
+    <!-- Rama NO — derecha -->
+    <line x1="370" y1="192" x2="440" y2="192" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-auth)"/>
+    <line x1="440" y1="192" x2="440" y2="258" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-auth)"/>
+
+    <!-- chain.doFilter -->
+    <rect x="370" y="260" width="140" height="50" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="440" y="281" text-anchor="middle" class="svg-df" font-size="11" fill="oklch(35% 0.12 155)">chain.doFilter</text>
+    <text x="440" y="296" text-anchor="middle" class="svg-df" font-size="10" fill="oklch(35% 0.12 155)">(req, resp)</text>
+
+    <!-- flecha hacia recurso -->
+    <line x1="440" y1="310" x2="440" y2="368" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-auth)"/>
+
+    <!-- Recurso protegido -->
+    <rect x="370" y="370" width="140" height="50" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="440" y="391" text-anchor="middle" class="svg-df" font-size="11" fill="oklch(35% 0.12 155)">Recurso</text>
+    <text x="440" y="407" text-anchor="middle" class="svg-df" font-size="11" fill="oklch(35% 0.12 155)">protegido</text>
+  </svg>
+
+  <!-- Bloque de código Java -->
+  <div class="code-block">
+    <div class="code-header">Java</div>
+    <pre><code>@WebFilter("/*")  // intercepta TODAS las peticiones; ajustar patrón según necesidad
+public class AuthFilter implements Filter &#123;
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse resp,
+                         FilterChain chain)
+            throws IOException, ServletException &#123;
+
+        // Castear a HTTP para acceder a sesión y redirección
+        HttpServletRequest  request  = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) resp;
+
+        // getSession(false) → no crear sesión nueva si no existe
+        HttpSession session = request.getSession(false);
+        String user = (session != null)
+                      ? (String) session.getAttribute("usr")
+                      : null;
+
+        if (user == null) &#123;
+            // 1. Guardar URL a la que intentaba acceder (para redirigir tras login)
+            String urlRetorno = request.getRequestURI();
+            HttpSession nueva = request.getSession(true);  // ahora sí crear sesión
+            nueva.setAttribute("return", urlRetorno);
+
+            // 2. Redirigir al login
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;  // ← CRÍTICO: sin return, continúa hacia chain.doFilter()
+        &#125;
+
+        // Sesión válida: continuar la cadena de filtros → recurso
+        chain.doFilter(req, resp);
+    &#125;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-key">
+    El <code>return</code> después de <code>sendRedirect()</code> es el error más común en el examen.
+    Sin él, el filtro llama a <code>chain.doFilter()</code> incluso después de haber redirigido,
+    lo que provoca errores de cabecera duplicada o acceso no autorizado al recurso.
+  </div>
+
+  <div class="callout callout-tip">
+    La verificación de permisos de rol (si el usuario autenticado tiene acceso a ese recurso concreto)
+    puede implementarse en el propio filtro o delegarse al controlador. En esta asignatura, el profesor
+    prefiere que la comprobación de roles vaya en el controlador.
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Responsabilidad</th>
+        <th>Filtro (<code>doFilter</code>)</th>
+        <th>Controlador (Servlet)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Verificar sesión activa</td>
+        <td>✓ Aquí</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Guardar URL de retorno</td>
+        <td>✓ Aquí</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Redirigir al login</td>
+        <td>✓ Aquí</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Verificar permisos de rol</td>
+        <td>Posible</td>
+        <td>✓ Preferido</td>
+      </tr>
+      <tr>
+        <td>Lógica de negocio</td>
+        <td>Nunca</td>
+        <td>✓ Aquí</td>
+      </tr>
+      <tr>
+        <td>Acceso a BBDD</td>
+        <td>Nunca</td>
+        <td>✓ Vía DAO</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-relation">
+    Relación con Bloque 4 (Servlets/JSP): los filtros se registran con <code>@WebFilter</code>
+    igual que los Servlets con <code>@WebServlet</code>. Ciclo de vida idéntico:
+    <code>init()</code> → <code>doFilter()</code> (N veces) → <code>destroy()</code>.
+    La diferencia clave es que el filtro NO genera respuesta directamente: pasa la petición
+    hacia adelante con <code>chain.doFilter()</code>.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 4. EJERCICIO 2 — API REST USUARIOS                          -->
+<!-- =========================================================== -->
+<section id="api-rest" class="content-section">
+  <h3>Ejercicio 2 — Diseño de API REST para gestión de usuarios</h3>
+
+  <div class="enunciado">
+    Diseña una API REST para gestionar usuarios con las siguientes restricciones: el listado y la
+    consulta de usuarios son públicos (no requieren autenticación); el login es un endpoint separado;
+    <strong>no se puede borrar usuarios</strong>. Diseña los endpoints razonando cada decisión y
+    escribe el pseudocódigo del controlador Spring (<code>/api/usuarios</code>).
+  </div>
+
+  <p>Antes de escribir código, hay que razonar el diseño. Las decisiones tomadas y su justificación:</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Decisión</th>
+        <th>Elección</th>
+        <th>Justificación</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>URL base</td>
+        <td><code>/api/usuarios</code></td>
+        <td>Convención REST: recurso en plural, bajo <code>/api/</code> para diferenciarlo de vistas</td>
+      </tr>
+      <tr>
+        <td>Listar todos</td>
+        <td><code>GET /api/usuarios</code></td>
+        <td>GET es idempotente y sin efectos secundarios; público según enunciado</td>
+      </tr>
+      <tr>
+        <td>Obtener uno</td>
+        <td><code>GET /api/usuarios/&#123;id&#125;</code></td>
+        <td>El <code>&#123;id&#125;</code> identifica un recurso concreto dentro de la colección</td>
+      </tr>
+      <tr>
+        <td>Crear</td>
+        <td><code>POST /api/usuarios</code></td>
+        <td>POST crea un recurso nuevo; requiere sesión activa (escritura)</td>
+      </tr>
+      <tr>
+        <td>Actualizar completo</td>
+        <td><code>PUT /api/usuarios/&#123;id&#125;</code></td>
+        <td>PUT reemplaza el recurso completo</td>
+      </tr>
+      <tr>
+        <td>Actualizar parcial</td>
+        <td><code>PATCH /api/usuarios/&#123;id&#125;</code></td>
+        <td>PATCH modifica solo los campos enviados</td>
+      </tr>
+      <tr>
+        <td>Login</td>
+        <td><code>POST /api/usuarios/login</code></td>
+        <td>POST porque tiene efecto en el servidor (crea sesión); público</td>
+      </tr>
+      <tr>
+        <td>Borrar</td>
+        <td>No implementado</td>
+        <td>Requisito explícito del enunciado: operación no disponible</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SVG: árbol de endpoints -->
+  <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" aria-label="Árbol de endpoints de la API REST de usuarios" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <style>
+        .svg-ep { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+        .svg-ep-mono { font-family: 'Fira Code', 'Cascadia Code', monospace; }
+      </style>
+    </defs>
+
+    <!-- Raíz /api/usuarios -->
+    <rect x="240" y="10" width="200" height="38" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="340" y="33" text-anchor="middle" class="svg-ep-mono" font-size="13" fill="oklch(18% 0.012 264)">/api/usuarios</text>
+
+    <!-- Líneas del árbol desde raíz -->
+    <line x1="340" y1="48" x2="340" y2="68" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="100" y1="68" x2="580" y2="68" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+
+    <!-- GET lista pública -->
+    <line x1="100" y1="68" x2="100" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="20" y="90" width="160" height="38" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="100" y="106" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.12 155)">GET</text>
+    <text x="100" y="120" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.12 155)">lista pública</text>
+
+    <!-- POST crear -->
+    <line x1="240" y1="68" x2="240" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="160" y="90" width="160" height="38" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="240" y="106" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.14 264)">POST</text>
+    <text x="240" y="120" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.14 264)">crear (auth)</text>
+
+    <!-- /login -->
+    <line x1="420" y1="68" x2="420" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="340" y="90" width="160" height="38" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="420" y="113" text-anchor="middle" class="svg-ep-mono" font-size="12" fill="oklch(18% 0.012 264)">/login</text>
+
+    <!-- POST login -->
+    <line x1="420" y1="128" x2="420" y2="148" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="340" y="150" width="160" height="38" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="420" y="166" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.14 264)">POST</text>
+    <text x="420" y="181" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.14 264)">autenticar (público)</text>
+
+    <!-- /{id} -->
+    <line x1="580" y1="68" x2="580" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="500" y="90" width="160" height="38" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="580" y="113" text-anchor="middle" class="svg-ep-mono" font-size="12" fill="oklch(18% 0.012 264)">&#123;id&#125;</text>
+
+    <!-- Subramas de /{id} -->
+    <line x1="580" y1="128" x2="580" y2="148" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="510" y1="148" x2="650" y2="148" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+
+    <!-- GET detalle -->
+    <line x1="510" y1="148" x2="510" y2="168" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="460" y="170" width="100" height="32" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="510" y="182" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.12 155)">GET</text>
+    <text x="510" y="196" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(35% 0.12 155)">detalle</text>
+
+    <!-- PUT/PATCH -->
+    <line x1="580" y1="148" x2="580" y2="168" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="530" y="170" width="100" height="32" rx="6" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="580" y="182" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(38% 0.12 75)">PUT/PATCH</text>
+    <text x="580" y="196" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(38% 0.12 75)">actualizar</text>
+
+    <!-- DELETE tachado -->
+    <line x1="650" y1="148" x2="650" y2="168" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="600" y="170" width="100" height="32" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="650" y="182" text-anchor="middle" class="svg-ep" font-size="11" fill="oklch(62% 0.010 264)">DELETE</text>
+    <text x="650" y="196" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(62% 0.010 264)">✗ no impl.</text>
+
+    <!-- Leyenda -->
+    <rect x="20" y="240" width="12" height="12" rx="2" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="38" y="251" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">GET (público)</text>
+    <rect x="140" y="240" width="12" height="12" rx="2" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="158" y="251" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">POST (crear/auth)</text>
+    <rect x="290" y="240" width="12" height="12" rx="2" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="308" y="251" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">PUT / PATCH</text>
+    <rect x="410" y="240" width="12" height="12" rx="2" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="428" y="251" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">No implementado</text>
+  </svg>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Método</th>
+        <th>Endpoint</th>
+        <th>Acceso</th>
+        <th>Descripción</th>
+        <th>HTTP éxito</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GET</td>
+        <td><code>/api/usuarios</code></td>
+        <td>Público</td>
+        <td>Listar todos los usuarios</td>
+        <td>200 OK</td>
+      </tr>
+      <tr>
+        <td>GET</td>
+        <td><code>/api/usuarios/&#123;id&#125;</code></td>
+        <td>Público</td>
+        <td>Obtener usuario por ID</td>
+        <td>200 / 404</td>
+      </tr>
+      <tr>
+        <td>POST</td>
+        <td><code>/api/usuarios</code></td>
+        <td>Autenticado</td>
+        <td>Crear nuevo usuario</td>
+        <td>201 Created</td>
+      </tr>
+      <tr>
+        <td>PUT</td>
+        <td><code>/api/usuarios/&#123;id&#125;</code></td>
+        <td>Autenticado</td>
+        <td>Actualizar usuario completo</td>
+        <td>200 OK</td>
+      </tr>
+      <tr>
+        <td>PATCH</td>
+        <td><code>/api/usuarios/&#123;id&#125;</code></td>
+        <td>Autenticado</td>
+        <td>Actualizar campos concretos</td>
+        <td>200 OK</td>
+      </tr>
+      <tr>
+        <td>POST</td>
+        <td><code>/api/usuarios/login</code></td>
+        <td>Público</td>
+        <td>Autenticar, crear sesión</td>
+        <td>200 / 401</td>
+      </tr>
+      <tr>
+        <td>DELETE</td>
+        <td><code>/api/usuarios/&#123;id&#125;</code></td>
+        <td>—</td>
+        <td>No implementado por requisito</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Bloque de código Java -->
+  <div class="code-block">
+    <div class="code-header">Java</div>
+    <pre><code>@RestController
+@RequestMapping("/api/usuarios")
+public class UsuarioController &#123;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    // ── Públicos ────────────────────────────────────────────────────────
+
+    @GetMapping
+    public List&lt;UsuarioEntity&gt; listarTodos() &#123;
+        return usuarioRepository.findAll();
+    &#125;
+
+    @GetMapping("/&#123;id&#125;")
+    public UsuarioEntity obtenerPorId(@PathVariable Long id) &#123;
+        return usuarioRepository.findById(id)
+               .orElseThrow(() -&gt; new NotFoundException("Usuario no encontrado"));
+    &#125;
+
+    @PostMapping("/login")
+    public void login(@RequestBody LoginRequest datos,
+                      HttpServletRequest req) &#123;
+        UsuarioEntity usuario = usuarioRepository.findByNombre(datos.getNombre());
+        if (usuario == null || !usuario.getPassword().equals(datos.getPassword())) &#123;
+            throw new NotAuthorizedException("Credenciales incorrectas");  // → 401
+        &#125;
+        req.getSession(true).setAttribute("user", usuario.getNombre());
+    &#125;
+
+    // ── Requieren autenticación ─────────────────────────────────────────
+
+    @PostMapping
+    public UsuarioEntity crear(@RequestBody UsuarioEntity nuevo,
+                               HttpServletRequest req) &#123;
+        verificarAutenticacion(req);
+
+        // Mapear los campos recibidos a una entidad nueva (nunca usar el objeto
+        // recibido directamente para evitar inyectar campos no deseados)
+        UsuarioEntity entidad = new UsuarioEntity();
+        entidad.setNombre(nuevo.getNombre());
+        // ... mapear resto de campos ...
+
+        return usuarioRepository.save(entidad);  // devuelve la entidad con ID asignado
+    &#125;
+
+    @PutMapping("/&#123;id&#125;")
+    public UsuarioEntity actualizar(@PathVariable Long id,
+                                    @RequestBody UsuarioEntity datos,
+                                    HttpServletRequest req) &#123;
+        verificarAutenticacion(req);
+        UsuarioEntity existente = usuarioRepository.findById(id)
+                                  .orElseThrow(() -&gt; new NotFoundException("..."));
+        // PUT reemplaza TODOS los campos
+        existente.setNombre(datos.getNombre());
+        // ... actualizar todos los campos ...
+        return usuarioRepository.save(existente);
+    &#125;
+
+    @PatchMapping("/&#123;id&#125;")
+    public UsuarioEntity actualizarParcial(@PathVariable Long id,
+                                           @RequestBody Map&lt;String, Object&gt; campos,
+                                           HttpServletRequest req) &#123;
+        verificarAutenticacion(req);
+        UsuarioEntity existente = usuarioRepository.findById(id)
+                                  .orElseThrow(() -&gt; new NotFoundException("..."));
+        // PATCH actualiza SOLO los campos presentes en el body
+        if (campos.containsKey("nombre")) &#123;
+            existente.setNombre((String) campos.get("nombre"));
+        &#125;
+        // ... comprobar y actualizar resto de campos opcionales ...
+        return usuarioRepository.save(existente);
+    &#125;
+
+    // DELETE no implementado → requisito explícito del enunciado
+
+    // ── Helper privado ───────────────────────────────────────────────────
+    private void verificarAutenticacion(HttpServletRequest req) &#123;
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("user") == null) &#123;
+            throw new NotAuthorizedException("Acción no permitida");  // → 401/403
+        &#125;
+    &#125;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-key">
+    Diferencia PUT vs PATCH: PUT reemplaza el recurso <strong>completo</strong> (si omites un campo,
+    ese campo queda a null). PATCH solo modifica los campos que incluyes en el body. En el examen,
+    si no se especifica, PUT para actualización completa y PATCH para parcial.
+  </div>
+
+  <div class="callout callout-warning">
+    Que los endpoints GET sean públicos no significa que no haya que manejar el caso de ID inexistente.
+    Devolver <code>404 Not Found</code> cuando <code>findById()</code> no encuentra el recurso
+    es parte del diseño correcto de la API.
+  </div>
+
+  <div class="callout callout-relation">
+    Relación con Bloque 4 (Servlets/JSP): <code>@RestController</code> es
+    <code>@Controller</code> + <code>@ResponseBody</code>. Sin Spring, el equivalente en Servlets
+    puros sería usar <code>resp.setContentType("application/json")</code> y serializar manualmente
+    con Gson o Jackson.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 5. EJERCICIO 3 — HTML MULTIPART + JS DOM                    -->
+<!-- =========================================================== -->
+<section id="html-multipart" class="content-section">
+  <h3>Ejercicio 3 — Formulario de subida de archivos y manipulación del DOM</h3>
+
+  <!-- Parte A -->
+  <h4>A) Formulario HTML para subida de archivos</h4>
+
+  <div class="enunciado">
+    ¿Qué hay que añadir a un formulario HTML para poder subir archivos? Escribe el código con todas
+    las etiquetas necesarias y explica cada atributo. Después, encadena con JavaScript para mostrar
+    una previsualización de la imagen antes de enviar el formulario.
+  </div>
+
+  <p>
+    Para que un formulario HTML pueda transportar archivos binarios hasta el servidor son necesarios
+    dos atributos obligatorios en la etiqueta <code>&lt;form&gt;</code>: el método <code>POST</code>
+    (GET no puede transportar binarios en el cuerpo) y el tipo de codificación
+    <code>multipart/form-data</code>. Sin <code>enctype</code>, aunque el usuario seleccione un
+    archivo, el servidor solo recibe el nombre del fichero, no su contenido.
+  </p>
+
+  <!-- Bloque de código HTML -->
+  <div class="code-block">
+    <div class="code-header">HTML</div>
+    <pre><code>&lt;!--
+  OBLIGATORIO para subida de archivos:
+  - method="POST"                 → binarios van en el body, no en la URL
+  - enctype="multipart/form-data" → codifica cada campo como parte separada
+--&gt;
+&lt;form action="/subir" method="POST" enctype="multipart/form-data"&gt;
+
+  &lt;!-- Input de tipo file: genera el botón "Examinar..." del SO --&gt;
+  &lt;input
+    type="file"
+    id="archivo"
+    name="archivo"
+    accept="image/*"
+  /&gt;
+  &lt;!--
+    accept="image/*"  → filtro visual en el diálogo del SO (opcional)
+    El servidor DEBE validar el tipo igualmente; accept no es seguridad
+  --&gt;
+
+  &lt;!-- Contenedor vacío que JS rellenará con la previsualización --&gt;
+  &lt;img
+    id="preview"
+    src=""
+    alt="Vista previa de la imagen"
+    style="display: none; max-width: 300px;"
+  /&gt;
+
+  &lt;button type="submit"&gt;Subir imagen&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Atributo</th>
+        <th>Valor requerido</th>
+        <th>Consecuencia si falta</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>method</code></td>
+        <td><code>POST</code></td>
+        <td>El archivo se añade a la URL como parámetro → inviable para binarios</td>
+      </tr>
+      <tr>
+        <td><code>enctype</code></td>
+        <td><code>multipart/form-data</code></td>
+        <td>El servidor recibe solo el nombre del archivo, no su contenido</td>
+      </tr>
+      <tr>
+        <td><code>type</code> del <code>&lt;input&gt;</code></td>
+        <td><code>file</code></td>
+        <td>Sin este tipo no aparece el selector de archivo del sistema</td>
+      </tr>
+      <tr>
+        <td><code>accept</code></td>
+        <td>Opcional (<code>image/*</code>, <code>.pdf</code>…)</td>
+        <td>Sin él, el diálogo muestra todos los tipos de archivo</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-key">
+    <code>enctype="multipart/form-data"</code> es el atributo más importante. Sin él, aunque pongas
+    <code>type="file"</code>, el contenido binario del archivo no llega al servidor.
+    Es la respuesta que el examen busca cuando pregunta "¿qué hay que añadir al formulario?".
+  </div>
+
+  <p>
+    Una vez declarado el formulario, se puede escuchar el evento <code>change</code> del
+    <code>&lt;input type="file"&gt;</code> para leer el archivo inmediatamente con la API
+    <code>FileReader</code> y mostrarlo en el <code>&lt;img&gt;</code> antes de enviarlo.
+  </p>
+
+  <!-- Bloque de código JavaScript -->
+  <div class="code-block">
+    <div class="code-header">JavaScript</div>
+    <pre><code>const inputArchivo = document.getElementById("archivo");
+const imgPreview   = document.getElementById("preview");
+
+// 'change' se dispara cuando el usuario selecciona un archivo
+inputArchivo.addEventListener("change", function(event) &#123;
+    const archivo = event.target.files[0];  // files es un FileList; [0] = primer archivo
+
+    if (!archivo) return;  // el usuario canceló el diálogo
+
+    const reader = new FileReader();
+
+    // 'load' se dispara cuando FileReader termina de leer
+    reader.addEventListener("load", function() &#123;
+        // result contiene la imagen como data URL (base64):
+        // "data:image/jpeg;base64,/9j/4AAQSkZJRgAB..."
+        imgPreview.src           = reader.result;
+        imgPreview.style.display = "block";
+    &#125;);
+
+    // Leer el archivo como data URL (base64) → adecuado para mostrar en &lt;img&gt;
+    reader.readAsDataURL(archivo);
+&#125;);</code></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    El objeto <code>event.target.files</code> es un <code>FileList</code> (no un array).
+    Para iterar sobre varios archivos (si el input tiene <code>multiple</code>), usar
+    <code>for...of event.target.files</code>. Para acceder al primero, <code>files[0]</code>.
+  </div>
+
+  <!-- Parte B -->
+  <h4>B) Manipulación del DOM: <code>childNodes</code> vs <code>children</code></h4>
+
+  <div class="enunciado">
+    Dado el siguiente fragmento de código JavaScript, explica qué hace cada línea y cuál es la
+    diferencia entre <code>childNodes</code> y <code>children</code>.
+    ¿Qué devuelve <code>childNodes[1]</code>?
+    <div class="code-block" style="margin-top:var(--space-3)">
+      <div class="code-header">JavaScript</div>
+      <pre><code>const div = document.getElementById("mio");
+div.childNodes[1];
+for (let c of div.childNodes) &#123;
+    if (c.nodeType == 1) &#123; ... &#125;
+&#125;
+div.children[0];</code></pre>
+    </div>
+  </div>
+
+  <p>
+    <code>childNodes</code> devuelve <strong>todos</strong> los nodos hijos de un elemento:
+    elementos HTML, nodos de texto (espacios en blanco y saltos de línea entre etiquetas) y
+    comentarios. <code>children</code>, en cambio, devuelve solo los nodos que son elementos HTML
+    (<code>nodeType === 1</code>). Esta diferencia hace que los índices no coincidan entre ambas
+    propiedades.
+  </p>
+
+  <!-- SVG: comparación childNodes vs children -->
+  <svg viewBox="0 0 640 310" xmlns="http://www.w3.org/2000/svg" aria-label="Comparación visual entre childNodes y children" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <style>
+        .svg-cn { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+        .svg-cn-mono { font-family: 'Fira Code', 'Cascadia Code', monospace; }
+      </style>
+    </defs>
+
+    <!-- Panel izquierdo: childNodes -->
+    <rect x="1" y="1" width="308" height="308" rx="6" fill="oklch(100% 0 0)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="154" y="28" text-anchor="middle" class="svg-cn" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">childNodes</text>
+    <text x="154" y="46" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(todos los nodos)</text>
+
+    <!-- Nodo raíz -->
+    <rect x="40" y="60" width="228" height="32" rx="4" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="154" y="80" text-anchor="middle" class="svg-cn-mono" font-size="12" fill="oklch(35% 0.14 264)">&lt;div id="mio"&gt;</text>
+
+    <!-- Líneas del árbol -->
+    <line x1="154" y1="92" x2="154" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="60" y1="108" x2="248" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+
+    <!-- Nodo texto \n [0] -->
+    <line x1="60" y1="108" x2="60" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="15" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="60" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(38% 0.12 75)">"\n"</text>
+    <text x="60" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(38% 0.12 75)">[0] texto</text>
+
+    <!-- Nodo <span> [1] -->
+    <line x1="154" y1="108" x2="154" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="109" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="154" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;span&gt;</text>
+    <text x="154" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[1] elemento</text>
+
+    <!-- Nodo texto \n [2] -->
+    <line x1="204" y1="108" x2="204" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="159" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="204" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(38% 0.12 75)">"\n"</text>
+    <text x="204" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(38% 0.12 75)">[2] texto</text>
+
+    <!-- Nodo <input> [3] -->
+    <line x1="248" y1="108" x2="248" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="203" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="248" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;input&gt;</text>
+    <text x="248" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[3] elemento</text>
+
+    <!-- Estadísticas -->
+    <text x="154" y="210" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(18% 0.012 264)">childNodes.length = 4</text>
+    <text x="154" y="232" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(35% 0.14 264)">childNodes[1] = &lt;span&gt;</text>
+    <text x="154" y="252" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(hay un "\n" antes)</text>
+    <rect x="20" y="268" width="268" height="28" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="154" y="286" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(38% 0.12 75)">Incluye nodos de texto y comentarios</text>
+
+    <!-- Divisor vertical -->
+    <line x1="320" y1="1" x2="320" y2="309" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+
+    <!-- Panel derecho: children -->
+    <rect x="331" y="1" width="308" height="308" rx="6" fill="oklch(100% 0 0)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="485" y="28" text-anchor="middle" class="svg-cn" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">children</text>
+    <text x="485" y="46" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(solo elementos HTML)</text>
+
+    <!-- Nodo raíz -->
+    <rect x="371" y="60" width="228" height="32" rx="4" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="485" y="80" text-anchor="middle" class="svg-cn-mono" font-size="12" fill="oklch(35% 0.14 264)">&lt;div id="mio"&gt;</text>
+
+    <!-- Líneas del árbol (solo 2 hijos) -->
+    <line x1="485" y1="92" x2="485" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="420" y1="108" x2="550" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+
+    <!-- <span> [0] -->
+    <line x1="420" y1="108" x2="420" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="370" y="126" width="100" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="420" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;span&gt;</text>
+    <text x="420" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[0] elemento</text>
+
+    <!-- <input> [1] -->
+    <line x1="550" y1="108" x2="550" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="500" y="126" width="100" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="550" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;input&gt;</text>
+    <text x="550" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[1] elemento</text>
+
+    <!-- Estadísticas -->
+    <text x="485" y="210" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(18% 0.012 264)">children.length = 2</text>
+    <text x="485" y="232" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(35% 0.12 155)">children[0] = &lt;span&gt;</text>
+    <text x="485" y="252" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(siempre el primer elemento)</text>
+    <rect x="350" y="268" width="268" height="28" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="485" y="286" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(35% 0.12 155)">Solo nodos element (nodeType === 1)</text>
+  </svg>
+
+  <!-- Bloque de código JavaScript -->
+  <div class="code-block">
+    <div class="code-header">JavaScript</div>
+    <pre><code>const div = document.getElementById("mio");
+
+// ── childNodes: TODOS los nodos (texto, elementos, comentarios) ──────
+// Si el HTML tiene espacios o saltos de línea entre etiquetas,
+// esos son nodos de texto y CUENTAN en childNodes
+const nodo = div.childNodes[1];
+// CUIDADO: [1] puede ser un nodo de texto, no el primer &lt;elemento&gt;
+
+// Iteración con childNodes → hay que filtrar por tipo
+for (let c of div.childNodes) &#123;
+    if (c.nodeType === Node.ELEMENT_NODE) &#123;  // nodeType 1 = Element (HTML)
+        // Solo procesamos nodos que son elementos HTML
+        console.log(c.tagName);
+    &#125;
+    // Otros tipos:
+    // nodeType 3 = Text (texto y espacios en blanco)
+    // nodeType 8 = Comment (comentarios HTML)
+&#125;
+
+// ── children: SOLO elementos HTML ────────────────────────────────────
+// Equivalente a childNodes filtrado a nodeType === 1
+const primerElemento = div.children[0];  // siempre el primer &lt;elemento&gt;, sin texto</code></pre>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Propiedad</th>
+        <th>Tipo retornado</th>
+        <th>Nodos texto</th>
+        <th>Comentarios</th>
+        <th><code>[0]</code> = elemento</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>childNodes</code></td>
+        <td><code>NodeList</code> (vivo)</td>
+        <td>Sí</td>
+        <td>Sí</td>
+        <td>No garantizado</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>HTMLCollection</code> (vivo)</td>
+        <td>No</td>
+        <td>No</td>
+        <td>Sí, siempre</td>
+      </tr>
+      <tr>
+        <td><code>querySelectorAll()</code></td>
+        <td><code>NodeList</code> (estático)</td>
+        <td>No</td>
+        <td>No</td>
+        <td>Sí, siempre</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    Trampa de examen clásica: <code>div.childNodes[1]</code> NO es el segundo elemento HTML hijo.
+    Si hay espacios o saltos de línea en el HTML, <code>childNodes[0]</code> puede ser un nodo de
+    texto (<code>nodeType === 3</code>). Usar <code>div.children[1]</code> para acceder al segundo
+    elemento HTML de forma fiable.
+  </div>
+
+  <div class="callout callout-key">
+    Regla práctica: si necesitas iterar solo por elementos HTML, usa <code>children</code> o
+    <code>querySelectorAll()</code>. Si necesitas acceder también a nodos de texto (por ejemplo,
+    para manipular el contenido textual directo), usa <code>childNodes</code>.
+  </div>
+</section>
+
+</BlockLayout>
+
+<style>
+  /* Bloque de enunciado de examen */
+  .enunciado {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-top: 2px solid var(--color-border-strong);
+    border-radius: 6px;
+    padding: var(--space-4) var(--space-5);
+    margin: var(--space-5) 0;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--color-text);
+  }
+  .enunciado::before {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    margin-bottom: var(--space-3);
+    content: "Enunciado";
+  }
+
+  /* Bloques de código manuales (sin Shiki) */
+  .code-block {
+    border: 1px solid var(--color-code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: var(--space-5) 0;
+  }
+  .code-header {
+    background: var(--color-surface-2);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    color: var(--color-text-2);
+    border-bottom: 1px solid var(--color-code-border);
+  }
+  .code-block pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-code-bg);
+    overflow-x: auto;
+  }
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-text);
+    line-height: var(--leading-normal);
+  }
+
+  /* Espaciado de secciones h3/h4 */
+  .content-section h4 {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-text);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-3);
+    letter-spacing: -0.005em;
+  }
+</style>

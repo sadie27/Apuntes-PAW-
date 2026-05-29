@@ -55,6 +55,13 @@ const blocks = [
     description: 'Comunicación asíncrona, fetch API, DOM dinámico',
     status: 'pending' as const,
   },
+  {
+    number: '08',
+    slug: 'examen',
+    name: 'Examen',
+    description: 'Convocatorias anteriores. Ejercicios resueltos con pseudocódigo, diagramas y análisis de errores frecuentes.',
+    status: 'complete' as const,
+  },
 ];
 
 const completedCount = blocks.filter(b => b.status === 'complete').length;
@@ -87,7 +94,7 @@ const statusClass: Record<string, string> = {
         <p class="landing-subtitle">
           Apuntes personales de PAW de Santiago Die , basados en el contenido de la asignatura - 2025/2026 - Universidad de la Rioja
         </p>
-        <p class="landing-progress">{completedCount} / 7 bloques completados</p>
+        <p class="landing-progress">{completedCount} / 8 bloques completados</p>
       </header>
 
       <section class="blocks-section" aria-label="Bloques del temario">
