@@ -1,7 +1,1760 @@
 ---
 import BlockLayout from '../layouts/BlockLayout.astro';
-const sections: { id: string; label: string }[] = [];
+const sections = [
+  { id: "motivacion",           label: "Por qué servlets" },
+  { id: "servlet-estructura",   label: "Estructura del servlet" },
+  { id: "ciclo-vida",           label: "Ciclo de vida" },
+  { id: "request-response",     label: "Request y Response" },
+  { id: "jsp-vistas",           label: "JSP como vista" },
+  { id: "el-jstl",              label: "EL y JSTL" },
+  { id: "scopes",               label: "Ámbitos de datos" },
+  { id: "patrones-prg",         label: "Patrón PRG" },
+  { id: "patrones-controlador", label: "Controladores: Page vs Front" },
+  { id: "patrones-dto",         label: "DTO y Template View" },
+  { id: "cookies",              label: "Cookies" },
+  { id: "sesion",               label: "Gestión de sesión" },
+  { id: "filtros",              label: "Filtros" },
+  { id: "utilidades",           label: "Utilidades" },
+];
 ---
 <BlockLayout title="Servlets / JSP" blockNumber={4} blockName="Servlets / JSP" sections={sections}>
-  <p>Contenido pendiente.</p>
+
+  <h1>Servlets / JSP</h1>
+  <p class="lead">Controladores, vistas, estado y patrones en Jakarta EE</p>
+
+  <!-- ===== SECCIÓN 1: MOTIVACIÓN ===== -->
+  <section id="motivacion">
+    <h2>Por qué servlets</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo. Contexto para entender MVC. El JSP con lógica es el anti-patrón de partida; el servlet es la solución.</p>
+    </div>
+
+    <svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+        </marker>
+        <marker id="arr1b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-accent)"/>
+        </marker>
+      </defs>
+      <!-- Panel divider -->
+      <line x1="390" y1="10" x2="390" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <!-- Left panel: ANTES -->
+      <text x="195" y="30" text-anchor="middle" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-text-2)">Sin separación</text>
+      <!-- ficha.jsp box -->
+      <rect x="100" y="50" width="190" height="130" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="195" y="70" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">ficha.jsp</text>
+      <!-- HTML zone -->
+      <rect x="112" y="80" width="166" height="40" rx="4" fill="oklch(94% 0.04 264 / 0.4)"/>
+      <text x="195" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-accent)">HTML</text>
+      <!-- Lógica zone -->
+      <rect x="112" y="125" width="166" height="46" rx="4" fill="oklch(97% 0.03 85 / 0.6)"/>
+      <text x="195" y="143" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-warning-text)">Lógica Java</text>
+      <text x="195" y="157" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)">acceso BD · redirecciones</text>
+      <!-- Arrows in/out -->
+      <line x1="40" y1="115" x2="98" y2="115" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr1)"/>
+      <text x="69" y="108" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">petición</text>
+      <line x1="292" y1="115" x2="350" y2="115" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr1)"/>
+      <text x="321" y="108" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">respuesta</text>
+      <!-- Right panel: MVC -->
+      <text x="585" y="30" text-anchor="middle" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-text-2)">MVC</text>
+      <!-- Controller -->
+      <rect x="460" y="45" width="170" height="50" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="545" y="65" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Controlador</text>
+      <text x="545" y="82" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">(Servlet)</text>
+      <!-- Vista -->
+      <rect x="460" y="130" width="170" height="50" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="545" y="152" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text)">Vista</text>
+      <text x="545" y="169" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">(JSP)</text>
+      <!-- Modelo -->
+      <rect x="460" y="215" width="170" height="45" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="545" y="237" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text)">Modelo / Servicio</text>
+      <!-- Arrows MVC -->
+      <line x1="545" y1="95" x2="545" y2="128" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr1b)"/>
+      <text x="563" y="115" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">forward →</text>
+      <line x1="545" y1="180" x2="545" y2="213" stroke="var(--color-text-2)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr1)"/>
+      <text x="563" y="200" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">lee / escribe</text>
+      <!-- Petición to Controller -->
+      <line x1="418" y1="70" x2="458" y2="70" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr1)"/>
+    </svg>
+
+    <p>Un JSP con scriptlets mezcla lógica de negocio, acceso a BD y generación de HTML en el mismo fichero. El resultado es imposible de testear y difícil de mantener.</p>
+    <p>La solución es el patrón MVC: el Servlet actúa como controlador (recibe la petición, delega al servicio, prepara los datos), el JSP solo visualiza lo que el controlador dejó preparado.</p>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>// ❌ JSP con lógica — anti-patrón
+String cart = request.getParameter("cart");
+if (cart == null) &#123; response.sendRedirect("error.html"); return; &#125;
+Articulo art = new GestorBD().getArticulo(cart); // acceso a BD directo en la vista</code></pre>
+    </div>
+
+    <p>El controlador asume esas responsabilidades, dejando la vista limpia:</p>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>// ✓ Servlet controller
+public class FichaController extends HttpServlet &#123;
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException &#123;
+    String cart = req.getParameter("cart");
+    if (cart == null) &#123; resp.sendRedirect("error.html"); return; &#125;
+    Articulo art = servicioArticulos.getArticulo(cart); // delega al servicio
+    req.setAttribute("art", art);                       // prepara datos para la vista
+    req.getRequestDispatcher("ficha.jsp").forward(req, resp);
+  &#125;
+&#125;</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p>La vista solo visualiza. Las decisiones de navegación y el acceso a datos son responsabilidad del controlador.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 2: ESTRUCTURA DEL SERVLET ===== -->
+  <section id="servlet-estructura">
+    <h2>Estructura del servlet</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. La estructura de un controlador Servlet es la base de todos los ejercicios. Saber escribir doGet y doPost con confianza. Referencia: P4, P5.</p>
+    </div>
+
+    <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+        </marker>
+      </defs>
+      <!-- Cliente -->
+      <rect x="10" y="70" width="90" height="60" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="55" y="104" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)">Cliente</text>
+      <!-- Servidor con tabla -->
+      <rect x="140" y="30" width="240" height="140" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="260" y="52" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text-2)">Servidor (Tomcat)</text>
+      <line x1="152" y1="62" x2="368" y2="62" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="165" y="80" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">/listado → ListadoCtrl</text>
+      <line x1="152" y1="90" x2="368" y2="90" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="165" y="108" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">/ficha   → FichaCtrl</text>
+      <line x1="152" y1="118" x2="368" y2="118" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="165" y="136" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">/comprar → ComprarCtrl</text>
+      <!-- ListadoController -->
+      <rect x="430" y="30" width="160" height="60" rx="6" fill="var(--color-surface)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="510" y="54" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">ListadoController</text>
+      <text x="510" y="72" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">doGet()</text>
+      <!-- ComprarController -->
+      <rect x="430" y="110" width="160" height="50" rx="6" fill="var(--color-surface)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="510" y="131" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">ComprarController</text>
+      <text x="510" y="149" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">doPost()</text>
+      <!-- Arrows -->
+      <line x1="100" y1="90" x2="138" y2="76" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <text x="108" y="78" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">GET /listado</text>
+      <line x1="100" y1="110" x2="138" y2="124" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <text x="102" y="130" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">POST /comprar</text>
+      <line x1="382" y1="62" x2="428" y2="58" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <line x1="382" y1="130" x2="428" y2="130" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+    </svg>
+
+    <p>HttpServlet es la clase base. Un servlet se corresponde con una URL o patrón de URL. El servidor invoca el método doXxx que corresponde al verbo HTTP de la petición recibida.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Método HTTP</th><th>Método Servlet</th><th>Cuándo usarlo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GET</td><td><code>doGet()</code></td><td>Consultar / mostrar datos. El más habitual.</td></tr>
+        <tr><td>POST</td><td><code>doPost()</code></td><td>Crear o modificar datos (envío de formularios).</td></tr>
+        <tr><td>PUT</td><td><code>doPut()</code></td><td>Reemplazar recurso completo (APIs REST).</td></tr>
+        <tr><td>PATCH</td><td><code>doPatch()</code></td><td>Actualizar parcialmente un recurso (APIs REST).</td></tr>
+        <tr><td>DELETE</td><td><code>doDelete()</code></td><td>Eliminar un recurso (APIs REST).</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>@WebServlet(urlPatterns = &#123;"/listado"&#125;)
+public class ListadoController extends HttpServlet &#123;
+
+  @Override
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException &#123;
+    // 1. Leer parámetros
+    String pagina = request.getParameter("pagina");
+
+    // 2. Delegar al servicio (lógica de negocio)
+    List&lt;Articulo&gt; articulos = servicioArticulos.getListado(pagina);
+
+    // 3. Pasar datos a la vista (request scope)
+    request.setAttribute("articulos", articulos);
+
+    // 4. Delegar a la vista (forward interno)
+    request.getRequestDispatcher("/vistas/listado.jsp")
+           .forward(request, response);
+  &#125;
+&#125;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">xml</div>
+      <pre><code>&lt;servlet&gt;
+  &lt;servlet-name&gt;ListadoController&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;es.unirioja.paw.ListadoController&lt;/servlet-class&gt;
+&lt;/servlet&gt;
+&lt;servlet-mapping&gt;
+  &lt;servlet-name&gt;ListadoController&lt;/servlet-name&gt;
+  &lt;url-pattern&gt;/listado&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;</code></pre>
+    </div>
+
+    <p>La anotación <code>@WebServlet</code> y <code>web.xml</code> son equivalentes. Si ambos existen, <code>web.xml</code> tiene precedencia. Desde Servlet 3.0 se prefieren las anotaciones.</p>
+
+    <div class="callout callout-tip">
+      <p>TRUCO: si <code>doGet</code> y <code>doPost</code> deben hacer lo mismo, crea un método privado <code>processRequest()</code> e invócalo desde ambos.</p>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>Si el servidor recibe un verbo HTTP para el que no hay <code>doXxx</code> implementado, devuelve <strong>405 Method Not Allowed</strong>.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 3: CICLO DE VIDA ===== -->
+  <section id="ciclo-vida">
+    <h2>Ciclo de vida</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso medio. El modelo instancia única + N hilos puede aparecer en teoría. El bug de las variables de instancia es un clásico de examen.</p>
+    </div>
+
+    <svg viewBox="0 0 760 170" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+        </marker>
+      </defs>
+      <!-- States -->
+      <rect x="10" y="60" width="80" height="36" rx="18" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="50" y="82" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)">Inactivo</text>
+
+      <line x1="92" y1="78" x2="118" y2="78" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr3)"/>
+      <text x="105" y="70" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">carga</text>
+
+      <rect x="120" y="60" width="80" height="36" rx="18" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="160" y="82" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)">Cargado</text>
+
+      <line x1="202" y1="78" x2="228" y2="78" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr3)"/>
+      <text x="215" y="70" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">init()</text>
+
+      <rect x="230" y="50" width="90" height="56" rx="18" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="275" y="82" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Activo</text>
+
+      <!-- Thread arrows -->
+      <line x1="322" y1="58" x2="365" y2="38" stroke="var(--color-text-2)" stroke-width="1.2" marker-end="url(#arr3)"/>
+      <line x1="322" y1="78" x2="365" y2="78" stroke="var(--color-text-2)" stroke-width="1.2" marker-end="url(#arr3)"/>
+      <line x1="322" y1="98" x2="365" y2="118" stroke="var(--color-text-2)" stroke-width="1.2" marker-end="url(#arr3)"/>
+      <text x="343" y="30" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">hilo 1</text>
+      <text x="343" y="72" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">hilo 2</text>
+      <text x="343" y="130" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">hilo 3</text>
+
+      <rect x="367" y="50" width="105" height="56" rx="18" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="419" y="72" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">Atendiendo</text>
+      <text x="419" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">service()×N</text>
+
+      <line x1="474" y1="78" x2="500" y2="78" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr3)"/>
+      <text x="487" y="70" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">destroy()</text>
+
+      <rect x="502" y="60" width="80" height="36" rx="18" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="542" y="82" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)">Destruido</text>
+
+      <text x="380" y="155" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text-3)">Una sola instancia · N hilos simultáneos</text>
+    </svg>
+
+    <p>El contenedor crea <strong>una única instancia</strong> del servlet cuando llega la primera petición (o al arrancar, si está configurado así). Esa misma instancia atiende todas las peticiones posteriores con hilos concurrentes. Ventaja sobre CGI: sin overhead de crear proceso por petición.</p>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>// ❌ NUNCA: variables de instancia con datos de la petición
+public class BugServlet extends HttpServlet &#123;
+  private String nombre; // compartida entre TODOS los hilos
+  private int edad;      // compartida entre TODOS los hilos
+
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) &#123;
+    nombre = req.getParameter("nombre"); // ¿de cuál de los 10 hilos simultáneos?
+    edad   = Integer.parseInt(req.getParameter("edad"));
+    // Petición del usuario A puede sobreescribir los datos del usuario B
+  &#125;
+&#125;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>// ✓ Variables locales al método: cada hilo tiene las suyas
+public class CorrectServlet extends HttpServlet &#123;
+  // Solo recursos compartidos thread-safe como variables de instancia:
+  private final ServicioArticulos servicio = new ServicioArticulos();
+
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) &#123;
+    String nombre = req.getParameter("nombre"); // local → segura por hilo
+    int    edad   = Integer.parseInt(req.getParameter("edad")); // local → segura
+  &#125;
+&#125;</code></pre>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>NUNCA guardar parámetros de petición ni datos de usuario en variables de instancia del servlet. Solo variables locales o recursos thread-safe.</p>
+    </div>
+
+    <div class="callout callout-key">
+      <p>Una sola instancia · N hilos simultáneos · Solo variables locales en los métodos doXxx.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>public class AppServlet extends HttpServlet &#123;
+  private DataSource dataSource;
+
+  @Override
+  public void init() throws ServletException &#123;
+    // Ejecutado UNA VEZ al cargar el servlet
+    dataSource = (DataSource) getServletContext().getAttribute("dataSource");
+  &#125;
+
+  @Override
+  public void destroy() &#123;
+    // Ejecutado UNA VEZ al destruir el servlet — liberar recursos
+  &#125;
+&#125;</code></pre>
+    </div>
+
+    <h3>Cuándo se llama a init(): lazy vs eager</h3>
+
+    <p>Por defecto el contenedor carga el servlet de forma <strong>lazy</strong>: <code>init()</code> se ejecuta cuando llega la primera petición real. Si el servlet inicializa recursos costosos (conexiones, cachés, configuración), conviene la carga <strong>eager</strong>: <code>init()</code> se ejecuta al arrancar el servidor, detectando errores de configuración antes de que llegue ningún usuario.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Modo</th><th>Cuándo se llama init()</th><th>Cuándo usarlo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Lazy (default)</td><td>Primera petición al servlet</td><td>Servlets simples sin inicialización costosa</td></tr>
+        <tr><td>Eager (load-on-startup)</td><td>Al arrancar el servidor</td><td>Recursos pesados, detección temprana de errores</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>// loadOnStartup > 0 → carga eager. El número indica el orden (1 = primero).
+@WebServlet(urlPatterns = &#123;"/init"&#125;, loadOnStartup = 1)
+public class AppInitServlet extends HttpServlet &#123;
+  @Override
+  public void init() throws ServletException &#123;
+    // Corre al ARRANCAR el servidor, no en la primera petición
+    // Si lanza excepción, el servidor informa del error al inicio
+    getServletContext().setAttribute("config", cargarConfiguracion());
+  &#125;
+&#125;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">xml</div>
+      <pre><code>&lt;servlet&gt;
+  &lt;servlet-name&gt;AppInitServlet&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;es.unirioja.paw.AppInitServlet&lt;/servlet-class&gt;
+  &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+&lt;/servlet&gt;</code></pre>
+    </div>
+
+    <div class="callout callout-tip">
+      <p>Si varios servlets tienen <code>load-on-startup</code>, el número indica el orden de carga. Números iguales → orden indefinido. Número negativo o ausente → lazy (comportamiento por defecto).</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 4: REQUEST Y RESPONSE ===== -->
+  <section id="request-response">
+    <h2>Request y Response</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. <code>setAttribute</code> / <code>getAttribute</code> para pasar datos del controller a la vista (forward) es el mecanismo central de P4 S1. La diferencia forward/redirect es la base del patrón PRG.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Método</th><th>Para qué sirve</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>getParameter(name)</code></td><td>Parámetro de query string o de formulario POST</td></tr>
+        <tr><td><code>getParameterValues(name)</code></td><td>Array de valores (checkboxes, select múltiple)</td></tr>
+        <tr><td><code>getHeader(name)</code></td><td>Cabecera HTTP de la petición</td></tr>
+        <tr><td><code>getSession()</code></td><td>Sesión actual (la crea si no existe)</td></tr>
+        <tr><td><code>getSession(false)</code></td><td>Sesión actual o <code>null</code> si no existe — no la crea</td></tr>
+        <tr><td><code>setAttribute(name, obj)</code></td><td>Guarda objeto en el ámbito de la petición (para forward)</td></tr>
+        <tr><td><code>getAttribute(name)</code></td><td>Recupera objeto del ámbito de la petición</td></tr>
+        <tr><td><code>getRequestDispatcher(path)</code></td><td>Para hacer forward o include a otro recurso</td></tr>
+        <tr><td><code>getCookies()</code></td><td>Array de cookies enviadas por el navegador</td></tr>
+        <tr><td><code>getMethod()</code></td><td>Verbo HTTP: "GET", "POST", etc.</td></tr>
+        <tr><td><code>getContextPath()</code></td><td>Ruta raíz de la aplicación (ej. <code>/MiApp</code>)</td></tr>
+      </tbody>
+    </table>
+
+    <table class="comparison-table" style="margin-top:var(--space-5)">
+      <thead>
+        <tr><th>Método</th><th>Para qué sirve</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>setContentType(type)</code></td><td>Tipo MIME de la respuesta (ej. <code>text/html;charset=UTF-8</code>)</td></tr>
+        <tr><td><code>getWriter()</code></td><td><code>PrintWriter</code> para escribir la respuesta directamente</td></tr>
+        <tr><td><code>sendRedirect(url)</code></td><td>Envía respuesta 302 al navegador para ir a otra URL</td></tr>
+        <tr><td><code>addCookie(cookie)</code></td><td>Añade cookie a la respuesta (<code>Set-Cookie</code> header)</td></tr>
+        <tr><td><code>setStatus(code)</code></td><td>Establece código HTTP de respuesta</td></tr>
+        <tr><td><code>sendError(code, msg)</code></td><td>Envía respuesta de error con código HTTP y mensaje</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <p><strong>Codificación en POST:</strong> añadir <code>req.setCharacterEncoding("UTF-8")</code> como primera línea de todo <code>doPost</code> que procese formularios. Sin esta llamada, parámetros con ñ, tildes o caracteres no-ASCII llegan corruptos. Solo afecta al cuerpo de la petición (POST); los parámetros de URL (GET) dependen de la configuración <code>URIEncoding="UTF-8"</code> en el <code>server.xml</code> de Tomcat.</p>
+    </div>
+
+    <svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arr4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+        </marker>
+        <marker id="arr4b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-accent)"/>
+        </marker>
+      </defs>
+      <!-- Divider -->
+      <line x1="390" y1="10" x2="390" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <!-- LEFT: Forward -->
+      <text x="195" y="24" text-anchor="middle" font-family="var(--font-display)" font-size="13" font-weight="700" fill="var(--color-text)">Forward</text>
+      <!-- Actors -->
+      <rect x="10" y="35" width="75" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="47" y="55" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Navegador</text>
+      <rect x="130" y="35" width="75" height="32" rx="4" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="167" y="55" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-accent)">Servlet A</text>
+      <rect x="255" y="35" width="75" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="292" y="55" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">Vista JSP</text>
+      <!-- Forward arrows -->
+      <line x1="86" y1="56" x2="128" y2="56" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr4)"/>
+      <text x="107" y="48" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">GET /listado</text>
+      <line x1="206" y1="60" x2="253" y2="60" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr4b)"/>
+      <text x="230" y="52" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-accent)">forward()</text>
+      <line x1="292" y1="68" x2="47" y2="115" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr4)"/>
+      <text x="180" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">HTML</text>
+      <!-- Forward note -->
+      <rect x="20" y="130" width="340" height="40" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="190" y="147" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">URL en barra: /listado (sin cambio)</text>
+      <text x="190" y="162" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)">server-side · mismo request</text>
+
+      <!-- RIGHT: Redirect -->
+      <text x="585" y="24" text-anchor="middle" font-family="var(--font-display)" font-size="13" font-weight="700" fill="var(--color-text)">Redirect</text>
+      <rect x="405" y="35" width="75" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="442" y="55" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Navegador</text>
+      <rect x="525" y="35" width="75" height="32" rx="4" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="562" y="55" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-accent)">Servlet A</text>
+      <rect x="650" y="35" width="75" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="687" y="55" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">Servlet B</text>
+      <!-- Redirect arrows -->
+      <line x1="480" y1="51" x2="523" y2="51" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr4)"/>
+      <text x="501" y="43" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">POST /comprar</text>
+      <line x1="562" y1="68" x2="442" y2="90" stroke="var(--color-warning-text)" stroke-width="1.5" marker-end="url(#arr4)"/>
+      <text x="530" y="72" font-family="var(--font-display)" font-size="9" fill="var(--color-warning-text)">302 → /carro</text>
+      <line x1="480" y1="98" x2="648" y2="65" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr4)"/>
+      <text x="560" y="96" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">GET /carro (nueva petición)</text>
+      <!-- Redirect note -->
+      <rect x="415" y="130" width="340" height="52" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="585" y="148" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">URL en barra: /carro (cambiada)</text>
+      <text x="585" y="163" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)">client-side · nuevo request</text>
+      <text x="585" y="177" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-warning-text)">datos del setAttribute se PIERDEN</text>
+    </svg>
+
+    <div class="callout callout-key">
+      <p>forward: mismo request/response, URL no cambia, datos en <code>setAttribute</code> llegan al JSP. redirect: nueva petición, URL cambia, datos del setAttribute se pierden.</p>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>La diferencia forward/redirect es la base del Patrón PRG, desarrollado en la sección <a href="#patrones-prg">#patrones-prg</a>.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>// Forward: pasar datos al JSP dentro de la misma petición
+protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException &#123;
+  List&lt;Articulo&gt; lista = servicioArticulos.getListado();
+  req.setAttribute("articulos", lista);  // el JSP leerá $&#123;articulos&#125;
+
+  RequestDispatcher rd = req.getRequestDispatcher("/vistas/listado.jsp");
+  rd.forward(req, resp);  // la URL del navegador sigue siendo la original
+&#125;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>// Redirect: ordenar al navegador ir a otra URL (nueva petición)
+protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException &#123;
+  req.setCharacterEncoding("UTF-8"); // primera línea en todo doPost con formularios
+  servicioCompras.añadirAlCarro(req.getSession(), req.getParameter("id"));
+
+  // PRG: redirigir para que F5 no repita el POST
+  resp.sendRedirect(req.getContextPath() + "/carro");
+  // Los datos de setAttribute se pierden — el nuevo GET no tiene acceso a ellos
+&#125;</code></pre>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 5: JSP COMO VISTA ===== -->
+  <section id="jsp-vistas">
+    <h2>JSP como vista</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo. JSP es la tecnología de vista. Lo principal: sin lógica en JSP (sin scriptlets). EL y JSTL son la alternativa moderna.</p>
+    </div>
+
+    <svg viewBox="0 0 720 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arr5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+        </marker>
+      </defs>
+      <!-- ficha.jsp -->
+      <rect x="10" y="40" width="150" height="80" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="85" y="62" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">ficha.jsp</text>
+      <text x="85" y="80" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-accent)">$&#123;art.nombre&#125;</text>
+      <text x="85" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">&lt;c:forEach ...&gt;</text>
+      <text x="85" y="138" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">Plantilla HTML + EL + JSTL</text>
+      <!-- Servlet generado -->
+      <rect x="220" y="30" width="200" height="100" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="320" y="55" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">_FichaJsp.java</text>
+      <text x="320" y="73" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">(Servlet generado</text>
+      <text x="320" y="87" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">por Tomcat)</text>
+      <!-- HTML output -->
+      <rect x="490" y="40" width="150" height="80" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="565" y="75" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">HTML enviado</text>
+      <text x="565" y="93" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">al navegador</text>
+      <!-- Arrows -->
+      <line x1="162" y1="80" x2="218" y2="80" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr5)"/>
+      <text x="190" y="70" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">compilación</text>
+      <line x1="422" y1="80" x2="488" y2="80" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr5)"/>
+      <text x="455" y="70" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">petición HTTP</text>
+    </svg>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Elemento</th><th>Sintaxis</th><th>Estado</th><th>Alternativa</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Scriptlet</td><td><code>&lt;% código Java %&gt;</code></td><td>Prohibido</td><td>EL + JSTL</td></tr>
+        <tr><td>Expresión</td><td><code>&lt;%= valor %&gt;</code></td><td>Prohibido</td><td><code>$&#123;valor&#125;</code> con EL</td></tr>
+        <tr><td>Declaración</td><td><code>&lt;%! var/método %&gt;</code></td><td>Prohibido</td><td>Clase Java separada</td></tr>
+        <tr><td>Directiva <code>page</code></td><td><code>&lt;%@ page ... %&gt;</code></td><td>OK</td><td>—</td></tr>
+        <tr><td>Directiva <code>taglib</code></td><td><code>&lt;%@ taglib ... %&gt;</code></td><td>Necesario</td><td>—</td></tr>
+        <tr><td>EL</td><td><code>$&#123;expresión&#125;</code></td><td>Usar</td><td>—</td></tr>
+        <tr><td>JSTL</td><td><code>&lt;c:forEach&gt;</code>, etc.</td><td>Usar</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">jsp</div>
+      <pre><code>&lt;%-- ❌ JSP con scriptlets — difícil de mantener --%&gt;
+&lt;%@ page contentType="text/html;charset=UTF-8" %&gt;
+&lt;ul&gt;
+&lt;% List&lt;Articulo&gt; arts = (List&lt;Articulo&gt;) request.getAttribute("articulos");
+   for (Articulo a : arts) &#123; %&gt;
+  &lt;li&gt;&lt;%= a.getNombre() %&gt; — &lt;%= a.getPrecio() %&gt; €&lt;/li&gt;
+&lt;% &#125; %&gt;
+&lt;/ul&gt;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">jsp</div>
+      <pre><code>&lt;%-- ✓ JSP moderno: solo EL y JSTL --%&gt;
+&lt;%@ page contentType="text/html;charset=UTF-8" %&gt;
+&lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+&lt;ul&gt;
+  &lt;c:forEach items="$&#123;articulos&#125;" var="a"&gt;
+    &lt;li&gt;$&#123;a.nombre&#125; — $&#123;a.precio&#125; €&lt;/li&gt;
+  &lt;/c:forEach&gt;
+&lt;/ul&gt;</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p>En JSP moderno: cero scriptlets. Solo EL (<code>$&#123;...&#125;</code>) y JSTL. El HTML debe ser legible sin conocer Java.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Nombre en JSP</th><th>Tipo Jakarta EE</th><th>Equivalente en Servlet</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>request</code> / <code>$&#123;param&#125;</code></td><td>HttpServletRequest</td><td>parámetro del método doXxx</td></tr>
+        <tr><td><code>session</code> / <code>$&#123;sessionScope&#125;</code></td><td>HttpSession</td><td><code>request.getSession()</code></td></tr>
+        <tr><td><code>application</code> / <code>$&#123;applicationScope&#125;</code></td><td>ServletContext</td><td><code>getServletContext()</code></td></tr>
+        <tr><td><code>$&#123;cookie&#125;</code></td><td>Map de Cookie</td><td><code>request.getCookies()</code></td></tr>
+        <tr><td><code>out</code></td><td>JspWriter</td><td><code>response.getWriter()</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== SECCIÓN 6: EL Y JSTL ===== -->
+  <section id="el-jstl">
+    <h2>EL y JSTL</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo. Leer para contexto; no memorizar la API completa. Sí entender <code>$&#123;sessionScope.usuario.nombre&#125;</code> y <code>&lt;c:forEach&gt;</code> básico.</p>
+    </div>
+
+    <svg viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arr6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+        </marker>
+      </defs>
+      <!-- EL expression -->
+      <rect x="10" y="30" width="110" height="36" rx="6" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="65" y="52" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--color-key-text)">$&#123;articulo&#125;</text>
+      <line x1="122" y1="48" x2="148" y2="48" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr6)"/>
+      <!-- pageScope -->
+      <rect x="150" y="30" width="90" height="36" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="195" y="52" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">pageScope</text>
+      <line x1="242" y1="48" x2="263" y2="48" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr6)"/>
+      <text x="252" y="38" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">?</text>
+      <!-- requestScope — highlighted -->
+      <rect x="265" y="24" width="100" height="48" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="315" y="46" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-accent)">requestScope</text>
+      <text x="315" y="62" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">✓ encontrado</text>
+      <line x1="367" y1="48" x2="388" y2="48" stroke="var(--color-text-3)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr6)"/>
+      <!-- sessionScope -->
+      <rect x="390" y="30" width="100" height="36" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5" opacity="0.5"/>
+      <text x="440" y="52" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)">sessionScope</text>
+      <line x1="492" y1="48" x2="513" y2="48" stroke="var(--color-text-3)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr6)"/>
+      <!-- applicationScope -->
+      <rect x="515" y="30" width="110" height="36" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5" opacity="0.4"/>
+      <text x="570" y="52" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)">applicationScope</text>
+      <line x1="627" y1="48" x2="648" y2="48" stroke="var(--color-text-3)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr6)"/>
+      <!-- null -->
+      <rect x="650" y="30" width="50" height="36" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1" opacity="0.4"/>
+      <text x="675" y="52" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-3)">null</text>
+      <text x="380" y="95" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)">EL busca en orden hasta encontrar el valor o devolver null</text>
+    </svg>
+
+    <p>EL (<code>$&#123;...&#125;</code>) simplifica el acceso a objetos en los ámbitos sin casting, con acceso a propiedades por punto (llama a getters automáticamente). Soporta operadores aritméticos, relacionales y ternario.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Etiqueta</th><th>Uso</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>&lt;c:out value="..."&gt;</code></td><td>Imprime con escape HTML automático</td></tr>
+        <tr><td><code>&lt;c:set var="x" value="..." scope=""&gt;</code></td><td>Define variable en un scope</td></tr>
+        <tr><td><code>&lt;c:if test="$&#123;...&#125;"&gt;</code></td><td>Condicional simple</td></tr>
+        <tr><td><code>&lt;c:choose&gt;/&lt;c:when&gt;/&lt;c:otherwise&gt;</code></td><td>If–else complejo (switch)</td></tr>
+        <tr><td><code>&lt;c:forEach items="$&#123;lista&#125;" var="x"&gt;</code></td><td>Iterar colección</td></tr>
+        <tr><td><code>&lt;c:forEach begin="1" end="10" var="i"&gt;</code></td><td>Iterar rango numérico</td></tr>
+        <tr><td><code>&lt;c:url value="/path"&gt;</code></td><td>URL con encoding correcto</td></tr>
+        <tr><td><code>&lt;c:redirect url="..."&gt;</code></td><td>Redirect desde JSP (mejor en servlet)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">jsp</div>
+      <pre><code>&lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+&lt;%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %&gt;
+
+&lt;%-- 1. Acceso a sesión --%&gt;
+&lt;c:if test="$&#123;sessionScope.usuario != null&#125;"&gt;
+  &lt;p&gt;Bienvenido, $&#123;sessionScope.usuario.nombre&#125;&lt;/p&gt;
+&lt;/c:if&gt;
+
+&lt;%-- 2. Iterar lista del request --%&gt;
+&lt;ul&gt;
+  &lt;c:forEach items="$&#123;requestScope.articulos&#125;" var="art" varStatus="st"&gt;
+    &lt;li&gt;$&#123;st.count&#125;. $&#123;art.nombre&#125; — $&#123;art.precio&#125; €&lt;/li&gt;
+  &lt;/c:forEach&gt;
+&lt;/ul&gt;
+
+&lt;%-- 3. Condicional choose --%&gt;
+&lt;c:choose&gt;
+  &lt;c:when test="$&#123;empty articulos&#125;"&gt;
+    &lt;p&gt;No hay artículos disponibles.&lt;/p&gt;
+  &lt;/c:when&gt;
+  &lt;c:otherwise&gt;
+    &lt;p&gt;Se muestran $&#123;fn:length(articulos)&#125; artículos.&lt;/p&gt;
+  &lt;/c:otherwise&gt;
+&lt;/c:choose&gt;</code></pre>
+    </div>
+
+    <div class="callout callout-tip">
+      <p>EL implícitos más útiles en el examen: <code>$&#123;param.nombre&#125;</code> (parámetros de la petición), <code>$&#123;sessionScope.usuario&#125;</code> (sesión), <code>$&#123;cookie.JSESSIONID.value&#125;</code> (cookie de sesión).</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 7: ÁMBITOS ===== -->
+  <section id="scopes">
+    <h2>Ámbitos de datos</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. La diferencia request vs session scope es fundamental. ¿Qué se guarda en request? ¿Qué en session? Referencia directa: P4 S1, P5 y P6.</p>
+    </div>
+
+    <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:var(--space-5) 0;">
+      <!-- application -->
+      <rect x="10" y="10" width="700" height="280" rx="8" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+      <text x="24" y="32" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-key-text)">application · toda la aplicación</text>
+      <text x="24" y="50" font-family="var(--font-display)" font-size="10" fill="var(--color-key-text)">DataSource, configuración global, estadísticas</text>
+      <!-- session -->
+      <rect x="40" y="65" width="640" height="200" rx="8" fill="var(--color-relation-bg)" stroke="var(--color-relation-border)" stroke-width="1.5"/>
+      <text x="54" y="84" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-relation-text)">session · sesión del usuario</text>
+      <text x="54" y="100" font-family="var(--font-display)" font-size="10" fill="var(--color-relation-text)">usuario autenticado, carrito de la compra</text>
+      <!-- request -->
+      <rect x="70" y="115" width="580" height="120" rx="8" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+      <text x="84" y="133" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-tip-text)">request · una petición / cadena de forwards</text>
+      <text x="84" y="150" font-family="var(--font-display)" font-size="10" fill="var(--color-tip-text)">listado de artículos, errores de validación</text>
+      <!-- page -->
+      <rect x="100" y="165" width="520" height="56" rx="8" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+      <text x="114" y="185" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-warning-text)">page · un solo JSP</text>
+      <text x="114" y="202" font-family="var(--font-display)" font-size="10" fill="var(--color-warning-text)">variables auxiliares de la vista</text>
+    </svg>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Ámbito</th><th>Duración</th><th>API en Servlet</th><th>EL</th><th>Usar para…</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>page</code></td><td>Solo el JSP actual</td><td>No existe en servlets</td><td><code>pageContext</code></td><td>Variables locales del JSP</td></tr>
+        <tr><td><code>request</code></td><td>Una petición (o chain de forwards)</td><td><code>req.setAttribute/getAttribute</code></td><td><code>$&#123;nombre&#125;</code></td><td>Pasar datos de controller a vista</td></tr>
+        <tr><td><code>session</code></td><td>Sesión del usuario</td><td><code>session.setAttribute/getAttribute</code></td><td><code>$&#123;sessionScope.nombre&#125;</code></td><td>Autenticación, carrito</td></tr>
+        <tr><td><code>application</code></td><td>Toda la aplicación</td><td><code>ctx.setAttribute/getAttribute</code></td><td><code>$&#123;applicationScope.nombre&#125;</code></td><td>Config. global, recursos cacheados</td></tr>
+      </tbody>
+    </table>
+
+    <p>La regla de oro: usar el scope más pequeño que cubra la necesidad.</p>
+
+    <div class="callout callout-key">
+      <p>Regla de oro: request para pasar datos del controlador a la vista. session solo para lo que debe sobrevivir entre peticiones del mismo usuario. Nunca usar session para lo que cabe en request.</p>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>Los objetos en session deben implementar <code>Serializable</code>. Una session grande penaliza el rendimiento, especialmente con balanceo de carga.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">java</div>
+      <pre><code>protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException &#123;
+  // request scope: datos temporales para esta vista
+  req.setAttribute("articulos", servicioArticulos.getListado());
+
+  // session scope: datos persistentes entre peticiones del usuario
+  HttpSession session = req.getSession(false); // no crear si no existe
+  Usuario usuario = (session != null)
+    ? (Usuario) session.getAttribute("usuario")
+    : null;
+
+  // application scope: datos globales (raramente se escribe aquí)
+  String version = (String) getServletContext().getAttribute("app.version");
+
+  req.getRequestDispatcher("/vistas/listado.jsp").forward(req, resp);
+&#125;</code></pre>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 8: PATRÓN PRG ===== -->
+<!-- PENDIENTE:patrones-prg -->
+<section id="patrones-prg">
+  <h2>Patrón PRG</h2>
+
+  <div class="callout callout-examen">
+    <p>Peso muy alto. El patrón PRG resuelve el problema del botón recargar en formularios POST. Aparece explícitamente en P4 S2. El profesor lo menciona en la tutoría. Muy probable en el examen.</p>
+  </div>
+
+  <p>El problema: HTTP es sin estado. Si la última acción del navegador fue un POST a <code>/comprar</code>, al pulsar F5 se repite el POST (otra compra no deseada). La solución NO es desactivar el botón de recarga.</p>
+  <p>La solución PRG: separar la operación en dos controladores con dos URLs. El primero procesa (POST) y redirige (302). El segundo solo muestra (GET). En el navegador queda la URL del GET, que se puede repetir sin efecto secundario.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Tipo</th><th>Descripción</th><th>Verbo habitual</th><th>¿Peligro con F5?</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Informativa</td><td>Solo muestra datos, no modifica el modelo</td><td>GET</td><td>No — es seguro</td></tr>
+      <tr><td>Funcional</td><td>Modifica el estado de la aplicación (crear, borrar…)</td><td>POST / PUT / DELETE</td><td>Sí — problema</td></tr>
+    </tbody>
+  </table>
+
+  <svg viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <marker id="arrPRG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+      </marker>
+      <marker id="arrPRGa" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-accent)"/>
+      </marker>
+    </defs>
+    <!-- Actor lines -->
+    <line x1="80" y1="40" x2="80" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+    <line x1="350" y1="40" x2="350" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+    <line x1="620" y1="40" x2="620" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+    <!-- Actor labels -->
+    <rect x="20" y="10" width="120" height="30" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="80" y="29" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Navegador</text>
+    <rect x="270" y="10" width="160" height="30" rx="4" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+    <text x="350" y="29" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-accent)">Servidor A (POST /comprar)</text>
+    <rect x="545" y="10" width="150" height="30" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="620" y="29" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Servidor B (GET /carro)</text>
+    <!-- Step 1 -->
+    <line x1="82" y1="70" x2="348" y2="70" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrPRG)"/>
+    <text x="215" y="63" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">① POST /comprar?id=123</text>
+    <text x="215" y="88" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">Petición funcional</text>
+    <!-- Step 2: internal -->
+    <rect x="290" y="100" width="120" height="28" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+    <text x="350" y="118" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)">servicioCompras.añadir()</text>
+    <!-- Step 3: redirect -->
+    <line x1="348" y1="148" x2="84" y2="148" stroke="var(--color-accent)" stroke-width="2" marker-end="url(#arrPRGa)"/>
+    <text x="215" y="142" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-accent)">③ 302 Redirect → /carro</text>
+    <text x="215" y="163" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">Location: /carro</text>
+    <!-- Step 4 -->
+    <line x1="82" y1="188" x2="618" y2="188" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrPRG)"/>
+    <text x="350" y="181" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">④ GET /carro</text>
+    <text x="350" y="205" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">Nueva petición. Petición informativa.</text>
+    <!-- Step 5 -->
+    <line x1="618" y1="228" x2="84" y2="228" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrPRG)"/>
+    <text x="350" y="222" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">⑤ HTML (estado actualizado)</text>
+    <!-- Note -->
+    <text x="390" y="265" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)">F5 aquí repite GET /carro — completamente seguro.</text>
+  </svg>
+
+  <div class="callout callout-key">
+    <p>El POST procesa y redirige (302). El GET muestra. F5 solo repite el GET. Dos controladores, dos URLs.</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>// Controlador 1: Procesa la acción (POST)
+@WebServlet(urlPatterns = &#123;"/comprar"&#125;)
+public class ComprarController extends HttpServlet &#123;
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException &#123;
+    req.setCharacterEncoding("UTF-8"); // primera línea en todo doPost con formularios
+    String idProducto = req.getParameter("id");
+
+    // 1. Acción funcional: modifica el modelo
+    servicioCompras.añadirAlCarro(req.getSession(), idProducto);
+
+    // 2. PRG: redirigir a la URL informativa
+    resp.sendRedirect(req.getContextPath() + "/carro");
+  &#125;
+&#125;
+
+// Controlador 2: Muestra el resultado (GET)
+@WebServlet(urlPatterns = &#123;"/carro"&#125;)
+public class CarroController extends HttpServlet &#123;
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException &#123;
+    // 3. Leer el modelo ya actualizado
+    Carro carro = servicioCompras.getCarro(req.getSession());
+    req.setAttribute("carro", carro);
+
+    // 4. Delegar a la vista
+    req.getRequestDispatcher("/vistas/carro.jsp").forward(req, resp);
+  &#125;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-warning">
+    <p>Error clásico: olvidar el <code>sendRedirect</code> en el POST y usar <code>forward</code> directamente. Resultado: F5 repite la compra. El patrón PRG existe exactamente para evitar esto.</p>
+  </div>
+
+  <h3>Flash scope: mensajes tras el redirect</h3>
+
+  <p>PRG resuelve el F5, pero introduce un nuevo problema: al redirigir, el navegador hace una nueva petición y los datos del <code>request.setAttribute()</code> se pierden. ¿Cómo mostrar "Artículo añadido al carro" en el GET después del redirect?</p>
+  <p>El patrón flash scope lo resuelve: guardar el mensaje en session en el POST y leerlo y borrarlo inmediatamente en el GET. El mensaje existe durante un único ciclo POST → redirect → GET; no contamina peticiones posteriores.</p>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>// === POST: procesar + guardar flash + redirigir ===
+protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException &#123;
+  req.setCharacterEncoding("UTF-8");
+  servicioCompras.añadirAlCarro(req.getSession(), req.getParameter("id"));
+
+  // Flash scope: mensaje que sobrevive exactamente UN redirect
+  req.getSession().setAttribute("flash", "Artículo añadido al carro");
+  resp.sendRedirect(req.getContextPath() + "/carro");
+&#125;
+
+// === GET: leer flash → borrar de session → pasar a request para la vista ===
+protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException &#123;
+  HttpSession session = req.getSession(false);
+  if (session != null) &#123;
+    String flash = (String) session.getAttribute("flash");
+    if (flash != null) &#123;
+      session.removeAttribute("flash"); // IMPORTANTE: borrar para que no reaparezca
+      req.setAttribute("flash", flash); // mover a request scope para el JSP
+    &#125;
+  &#125;
+  Carro carro = servicioCompras.getCarro(req.getSession(false));
+  req.setAttribute("carro", carro);
+  req.getRequestDispatcher("/vistas/carro.jsp").forward(req, resp);
+&#125;</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-block-header">jsp</div>
+    <pre><code>&lt;%-- En carro.jsp: mostrar el mensaje flash si existe --%&gt;
+&lt;c:if test="$&#123;flash != null&#125;"&gt;
+  &lt;p class="flash-ok"&gt;$&#123;flash&#125;&lt;/p&gt;
+&lt;/c:if&gt;
+
+&lt;!-- Después del GET: flash == null, el mensaje no vuelve a aparecer --&gt;</code></pre>
+  </div>
+
+  <div class="callout callout-key">
+    <p>Flash scope = session como almacén temporal de un solo uso. Patrón: <code>setAttribute</code> en el POST → <code>removeAttribute</code> en el GET siguiente → la vista lo muestra una sola vez.</p>
+  </div>
+
+  <div class="callout callout-relation">
+    <p>El flash scope usa session como transporte, pero se limpia inmediatamente. Es diferente a guardar datos permanentes en session. Algunos frameworks (Spring MVC con <code>RedirectAttributes</code>) implementan este patrón de forma nativa.</p>
+  </div>
+</section>
+<!-- /PENDIENTE:patrones-prg -->
+
+<!-- PENDIENTE:patrones-controlador -->
+<section id="patrones-controlador">
+  <h2>Controladores: Page vs Front Controller</h2>
+
+  <div class="callout callout-examen">
+    <p>Peso muy alto. Page Controller vs Front Controller. El Front Controller es la base de Spring MVC (el DispatcherServlet). Referencia: P5.</p>
+  </div>
+
+  <svg viewBox="0 0 780 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <marker id="arrFC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+      </marker>
+    </defs>
+    <!-- Divider -->
+    <line x1="390" y1="10" x2="390" y2="310" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+    <!-- LEFT: Page Controller -->
+    <text x="195" y="26" text-anchor="middle" font-family="var(--font-display)" font-size="13" font-weight="700" fill="var(--color-text)">Page Controller</text>
+    <!-- Group 1 -->
+    <text x="30" y="52" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">/listado</text>
+    <rect x="90" y="40" width="120" height="50" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="150" y="60" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">ListadoController</text>
+    <rect x="96" y="67" width="108" height="16" rx="2" fill="oklch(97% 0.03 20 / 0.6)"/>
+    <text x="150" y="79" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="oklch(40% 0.12 20)">auth check (repetido)</text>
+    <line x1="46" y1="65" x2="88" y2="65" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFC)"/>
+    <!-- Group 2 -->
+    <text x="30" y="122" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">/ficha</text>
+    <rect x="90" y="112" width="120" height="50" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="150" y="132" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">FichaController</text>
+    <rect x="96" y="139" width="108" height="16" rx="2" fill="oklch(97% 0.03 20 / 0.6)"/>
+    <text x="150" y="151" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="oklch(40% 0.12 20)">auth check (repetido)</text>
+    <line x1="46" y1="137" x2="88" y2="137" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFC)"/>
+    <!-- Group 3 -->
+    <text x="30" y="192" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">/carro</text>
+    <rect x="90" y="182" width="120" height="50" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="150" y="202" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">CarroController</text>
+    <rect x="96" y="209" width="108" height="16" rx="2" fill="oklch(97% 0.03 20 / 0.6)"/>
+    <text x="150" y="221" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="oklch(40% 0.12 20)">auth check (repetido)</text>
+    <line x1="46" y1="207" x2="88" y2="207" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFC)"/>
+    <!-- Duplicate label -->
+    <text x="150" y="260" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="oklch(40% 0.12 20)">código duplicado en cada controlador</text>
+
+    <!-- RIGHT: Front Controller -->
+    <text x="585" y="26" text-anchor="middle" font-family="var(--font-display)" font-size="13" font-weight="700" fill="var(--color-text)">Front Controller</text>
+    <!-- DispatcherServlet -->
+    <rect x="415" y="38" width="340" height="60" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="2"/>
+    <text x="585" y="60" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="700" fill="var(--color-accent)">DispatcherServlet</text>
+    <text x="585" y="78" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-accent)">auth, logging, i18n (centralizado)</text>
+    <!-- Handlers -->
+    <rect x="430" y="130" width="100" height="36" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="480" y="152" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">ListadoHandler</text>
+    <rect x="540" y="130" width="90" height="36" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="585" y="152" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">FichaHandler</text>
+    <rect x="640" y="130" width="100" height="36" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="690" y="152" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">CarroHandler</text>
+    <!-- Dispatch arrows -->
+    <line x1="480" y1="99" x2="480" y2="128" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrFC)"/>
+    <line x1="585" y1="99" x2="585" y2="128" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrFC)"/>
+    <line x1="690" y1="99" x2="690" y2="128" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrFC)"/>
+    <text x="585" y="210" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">Un punto de entrada · N manejadores</text>
+  </svg>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Aspecto</th><th>Page Controller</th><th>Front Controller</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Entrada</td><td>Un controller por URL / acción</td><td>Un único controller para todas las peticiones</td></tr>
+      <tr><td>Tareas comunes</td><td>Repetidas en cada controller (auth, logs…)</td><td>Centralizadas en el Front Controller</td></tr>
+      <tr><td>Complejidad</td><td>Simple al principio, explota al crecer</td><td>Más complejo inicialmente, escala mejor</td></tr>
+      <tr><td>Ejemplo real</td><td>Servlets individuales en Tomcat</td><td><code>DispatcherServlet</code> de Spring MVC</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-key">
+    <p>Spring MVC implementa el Front Controller pattern a través del <code>DispatcherServlet</code>. Este mapea URLs a métodos de <code>@Controller</code> (los handlers).</p>
+  </div>
+
+  <p>El Front Controller resuelve el principal defecto del Page Controller: la duplicación de lógica transversal (autenticación, logging, manejo de errores, i18n). Al centralizar estas responsabilidades, permite añadir nuevo comportamiento sin tocar los handlers individuales.</p>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>// Patrón Front Controller manual (antes de Spring MVC)
+@WebServlet(urlPatterns = &#123;"*.do"&#125;)
+public class FrontController extends HttpServlet &#123;
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException &#123;
+    processRequest(req, resp);
+  &#125;
+
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException &#123;
+    processRequest(req, resp);
+  &#125;
+
+  private void processRequest(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException &#123;
+    // 1. Lógica transversal centralizada
+    // getSession(false): no crear sesión nueva si no existe
+    if (!authService.isAuthenticated(req.getSession(false))) &#123;
+      resp.sendRedirect("login.jsp");
+      return;
+    &#125;
+
+    // 2. Dispatch al handler correcto según la URL
+    String action = req.getServletPath();
+    switch (action) &#123;
+      case "/listado.do" -> new ListadoHandler().execute(req, resp);
+      case "/ficha.do"   -> new FichaHandler().execute(req, resp);
+      default -> resp.sendError(404);
+    &#125;
+  &#125;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-relation">
+    <p>En Spring MVC el <code>DispatcherServlet</code> es el Front Controller. Los métodos de las clases <code>@Controller</code> son los handlers. La anotación <code>@GetMapping</code> / <code>@PostMapping</code> hace el dispatch automáticamente.</p>
+  </div>
+</section>
+<!-- /PENDIENTE:patrones-controlador -->
+
+<!-- PENDIENTE:patrones-dto -->
+<section id="patrones-dto">
+  <h2>DTO y Template View</h2>
+
+  <div class="callout callout-examen">
+    <p>Peso bajo. DTO como concepto de transferencia de datos entre capas. No memorizar la implementación; sí entender para qué sirve.</p>
+  </div>
+
+  <p>Un Data Transfer Object (DTO) es un objeto sin lógica de negocio que transporta datos de la capa de servicios a la capa de presentación. Contiene solo los datos que la vista necesita, protegiendo la vista de cambios en los objetos del modelo.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Característica</th><th>Por qué importa</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Solo datos, sin lógica</td><td>La vista no ejecuta reglas de negocio</td></tr>
+      <tr><td>Puede agregar varios objetos</td><td>Evita múltiples llamadas a la capa de servicios</td></tr>
+      <tr><td>Inmutable</td><td>Evita modificaciones accidentales en la vista</td></tr>
+      <tr><td>Serializable</td><td>Necesario si se envía por red o se guarda en sesión</td></tr>
+      <tr><td>POJO</td><td>Sin dependencias de framework, fácil de testear</td></tr>
+    </tbody>
+  </table>
+
+  <p>Template View es el patrón que usa JSP: HTML estático con marcadores (<code>$&#123;...&#125;</code>) que se reemplazan dinámicamente. La reutilización de fragmentos se logra de dos formas: estilo include (cada vista incluye explícitamente los fragmentos comunes) o estilo jerárquico (una plantilla maestra que cada vista especializa — Thymeleaf Layout Dialect).</p>
+
+  <div class="callout callout-tip">
+    <p>En proyectos modernos con Spring + JPA, las interfaces de proyección de Spring Data JPA cumplen el papel del DTO sin código extra.</p>
+  </div>
+</section>
+<!-- /PENDIENTE:patrones-dto -->
+
+<!-- PENDIENTE:cookies -->
+<section id="cookies">
+  <h2>Cookies</h2>
+
+  <div class="callout callout-examen">
+    <p>Peso bajo. Las cookies son el mecanismo de transporte del id de sesión. Lo principal: qué es <code>JSESSIONID</code> y cómo funciona el flujo. La API de Jakarta EE es complementaria.</p>
+  </div>
+
+  <svg viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <marker id="arrCK" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+      </marker>
+    </defs>
+    <!-- Actors -->
+    <rect x="10" y="20" width="120" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="70" y="40" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Navegador</text>
+    <rect x="590" y="20" width="120" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="650" y="40" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Servidor</text>
+    <!-- Cookie store -->
+    <rect x="240" y="95" width="160" height="45" rx="4" fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+    <text x="320" y="116" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">almacén de cookies</text>
+    <text x="320" y="132" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">miCookie=valor</text>
+    <!-- Step 1 -->
+    <line x1="132" y1="42" x2="588" y2="42" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrCK)"/>
+    <text x="360" y="35" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">① petición GET</text>
+    <!-- Step 2 -->
+    <line x1="588" y1="60" x2="134" y2="78" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrCK)"/>
+    <text x="400" y="60" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">② Set-Cookie: miCookie=valor; Max-Age=3600</text>
+    <!-- Step 3: store -->
+    <line x1="130" y1="90" x2="238" y2="108" stroke="var(--color-text-2)" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#arrCK)"/>
+    <text x="175" y="88" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">③ almacena</text>
+    <!-- Step 4 -->
+    <line x1="132" y1="155" x2="588" y2="155" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrCK)"/>
+    <text x="360" y="148" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">④ Cookie: miCookie=valor (siguiente petición)</text>
+    <!-- Note -->
+    <text x="380" y="175" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">Solo se devuelve al dominio que la emitió (same-domain policy)</text>
+  </svg>
+
+  <p>Una cookie es un pequeño dato (texto) que el servidor envía al navegador y este devuelve en cada petición posterior al mismo dominio. Son el mecanismo preferido para mantener el id de sesión.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Atributo</th><th>Función</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Domain</code></td><td>Dominio al que se devuelve la cookie (por defecto: el que la emitió)</td></tr>
+      <tr><td><code>Path</code></td><td>Ruta del servidor para la que aplica</td></tr>
+      <tr><td><code>Expires</code></td><td>Fecha de expiración (cookie persistente si presente; de sesión si ausente)</td></tr>
+      <tr><td><code>Max-Age</code></td><td>Segundos de vida. Toma precedencia sobre <code>Expires</code>. 0 = eliminar.</td></tr>
+      <tr><td><code>Secure</code></td><td>Solo se transmite por HTTPS</td></tr>
+      <tr><td><code>HttpOnly</code></td><td>No accesible desde JavaScript (protege contra XSS)</td></tr>
+    </tbody>
+  </table>
+
+  <table class="comparison-table" style="margin-top:var(--space-4)">
+    <thead>
+      <tr><th>Tipo</th><th>Descripción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>De sesión</td><td>Sin <code>Expires</code> ni <code>Max-Age</code>. Se elimina al cerrar el navegador.</td></tr>
+      <tr><td>Persistente</td><td>Con <code>Expires</code> o <code>Max-Age</code> positivo. Sobrevive al cierre.</td></tr>
+      <tr><td>Segura</td><td>Flag <code>Secure</code>. Solo viaja por HTTPS.</td></tr>
+      <tr><td>HttpOnly</td><td>Flag <code>HttpOnly</code>. No accesible desde JavaScript.</td></tr>
+      <tr><td>First-party</td><td><code>Domain</code> igual al de la página. Propias del sitio.</td></tr>
+      <tr><td>Third-party</td><td><code>Domain</code> diferente. Usadas para tracking publicitario.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>// Enviar cookie desde un Servlet
+Cookie ck = new Cookie("preferencia", "dark");
+ck.setPath(req.getContextPath());
+ck.setMaxAge(60 * 60 * 24 * 30); // 30 días
+ck.setHttpOnly(true);             // no accesible desde JS
+resp.addCookie(ck);
+
+// Leer cookies en una petición
+Cookie[] cookies = req.getCookies();
+if (cookies != null) &#123;
+  for (Cookie c : cookies) &#123;
+    if ("preferencia".equals(c.getName())) &#123;
+      String valor = c.getValue();
+    &#125;
+  &#125;
+&#125;
+
+// En JSP con EL:
+// $&#123;cookie.preferencia.value&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-key">
+    <p><code>JSESSIONID</code> es la cookie que Jakarta EE usa para identificar la sesión de cada usuario. Es de sesión (sin Expires) y HttpOnly por defecto.</p>
+  </div>
+
+  <h3>Eliminar una cookie</h3>
+
+  <p>El servidor no puede borrar directamente una cookie del navegador. El mecanismo es enviar la misma cookie con <code>Max-Age=0</code>: el navegador la destruye inmediatamente al recibirla. Es obligatorio que el <code>Path</code> coincida con el de la cookie original; si no, el navegador no la reconocerá como la misma cookie.</p>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>// Eliminar una cookie: Max-Age=0 + mismo Path que la original
+Cookie deleteCk = new Cookie("preferencia", "");
+deleteCk.setPath(req.getContextPath()); // MISMO path que al crearla
+deleteCk.setMaxAge(0);                  // 0 → destruir inmediatamente
+resp.addCookie(deleteCk);
+
+// Patrón completo de logout: invalidar sesión + borrar cookies persistentes
+protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException &#123;
+  // 1. Invalidar la sesión (elimina JSESSIONID automáticamente)
+  HttpSession session = req.getSession(false);
+  if (session != null) &#123; session.invalidate(); &#125;
+
+  // 2. Borrar cualquier cookie persistente de "recordarme"
+  Cookie deleteCk = new Cookie("rememberMe", "");
+  deleteCk.setPath(req.getContextPath());
+  deleteCk.setMaxAge(0);
+  resp.addCookie(deleteCk);
+
+  resp.sendRedirect(req.getContextPath() + "/login");
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-warning">
+    <p>El <code>Path</code> de la cookie de borrado debe ser <strong>idéntico</strong> al de la cookie original. Si al crear la cookie usaste <code>setPath("/app")</code> y al borrarla usas <code>setPath("/")</code>, el navegador las trata como dos cookies distintas y no borra nada.</p>
+  </div>
+</section>
+<!-- /PENDIENTE:cookies -->
+
+<!-- PENDIENTE:sesion -->
+<section id="sesion">
+  <h2>Gestión de sesión</h2>
+
+  <div class="callout callout-examen">
+    <p>Peso muy alto. HttpSession es la base del sistema de autenticación. <code>setAttribute</code> / <code>getAttribute</code> / <code>invalidate</code> son los tres métodos más importantes. El flujo login → filter → logout es el núcleo de P5 y P6.</p>
+  </div>
+
+  <p>HTTP es sin estado: cada petición es independiente. La sesión es la solución de Jakarta EE: un Map server-side asociado a cada usuario identificado por un token (JSESSIONID), transmitido como cookie o reescritura de URL.</p>
+
+  <svg viewBox="0 0 780 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <marker id="arrSS" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+      </marker>
+    </defs>
+    <!-- Timeline line -->
+    <line x1="30" y1="80" x2="750" y2="80" stroke="var(--color-border-strong)" stroke-width="2"/>
+    <!-- Event 1: Primera petición -->
+    <circle cx="80" cy="80" r="6" fill="var(--color-accent)"/>
+    <rect x="30" y="95" width="160" height="60" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+    <text x="110" y="113" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-tip-text)">Primera petición</text>
+    <text x="110" y="129" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)">Sesión creada.</text>
+    <text x="110" y="143" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-tip-text)">Set-Cookie: JSESSIONID=abc</text>
+    <!-- Event 2 -->
+    <circle cx="280" cy="80" r="6" fill="var(--color-accent)"/>
+    <rect x="220" y="95" width="160" height="60" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+    <text x="300" y="113" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-tip-text)">Petición 2 con cookie</text>
+    <text x="300" y="129" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)">Sesión encontrada</text>
+    <text x="300" y="143" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-tip-text)">getAttribute("usuario")</text>
+    <!-- dots -->
+    <text x="430" y="84" text-anchor="middle" font-family="var(--font-display)" font-size="16" fill="var(--color-text-3)">···</text>
+    <!-- Event 3a: timeout -->
+    <circle cx="560" cy="80" r="6" fill="var(--color-text-3)"/>
+    <rect x="490" y="95" width="160" height="55" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="570" y="113" text-anchor="middle" font-family="var(--font-display)" font-size="9" font-weight="600" fill="var(--color-text-2)">Timeout (30 min)</text>
+    <text x="570" y="128" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">sesión destruida</text>
+    <text x="570" y="142" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">automáticamente</text>
+    <!-- Event 3b: invalidate -->
+    <circle cx="700" cy="80" r="6" fill="var(--color-text-3)"/>
+    <rect x="630" y="95" width="140" height="55" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="700" y="113" text-anchor="middle" font-family="var(--font-display)" font-size="9" font-weight="600" fill="var(--color-text-2)">invalidate() en logout</text>
+    <text x="700" y="128" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">sesión destruida</text>
+    <text x="700" y="142" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">manualmente</text>
+    <!-- Label -->
+    <text x="390" y="200" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text-3)">Ciclo de vida de la sesión de un usuario</text>
+  </svg>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Método</th><th>Para qué sirve</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>setAttribute(name, obj)</code></td><td>Guarda objeto en la sesión</td></tr>
+      <tr><td><code>getAttribute(name)</code></td><td>Recupera objeto de la sesión (null si no existe)</td></tr>
+      <tr><td><code>removeAttribute(name)</code></td><td>Elimina objeto de la sesión</td></tr>
+      <tr><td><code>invalidate()</code></td><td>Destruye la sesión y todos sus datos (logout)</td></tr>
+      <tr><td><code>getId()</code></td><td>Devuelve el JSESSIONID</td></tr>
+      <tr><td><code>isNew()</code></td><td>True si la sesión acaba de crearse en esta petición</td></tr>
+      <tr><td><code>setMaxInactiveInterval(s)</code></td><td>Tiempo de inactividad antes de que expire (default: 1800s)</td></tr>
+      <tr><td><code>getLastAccessedTime()</code></td><td>Timestamp del último acceso</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>// === LoginController.doPost — guardar usuario en sesión ===
+protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException &#123;
+  req.setCharacterEncoding("UTF-8");
+  String user = req.getParameter("usuario");
+  String pass = req.getParameter("password");
+
+  Usuario u = servicioAuth.autenticar(user, pass);
+  if (u != null) &#123;
+    HttpSession session = req.getSession(); // crea si no existe
+    session.setAttribute("usuario", u);    // guardar en sesión
+
+    // PRG: redirigir tras POST (o a la URL guardada por el filtro)
+    String returnUrl = (String) session.getAttribute("urlRetorno");
+    session.removeAttribute("urlRetorno");
+    resp.sendRedirect(returnUrl != null ? returnUrl
+                                       : req.getContextPath() + "/inicio");
+  &#125; else &#123;
+    req.setAttribute("errorLogin", "Credenciales incorrectas");
+    req.getRequestDispatcher("/vistas/login.jsp").forward(req, resp);
+  &#125;
+&#125;
+
+// --- CHECK: verificar si hay sesión activa ---
+HttpSession session = req.getSession(false); // false = no crear
+boolean loggedIn = (session != null && session.getAttribute("usuario") != null);
+
+// === LogoutController.doPost — destruir la sesión ===
+protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException &#123;
+  HttpSession session = req.getSession(false);
+  if (session != null) &#123;
+    session.invalidate(); // destruye la sesión y todos sus datos
+  &#125;
+  resp.sendRedirect(req.getContextPath() + "/login");
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-key">
+    <p>Patrón obligatorio: <code>getSession(false)</code> para verificar (no crear sesión vacía). <code>getSession()</code> para login (crea si no existe). <code>invalidate()</code> en logout.</p>
+  </div>
+
+  <div class="callout callout-warning">
+    <p>Guardar objetos grandes en sesión penaliza el rendimiento. En entornos con balanceo de carga, los objetos en sesión se serializan y transfieren entre instancias.</p>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Adecuado para session</th><th>Evitar en session</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Usuario autenticado (objeto ligero)</td><td>Listados completos de datos (van en request)</td></tr>
+      <tr><td>Carrito de la compra</td><td>Conexiones a BD</td></tr>
+      <tr><td>URL de retorno (temporalmente)</td><td>Objetos no serializables</td></tr>
+      <tr><td>Preferencias de idioma/tema</td><td>Resultados de búsqueda paginados</td></tr>
+    </tbody>
+  </table>
+</section>
+<!-- /PENDIENTE:sesion -->
+
+<!-- PENDIENTE:filtros -->
+<section id="filtros">
+  <h2>Filtros</h2>
+
+  <div class="callout callout-examen">
+    <p>Peso muy alto. El filtro de autenticación es el ejercicio más probable del examen, mencionado explícitamente por el profesor en la tutoría. Entender doFilter, chain.doFilter, comprobación de sesión, redirect a login y guardado de URL de retorno. Referencia: P5 (AuthFilter), P6.</p>
+  </div>
+
+  <p>Un filtro es un componente que intercepta peticiones (y respuestas) antes de que lleguen a su destino (servlet, JSP o recurso estático). Se pueden encadenar varios filtros. El servlet no sabe que hay filtros actuando sobre él.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Caso de uso</th><th>Descripción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Control de acceso</td><td>Verificar autenticación antes de que la petición llegue al servlet</td></tr>
+      <tr><td>Auditoría</td><td>Registrar tiempo de respuesta, URLs accedidas, usuario</td></tr>
+      <tr><td>Transformación de respuesta</td><td>Comprimir la respuesta (gzip), encriptar</td></tr>
+      <tr><td>Encoding global</td><td>Establecer <code>request.setCharacterEncoding("UTF-8")</code> en todas las peticiones</td></tr>
+      <tr><td>Métricas</td><td>Contar peticiones por URL, detectar errores</td></tr>
+    </tbody>
+  </table>
+
+  <svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <marker id="arrFIL" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+      </marker>
+      <marker id="arrFILr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="oklch(40% 0.12 20)"/>
+      </marker>
+    </defs>
+    <!-- Scenario 1: passes -->
+    <text x="10" y="20" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text-2)">Petición que pasa la cadena:</text>
+    <!-- Actors row 1 -->
+    <rect x="10" y="30" width="60" height="28" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="40" y="48" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text)">Cliente</text>
+    <rect x="110" y="30" width="70" height="28" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+    <text x="145" y="48" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)">Filtro A</text>
+    <rect x="230" y="30" width="70" height="28" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+    <text x="265" y="48" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)">Filtro B</text>
+    <rect x="350" y="30" width="70" height="28" rx="4" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+    <text x="385" y="48" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">Servlet</text>
+    <!-- Forward flow -->
+    <line x1="72" y1="44" x2="108" y2="44" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFIL)"/>
+    <line x1="182" y1="44" x2="228" y2="44" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFIL)"/>
+    <text x="205" y="38" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">chain.doFilter</text>
+    <line x1="302" y1="44" x2="348" y2="44" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFIL)"/>
+    <text x="325" y="38" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">chain.doFilter</text>
+    <!-- Return flow (below) -->
+    <line x1="348" y1="70" x2="302" y2="70" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFIL)"/>
+    <line x1="228" y1="70" x2="184" y2="70" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFIL)"/>
+    <line x1="108" y1="70" x2="74" y2="70" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFIL)"/>
+    <text x="210" y="84" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">postproceso (respuesta)</text>
+
+    <!-- Scenario 2: blocked -->
+    <text x="10" y="120" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text-2)">Petición bloqueada por el filtro:</text>
+    <rect x="10" y="130" width="60" height="28" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="40" y="148" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text)">Cliente</text>
+    <rect x="110" y="130" width="120" height="52" rx="4" fill="oklch(97% 0.03 20 / 0.5)" stroke="oklch(82% 0.08 20)" stroke-width="1.5"/>
+    <text x="170" y="150" text-anchor="middle" font-family="var(--font-display)" font-size="9" font-weight="600" fill="oklch(40% 0.12 20)">Filtro A</text>
+    <text x="170" y="165" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="oklch(40% 0.12 20)">detecta "sin sesión"</text>
+    <text x="170" y="178" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="oklch(40% 0.12 20)">NO chain.doFilter</text>
+    <line x1="72" y1="156" x2="108" y2="156" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrFIL)"/>
+    <!-- redirect back -->
+    <line x1="108" y1="172" x2="72" y2="172" stroke="oklch(40% 0.12 20)" stroke-width="1.5" marker-end="url(#arrFILr)"/>
+    <text x="90" y="190" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="oklch(40% 0.12 20)">redirect login</text>
+    <!-- No servlet -->
+    <rect x="350" y="130" width="120" height="52" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1" opacity="0.4"/>
+    <text x="410" y="158" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">Servlet</text>
+    <text x="410" y="175" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">(nunca recibe la petición)</text>
+  </svg>
+
+  <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <marker id="arrAF" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+      </marker>
+      <marker id="arrAFok" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-tip-text)"/>
+      </marker>
+      <marker id="arrAFno" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-warning-text)"/>
+      </marker>
+    </defs>
+    <text x="350" y="20" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="700" fill="var(--color-text)">Flujo del AuthFilter</text>
+    <!-- Start -->
+    <rect x="200" y="35" width="300" height="36" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="350" y="57" text-anchor="middle" font-family="var(--font-display)" font-size="11" fill="var(--color-text)">Petición llega a /clientes/*</text>
+    <!-- Decision -->
+    <polygon points="350,90 450,115 350,140 250,115" fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+    <text x="350" y="110" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">usuario != null</text>
+    <text x="350" y="126" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text)">en sesión?</text>
+    <!-- Arrow from start to decision -->
+    <line x1="350" y1="71" x2="350" y2="88" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrAF)"/>
+    <!-- YES branch -->
+    <line x1="452" y1="115" x2="560" y2="115" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arrAFok)"/>
+    <text x="506" y="108" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-tip-text)">SÍ</text>
+    <rect x="562" y="97" width="120" height="36" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+    <text x="622" y="115" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-tip-text)">chain.doFilter()</text>
+    <rect x="542" y="148" width="160" height="36" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+    <text x="622" y="170" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-tip-text)">Petición al servlet</text>
+    <line x1="622" y1="133" x2="622" y2="146" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arrAFok)"/>
+    <!-- NO branch -->
+    <line x1="350" y1="142" x2="350" y2="165" stroke="var(--color-warning-text)" stroke-width="1.5" marker-end="url(#arrAFno)"/>
+    <text x="362" y="158" font-family="var(--font-display)" font-size="10" fill="var(--color-warning-text)">NO</text>
+    <rect x="180" y="167" width="340" height="36" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+    <text x="350" y="188" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-warning-text)">session.setAttribute("urlRetorno", url)</text>
+    <line x1="350" y1="203" x2="350" y2="220" stroke="var(--color-warning-text)" stroke-width="1.5" marker-end="url(#arrAFno)"/>
+    <rect x="200" y="222" width="300" height="36" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+    <text x="350" y="243" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-warning-text)">resp.sendRedirect("/login")</text>
+    <line x1="350" y1="258" x2="350" y2="275" stroke="var(--color-warning-text)" stroke-width="1.5" marker-end="url(#arrAFno)"/>
+    <rect x="280" y="277" width="140" height="32" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+    <text x="350" y="297" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-warning-text)">return</text>
+  </svg>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Método</th><th>Cuándo se llama</th><th>Uso habitual</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>init(FilterConfig config)</code></td><td>Al cargar el filtro (una vez)</td><td>Leer parámetros de configuración</td></tr>
+      <tr><td><code>doFilter(ServletRequest, ServletResponse, FilterChain)</code></td><td>Cada petición que coincida</td><td>Lógica del filtro + chain.doFilter()</td></tr>
+      <tr><td><code>destroy()</code></td><td>Al destruir el filtro</td><td>Liberar recursos</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    <p>Los parámetros de <code>doFilter</code> son <code>ServletRequest</code> y <code>ServletResponse</code>, NO sus subtipos HTTP. <strong>Hay que hacer casting</strong> a <code>HttpServletRequest</code> / <code>HttpServletResponse</code> para acceder a <code>getSession()</code>, <code>sendRedirect()</code>, etc.</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>// Filtro de autenticación — patrón de P5
+@WebFilter(urlPatterns = &#123;"/clientes/*"&#125;)
+public class AuthFilter implements Filter &#123;
+
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response,
+      FilterChain chain) throws IOException, ServletException &#123;
+
+    // PASO 1: Casting a Http* (necesario para getSession/sendRedirect)
+    HttpServletRequest  req  = (HttpServletRequest)  request;
+    HttpServletResponse resp = (HttpServletResponse) response;
+
+    // PASO 2: Comprobar si hay usuario autenticado
+    // getSession(false) → no crear sesión nueva si no existe
+    HttpSession session = req.getSession(false);
+    boolean autenticado = (session != null)
+                       && (session.getAttribute("usuario") != null);
+
+    if (!autenticado) &#123;
+      // PASO 3a: Guardar la URL destino para redirigir después del login
+      String returnUrl = req.getRequestURI();
+      if (req.getQueryString() != null) &#123;
+        returnUrl += "?" + req.getQueryString();
+      &#125;
+      req.getSession().setAttribute("urlRetorno", returnUrl);
+
+      // PASO 3b: Redirigir al formulario de login
+      resp.sendRedirect(req.getContextPath() + "/login");
+      return; // IMPORTANTE: no llamar a chain.doFilter
+    &#125;
+
+    // PASO 4: Usuario autenticado → continuar la cadena
+    chain.doFilter(request, response);
+  &#125;
+
+  @Override public void init(FilterConfig cfg) throws ServletException &#123; &#125;
+  @Override public void destroy() &#123; &#125;
+&#125;</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-block-header">xml</div>
+    <pre><code>&lt;filter&gt;
+  &lt;filter-name&gt;AuthFilter&lt;/filter-name&gt;
+  &lt;filter-class&gt;es.unirioja.paw.AuthFilter&lt;/filter-class&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+  &lt;filter-name&gt;AuthFilter&lt;/filter-name&gt;
+  &lt;url-pattern&gt;/clientes/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</code></pre>
+  </div>
+
+  <p>El orden de ejecución de los filtros está determinado por el orden en <code>web.xml</code>. La anotación <code>@WebFilter</code> no tiene propiedad de orden — si el orden importa, usar <code>web.xml</code>.</p>
+
+  <div class="callout callout-key">
+    <p>Estructura del AuthFilter: (1) cast a Http*, (2) <code>getSession(false)</code> para verificar, (3) si no autenticado → guardar URL + redirect + return, (4) si autenticado → <code>chain.doFilter()</code>.</p>
+  </div>
+
+  <div class="callout callout-relation">
+    <p>Este filtro implementa el mismo patrón que usa Spring Security. En Spring, la configuración es declarativa, pero la lógica subyacente es idéntica: interceptar, verificar sesión, redirigir o continuar.</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>// Filtro de timing: mide cuánto tarda cada petición
+@WebFilter("/*")
+public class TiempoRespuestaFilter implements Filter &#123;
+
+  public void doFilter(ServletRequest req, ServletResponse resp,
+      FilterChain chain) throws IOException, ServletException &#123;
+    long inicio = System.currentTimeMillis();
+
+    chain.doFilter(req, resp); // la petición continúa...
+
+    long fin = System.currentTimeMillis();
+    HttpServletRequest httpReq = (HttpServletRequest) req;
+    getServletContext().log(
+      httpReq.getRequestURI() + " tardó " + (fin - inicio) + " ms"
+    );
+    // El código DESPUÉS de chain.doFilter es postprocesado
+  &#125;
+&#125;</code></pre>
+  </div>
+</section>
+<!-- /PENDIENTE:filtros -->
+
+<!-- PENDIENTE:utilidades -->
+<section id="utilidades">
+  <h2>Utilidades</h2>
+
+  <div class="callout callout-examen">
+    <p>Peso medio. La subida de ficheros (multipart) puede entrar en el examen, especialmente la parte HTML del formulario. El profesor lo mencionó en clase. Logging: solo el concepto, no la API concreta.</p>
+  </div>
+
+  <h3>Subida de ficheros (multipart)</h3>
+
+  <p>La subida de ficheros requiere adaptar tanto el formulario HTML como la recepción en el servlet. Se usa el tipo de contenido <code>multipart/form-data</code> en lugar del estándar <code>application/x-www-form-urlencoded</code>.</p>
+
+  <svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <marker id="arrMP" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+      </marker>
+    </defs>
+    <!-- LEFT: HTML form -->
+    <rect x="10" y="20" width="300" height="170" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="160" y="42" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text)">Formulario HTML</text>
+    <rect x="24" y="52" width="272" height="28" rx="3" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+    <text x="160" y="70" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-tip-text)">method="POST"</text>
+    <rect x="24" y="86" width="272" height="28" rx="3" fill="oklch(94% 0.04 155 / 0.8)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+    <text x="160" y="104" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-weight="700" fill="var(--color-tip-text)">enctype="multipart/form-data"</text>
+    <rect x="24" y="120" width="272" height="28" rx="3" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+    <text x="160" y="138" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-accent)">&lt;input type="file" name="foto"&gt;</text>
+
+    <!-- Arrow -->
+    <line x1="312" y1="110" x2="430" y2="110" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrMP)"/>
+    <text x="371" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">navegador construye</text>
+
+    <!-- RIGHT: HTTP request -->
+    <rect x="432" y="20" width="310" height="170" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+    <text x="587" y="42" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text)">Petición HTTP generada</text>
+    <text x="445" y="60" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-2)">Content-Type: multipart/form-data; boundary=----W...</text>
+    <text x="445" y="76" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-3)">------W...</text>
+    <text x="445" y="90" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-3)">Content-Disposition: form-data; name="nombre"</text>
+    <text x="445" y="104" font-family="var(--font-mono)" font-size="8" fill="var(--color-text)">Juan</text>
+    <text x="445" y="118" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-3)">------W...</text>
+    <text x="445" y="132" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-3)">Content-Disposition: form-data; name="foto"; filename="perfil.jpg"</text>
+    <text x="445" y="146" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-3)">Content-Type: image/jpeg</text>
+    <text x="445" y="160" font-family="var(--font-mono)" font-size="8" fill="var(--color-accent)">[datos binarios del fichero]</text>
+  </svg>
+
+  <div class="callout callout-key">
+    <p>Tres requisitos para un formulario de subida: <code>method="POST"</code> + <code>enctype="multipart/form-data"</code> + <code>&lt;input type="file"&gt;</code>. Si falta <code>enctype</code>, el fichero no llega al servidor.</p>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr><th>Elemento HTML</th><th>Obligatorio</th><th>Por qué</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>method="POST"</code></td><td>Sí</td><td>GET no puede transportar cuerpos con ficheros</td></tr>
+      <tr><td><code>enctype="multipart/form-data"</code></td><td>Sí</td><td>Cambia el Content-Type y el formato del cuerpo HTTP</td></tr>
+      <tr><td><code>&lt;input type="file" name="archivo"&gt;</code></td><td>Sí</td><td>Control de selección de fichero en el formulario</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <div class="code-block-header">html</div>
+    <pre><code>&lt;form action="$&#123;pageContext.request.contextPath&#125;/subir" method="POST"
+      enctype="multipart/form-data"&gt;
+
+  &lt;label for="nombre"&gt;Nombre:&lt;/label&gt;
+  &lt;input type="text" id="nombre" name="nombre" required&gt;
+
+  &lt;label for="foto"&gt;Foto de perfil:&lt;/label&gt;
+  &lt;input type="file" id="foto" name="foto" accept="image/*"&gt;
+
+  &lt;button type="submit"&gt;Subir&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>@WebServlet("/subir")
+@MultipartConfig(
+  maxFileSize    = 1024 * 1024 * 5,  // 5 MB por fichero
+  maxRequestSize = 1024 * 1024 * 10  // 10 MB por petición
+)
+public class SubirFotoController extends HttpServlet &#123;
+
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException &#123;
+    req.setCharacterEncoding("UTF-8");
+
+    // Parámetros de texto: igual que siempre
+    String nombre = req.getParameter("nombre");
+
+    // Fichero: via Part API (Servlet 3.0+)
+    Part fotoPart = req.getPart("foto");
+    String nombreFichero = fotoPart.getSubmittedFileName();
+    InputStream contenido = fotoPart.getInputStream();
+
+    String rutaDestino = getServletContext().getRealPath("/uploads/") + nombreFichero;
+    fotoPart.write(rutaDestino);
+
+    resp.sendRedirect(req.getContextPath() + "/perfil");
+  &#125;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-warning">
+    <p><code>@MultipartConfig</code> es <strong>obligatorio</strong> en el servlet receptor. Sin él, <code>req.getPart()</code> devuelve null aunque el formulario sea correcto.</p>
+  </div>
+
+  <h3>Logging</h3>
+
+  <p>En lugar de <code>System.out.println()</code>, usar una biblioteca de logging. SLF4j es una fachada (abstracción) que permite cambiar la implementación de logging (LogBack, Log4j, JUL) sin tocar el código. Ventajas: niveles de log (TRACE, DEBUG, INFO, WARN, ERROR), destinos configurables (consola, fichero, BD).</p>
+
+  <div class="code-block">
+    <div class="code-block-header">java</div>
+    <pre><code>import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class ListadoController extends HttpServlet &#123;
+  private static final Logger logger =
+    LoggerFactory.getLogger(ListadoController.class);
+
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) &#123;
+    logger.info("Listado solicitado por usuario: &#123;&#125;",
+      req.getSession(false) != null
+        ? req.getSession(false).getAttribute("usuario")
+        : "anónimo");
+
+    logger.debug("Parámetros: página=&#123;&#125;", req.getParameter("pagina"));
+    // logger.error("Error al obtener listado", excepcion);
+  &#125;
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <p>Usar <code>&#123;&#125;</code> como placeholder en SLF4j evita la concatenación de strings cuando el nivel de log está desactivado. <code>logger.debug("valor=" + obj)</code> siempre evalúa la concatenación; <code>logger.debug("valor=&#123;&#125;", obj)</code> no lo hace si DEBUG está desactivado.</p>
+  </div>
+</section>
+<!-- /PENDIENTE:utilidades -->
+
 </BlockLayout>
+
+<style>
+  section {
+    margin-bottom: var(--space-8);
+  }
+  .code-block {
+    border: 1px solid var(--color-code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: var(--space-4) 0;
+  }
+  .code-block-header {
+    background: var(--color-surface-2);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    color: var(--color-text-2);
+  }
+  .code-block pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    overflow-x: auto;
+    background: var(--color-code-bg);
+  }
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+  }
+  table {
+    margin: var(--space-4) 0;
+  }
+  p {
+    margin: var(--space-4) 0;
+    max-width: var(--measure);
+    line-height: var(--leading-normal);
+  }
+  .lead {
+    font-size: var(--text-md);
+    color: var(--color-text-2);
+    margin-bottom: var(--space-7);
+  }
+  h1 {
+    font-size: var(--text-2xl);
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-3);
+  }
+  h2 {
+    font-size: var(--text-xl);
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-5);
+    margin-top: 0;
+  }
+  h3 {
+    font-size: var(--text-lg);
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-4);
+    margin-top: var(--space-6);
+  }
+  a {
+    color: var(--color-accent);
+  }
+</style>
