@@ -55,6 +55,12 @@ const { title, blockNumber, blockName, sections } = Astro.props;
   }
 
   .block-sidebar {
+    align-self: start;
+    position: sticky;
+    top: calc(var(--navbar-height) + var(--space-5));
+    z-index: var(--z-sidebar);
+    max-height: calc(100dvh - var(--navbar-height) - var(--space-8));
+    overflow-y: auto;
     padding-top: var(--space-7);
     padding-left: var(--space-5);
   }
