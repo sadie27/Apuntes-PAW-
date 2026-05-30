@@ -1,7 +1,1842 @@
 ---
 import BlockLayout from '../layouts/BlockLayout.astro';
-const sections: { id: string; label: string }[] = [];
+
+const sections = [
+  { id: "por-que-arquitectura",    label: "Por qué necesitamos arquitectura" },
+  { id: "arquitectura-capas",      label: "Arquitectura en capas" },
+  { id: "evolucion-modelos",       label: "Model 0 → 1 → 2" },
+  { id: "patron-mvc",              label: "Patrón MVC (Model 2)" },
+  { id: "estilos-arquitectonicos", label: "Estilos arquitectónicos" },
+  { id: "patrones-renderizado",    label: "Patrones de renderizado" },
+  { id: "tecnologias-java",        label: "Stack Java: Jakarta EE" },
+];
 ---
+
 <BlockLayout title="Arquitectura" blockNumber={3} blockName="Arquitectura" sections={sections}>
-  <p>Contenido pendiente.</p>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECCIÓN 1 — Por qué necesitamos arquitectura
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="por-que-arquitectura" class="content-section">
+    <h2>Por qué necesitamos arquitectura</h2>
+
+    <div class="callout callout-examen">
+      Peso alto. El profesor preguntará el flujo de petición y el problema de mezclar capas como
+      introducción al MVC. Referencia: todas las prácticas.
+    </div>
+
+    <!-- Diagrama 1 — El problema de la mezcla -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg" aria-label="Código sin arquitectura vs los tres problemas que genera">
+        <!-- Divisor vertical -->
+        <line x1="390" y1="20" x2="390" y2="260" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="6,4"/>
+
+        <!-- ── Mitad izquierda ── -->
+        <text x="30" y="44" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-text)">Servlet / CGI / JSP sin arquitectura</text>
+
+        <!-- bloque código mezclado -->
+        <rect x="30" y="56" width="320" height="140" rx="6" fill="var(--color-code-bg)" stroke="var(--color-code-border)" stroke-width="1"/>
+        <!-- líneas alternando: lógica / HTML -->
+        <rect x="46" y="74"  width="200" height="8" rx="2" fill="var(--color-accent)" opacity="0.7"/>
+        <rect x="46" y="90"  width="160" height="8" rx="2" fill="var(--color-text-2)" opacity="0.4"/>
+        <rect x="46" y="106" width="220" height="8" rx="2" fill="var(--color-accent)" opacity="0.7"/>
+        <rect x="46" y="122" width="130" height="8" rx="2" fill="var(--color-text-2)" opacity="0.4"/>
+        <rect x="46" y="138" width="250" height="8" rx="2" fill="var(--color-accent)" opacity="0.7"/>
+        <rect x="46" y="154" width="180" height="8" rx="2" fill="var(--color-text-2)" opacity="0.4"/>
+        <rect x="46" y="170" width="210" height="8" rx="2" fill="var(--color-accent)" opacity="0.7"/>
+
+        <!-- leyenda colores -->
+        <rect x="30" y="212" width="10" height="10" rx="2" fill="var(--color-accent)" opacity="0.7"/>
+        <text x="46" y="222" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)">lógica Java</text>
+        <rect x="130" y="212" width="10" height="10" rx="2" fill="var(--color-text-2)" opacity="0.4"/>
+        <text x="146" y="222" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)">HTML generado</text>
+        <!-- flecha entremezclados -->
+        <text x="50" y="250" font-family="var(--font-display)" font-size="11" fill="var(--color-text-3)">entremezclados en el mismo fichero</text>
+
+        <!-- ── Mitad derecha — tres problemas ── -->
+        <text x="410" y="44" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-text)">Los tres problemas</text>
+
+        <!-- problema 1 -->
+        <rect x="410" y="56" width="340" height="52" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="424" y="76" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-warning-text)">Reutilización imposible</text>
+        <text x="424" y="92" font-family="var(--font-body)" font-size="11" fill="var(--color-warning-text)">El HTML impide extraer la lógica de negocio</text>
+
+        <!-- problema 2 -->
+        <rect x="410" y="118" width="340" height="52" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="424" y="138" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-warning-text)">Legibilidad nula</text>
+        <text x="424" y="154" font-family="var(--font-body)" font-size="11" fill="var(--color-warning-text)">Ni es Java limpio ni es HTML limpio</text>
+
+        <!-- problema 3 -->
+        <rect x="410" y="180" width="340" height="52" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="424" y="200" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-warning-text)">Mantenimiento: pesadilla</text>
+        <text x="424" y="216" font-family="var(--font-body)" font-size="11" fill="var(--color-warning-text)">Cambiar la vista implica tocar la lógica</text>
+
+        <!-- flechas conectando bloque izquierdo con problemas -->
+        <path d="M350 82 Q380 82 410 82" stroke="var(--color-warning-border)" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+        <path d="M350 126 Q380 126 410 144" stroke="var(--color-warning-border)" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+        <path d="M350 170 Q380 196 410 206" stroke="var(--color-warning-border)" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-warning-border)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>El código sin arquitectura mezcla lógica y HTML, generando tres problemas insolubles</figcaption>
+    </figure>
+
+    <p style="max-width: var(--measure)">
+      El problema raíz es la <strong>coexistencia de dos responsabilidades distintas en un mismo fichero</strong>:
+      el proceso (lógica) y la generación de HTML (presentación). Esta mezcla ocurre en CGI en C,
+      en Servlets Java, en PHP y en JSP sin disciplina: el programador escribe
+      <code>out.println("&lt;li&gt;" + item.getNombre() + "&lt;/li&gt;")</code>
+      y ahí conviven HTML, Java y acceso a datos en la misma línea.
+    </p>
+    <p style="max-width: var(--measure)">
+      Las consecuencias son siempre las mismas: si hay que cambiar la vista, hay que reescribir el programa.
+      Si hay que reutilizar la lógica de negocio, no se puede extraer limpiamente. Los principios SOLID, DRY,
+      KISS y YAGNI no se pueden aplicar.
+    </p>
+
+    <div class="callout callout-key">
+      Los dos mantras del código web limpio: <em>Ni mucho HTML en el código. Ni mucho código en el HTML.</em>
+      La solución es separar las responsabilidades en capas y patrones distintos.
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Tecnología</th>
+          <th>Cómo genera HTML</th>
+          <th>Problema principal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>CGI (C/C++)</strong></td>
+          <td><code>cout &lt;&lt; "&lt;html&gt;..."</code> — HTML concatenado en strings</td>
+          <td>100% lógica y presentación mezcladas</td>
+        </tr>
+        <tr>
+          <td><strong>Servlet Java</strong></td>
+          <td><code>out.println("&lt;li&gt;" + item + "&lt;/li&gt;")</code></td>
+          <td>Mismo problema, en Java</td>
+        </tr>
+        <tr>
+          <td><strong>PHP sin arquitectura</strong></td>
+          <td><code>echo "&lt;p&gt;$nombre&lt;/p&gt;"</code> en ficheros PHP</td>
+          <td>Muy tentador; escala mal</td>
+        </tr>
+        <tr>
+          <td><strong>JSP (Model 0)</strong></td>
+          <td>HTML como plantilla con <code>&lt;% código Java %&gt;</code> intercalado</td>
+          <td>Mejor para el HTML, pero sigue mezclando capas</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECCIÓN 2 — Arquitectura en capas
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="arquitectura-capas" class="content-section">
+    <h2>Arquitectura en capas</h2>
+
+    <div class="callout callout-examen">
+      Peso alto. El profesor pedirá describir las responsabilidades de cada capa. Saber qué hace
+      y qué NO hace cada una es clave. Referencia: P5, P6.
+    </div>
+
+    <!-- Diagrama 2 — Las tres capas -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" aria-label="Las tres capas de la arquitectura y sus responsabilidades">
+
+        <!-- Navegador -->
+        <rect x="20" y="120" width="90" height="60" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <rect x="30" y="128" width="70" height="36" rx="3" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <line x1="30" y1="138" x2="100" y2="138" stroke="var(--color-border)" stroke-width="1"/>
+        <rect x="34" y="142" width="58" height="16" rx="2" fill="var(--color-code-bg)"/>
+        <text x="65" y="195" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Navegador</text>
+
+        <!-- Recursos externos -->
+        <rect x="610" y="90" width="90" height="50" rx="0" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <ellipse cx="655" cy="90" rx="45" ry="10" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <ellipse cx="655" cy="140" rx="45" ry="10" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="655" y="120" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">SGBD</text>
+        <text x="655" y="168" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Recursos externos</text>
+        <!-- email / api icons -->
+        <rect x="614" y="190" width="30" height="22" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <path d="M614 192 L629 204 L644 192" stroke="var(--color-text-3)" stroke-width="1.2" fill="none"/>
+        <text x="629" y="226" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">email</text>
+        <rect x="656" y="190" width="30" height="22" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="671" y="206" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)" text-anchor="middle">API</text>
+        <text x="671" y="226" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">REST</text>
+
+        <!-- Capa Presentación -->
+        <rect x="150" y="40" width="380" height="80" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="340" y="72" font-family="var(--font-display)" font-size="14" font-weight="600" fill="var(--color-accent)" text-anchor="middle">Presentación</text>
+        <text x="340" y="90" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Controladores / Vistas / Templates</text>
+
+        <!-- Capa Lógica de negocio -->
+        <rect x="150" y="148" width="380" height="80" rx="6" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="340" y="180" font-family="var(--font-display)" font-size="14" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Lógica de negocio</text>
+        <text x="340" y="198" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Servicios / Entidades / Reglas de dominio</text>
+
+        <!-- Capa Persistencia -->
+        <rect x="150" y="256" width="380" height="80" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="340" y="288" font-family="var(--font-display)" font-size="14" font-weight="600" fill="var(--color-text)" text-anchor="middle">Persistencia</text>
+        <text x="340" y="306" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">DAO / Repositorios / Transacciones</text>
+
+        <!-- flechas entre capas (dependencia ↓) -->
+        <path d="M340 120 L340 148" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrGray)"/>
+        <path d="M340 228 L340 256" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrGray)"/>
+
+        <!-- flechas navegador ↔ presentación -->
+        <path d="M110 150 L150 100" stroke="var(--color-accent)" stroke-width="1.5" fill="none" marker-end="url(#arrBlue)"/>
+        <path d="M150 82 L110 145" stroke="var(--color-accent)" stroke-width="1.5" fill="none" marker-end="url(#arrBlue)"/>
+        <text x="100" y="110" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">petición</text>
+        <text x="96" y="142" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">respuesta</text>
+
+        <!-- flechas persistencia ↔ recursos -->
+        <path d="M530 296 L610 120" stroke="var(--color-text-3)" stroke-width="1.5" fill="none" marker-end="url(#arrGray)"/>
+        <path d="M610 130 L530 305" stroke="var(--color-text-3)" stroke-width="1.5" fill="none" marker-end="url(#arrGray)"/>
+
+        <defs>
+          <marker id="arrGray" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-text-3)"/>
+          </marker>
+          <marker id="arrBlue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-accent)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>Las tres capas de la arquitectura en capas y su relación con el cliente y los recursos externos</figcaption>
+    </figure>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Capa</th>
+          <th>Responsabilidades</th>
+          <th>Lo que NO le compete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Presentación</strong></td>
+          <td>Recibir petición, recoger parámetros, invocar lógica, construir respuesta HTML/JSON, validación de formato UI, internacionalización</td>
+          <td>Reglas de negocio, acceso directo a BD, decisiones de dominio</td>
+        </tr>
+        <tr>
+          <td><strong>Lógica de negocio</strong></td>
+          <td>Todo lo que la empresa haría sin sistema informático: reglas de dominio, autenticación, control de acceso, casos de uso, orquestación</td>
+          <td>Generar HTML, conocer el protocolo HTTP, detalles de BD</td>
+        </tr>
+        <tr>
+          <td><strong>Persistencia</strong></td>
+          <td>CRUD de entidades (DAO), búsquedas, transacciones, acceso a BD relacional/NoSQL, servicios externos (email, directorio, APIs REST)</td>
+          <td>Reglas de negocio, construcción de HTML</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Diagrama 3 — 2-tier vs 3-tier -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" aria-label="2-tier vs 3-tier: separación lógica vs física">
+
+        <!-- ── 2-tier ── -->
+        <text x="160" y="26" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-text)" text-anchor="middle">2 niveles (tiers)</text>
+
+        <rect x="20" y="40" width="80" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="60" y="70" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Cliente</text>
+
+        <path d="M100 65 L140 65" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrG2)"/>
+
+        <rect x="140" y="40" width="120" height="50" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+        <text x="200" y="63" font-family="var(--font-display)" font-size="11" fill="var(--color-accent)" text-anchor="middle">Servidor</text>
+        <text x="200" y="78" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">pres + lógica + persistencia</text>
+
+        <path d="M260 65 L300 65" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrG2)"/>
+
+        <rect x="300" y="40" width="60" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <ellipse cx="330" cy="40" rx="30" ry="8" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <text x="330" y="70" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">BD</text>
+
+        <text x="200" y="115" font-family="var(--font-body)" font-size="11" fill="var(--color-text-3)" text-anchor="middle">Todo en un proceso</text>
+
+        <!-- ── divisor ── -->
+        <line x1="390" y1="20" x2="390" y2="200" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
+
+        <!-- ── 3-tier ── -->
+        <text x="555" y="26" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-text)" text-anchor="middle">3 niveles (tiers)</text>
+
+        <rect x="400" y="40" width="70" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="435" y="70" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Cliente</text>
+
+        <path d="M470 65 L504 65" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrG2)"/>
+
+        <rect x="504" y="40" width="100" height="50" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+        <text x="554" y="63" font-family="var(--font-display)" font-size="11" fill="var(--color-accent)" text-anchor="middle">App Server</text>
+        <text x="554" y="78" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">pres + lógica</text>
+
+        <path d="M604 65 L638 65" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrG2)"/>
+
+        <rect x="638" y="40" width="62" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <ellipse cx="669" cy="40" rx="31" ry="8" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <text x="669" y="68" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Servidor</text>
+        <text x="669" y="82" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">BD</text>
+
+        <text x="555" y="115" font-family="var(--font-body)" font-size="11" fill="var(--color-text-3)" text-anchor="middle">Capas físicamente separadas</text>
+
+        <!-- nota aclaratoria -->
+        <rect x="20" y="140" width="680" height="56" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="360" y="162" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text)" text-anchor="middle">Capa (layer) ≠ Nivel (tier)</text>
+        <text x="360" y="180" font-family="var(--font-body)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Las capas son separación lógica de responsabilidades. Los tiers son separación física de despliegue.</text>
+
+        <defs>
+          <marker id="arrG2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-text-3)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>2-tier vs 3-tier: la diferencia entre separación lógica (layers) y separación física (tiers)</figcaption>
+    </figure>
+
+    <div class="callout callout-key">
+      <strong>Capa (layer) ≠ Nivel (tier).</strong> Las capas son separación lógica de código. Los tiers son
+      separación física de despliegue en máquinas distintas. Una aplicación puede tener 3 capas y
+      desplegarse en 1 solo servidor (1 tier).
+    </div>
+
+    <div class="callout callout-tip">
+      La capa de lógica de negocio debe ser <strong>independiente del protocolo HTTP</strong>. Si los métodos
+      de servicio reciben <code>HttpServletRequest</code> como parámetro, es una señal de que la capa de
+      presentación está filtrándose hacia abajo. Los servicios deberían recibir tipos de dominio, no tipos HTTP.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECCIÓN 3 — Evolución Model 0 → 1 → 2
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="evolucion-modelos" class="content-section">
+    <h2>Evolución Model 0 → 1 → 2</h2>
+
+    <div class="callout callout-examen">
+      Peso alto. El profesor puede pedir explicar qué problema resuelve cada modelo y cuál es el
+      problema que queda sin resolver. Saber los tres de memoria con un ejemplo mínimo.
+    </div>
+
+    <!-- Diagrama 4 — Progresión de los tres modelos -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 840 380" xmlns="http://www.w3.org/2000/svg" aria-label="Progresión de Model 0 a Model 1 a Model 2 MVC">
+
+        <!-- divisores -->
+        <line x1="280" y1="10" x2="280" y2="370" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
+        <line x1="560" y1="10" x2="560" y2="370" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
+
+        <!-- ══ Model 0 ══ -->
+        <text x="140" y="30" font-family="var(--font-display)" font-size="15" font-weight="700" fill="var(--color-warning-text)" text-anchor="middle">Model 0</text>
+        <text x="140" y="48" font-family="var(--font-display)" font-size="11" fill="var(--color-text-3)" text-anchor="middle">(Page-centric)</text>
+
+        <!-- petición entrante -->
+        <text x="20" y="110" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)">Petición HTTP</text>
+        <path d="M20 116 L55 150" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrW)"/>
+
+        <!-- bloque JSP mezclado -->
+        <rect x="55" y="150" width="180" height="130" rx="5" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="145" y="172" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-warning-text)" text-anchor="middle">JSP / PHP</text>
+        <text x="145" y="192" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">entrada (request)</text>
+        <text x="145" y="208" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">consulta BD</text>
+        <text x="145" y="224" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">regla de negocio</text>
+        <text x="145" y="240" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">bucle + HTML</text>
+        <text x="145" y="256" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">Respuesta HTML</text>
+
+        <path d="M235 215 L262 215" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrW)"/>
+        <text x="240" y="210" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">HTML</text>
+
+        <text x="140" y="310" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Todo en una JSP / PHP</text>
+
+        <!-- ══ Model 1 ══ -->
+        <text x="420" y="30" font-family="var(--font-display)" font-size="15" font-weight="700" fill="var(--color-text-2)" text-anchor="middle">Model 1</text>
+        <text x="420" y="48" font-family="var(--font-display)" font-size="11" fill="var(--color-text-3)" text-anchor="middle">(JSP coordina y presenta)</text>
+
+        <text x="295" y="110" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)">Petición HTTP</text>
+        <path d="M295 116 L320 150" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrW)"/>
+
+        <!-- JSP vista+control -->
+        <rect x="320" y="150" width="150" height="80" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="395" y="172" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text)" text-anchor="middle">JSP (vista + coord.)</text>
+        <text x="395" y="190" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">entrada + llamada Modelo</text>
+        <text x="395" y="206" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">genera HTML</text>
+
+        <!-- Modelo separado -->
+        <rect x="340" y="266" width="110" height="60" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="395" y="289" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Clases Java</text>
+        <text x="395" y="306" font-family="var(--font-body)" font-size="10" fill="var(--color-key-text)" text-anchor="middle">lógica + persistencia</text>
+
+        <!-- flechas JSP ↔ Modelo -->
+        <path d="M395 230 L395 266" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrK)"/>
+        <path d="M385 266 L385 230" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrK)"/>
+
+        <path d="M470 190 L545 190" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrW)"/>
+
+        <text x="420" y="345" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">JSP coordina Y presenta</text>
+
+        <!-- ══ Model 2 (MVC) ══ -->
+        <text x="700" y="30" font-family="var(--font-display)" font-size="15" font-weight="700" fill="var(--color-tip-text)" text-anchor="middle">Model 2 / MVC</text>
+        <text x="700" y="48" font-family="var(--font-display)" font-size="11" fill="var(--color-text-3)" text-anchor="middle">(Responsabilidades separadas)</text>
+
+        <text x="572" y="110" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)">Petición HTTP</text>
+        <path d="M572 116 L610 150" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrW)"/>
+
+        <!-- Controlador -->
+        <rect x="610" y="150" width="120" height="52" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="670" y="172" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)" text-anchor="middle">Controlador</text>
+        <text x="670" y="188" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">(Servlet)</text>
+
+        <!-- Modelo -->
+        <rect x="578" y="256" width="100" height="52" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="628" y="278" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Modelo</text>
+        <text x="628" y="294" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">(Clases Java)</text>
+
+        <!-- Vista -->
+        <rect x="722" y="256" width="100" height="52" rx="5" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="772" y="278" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-tip-text)" text-anchor="middle">Vista</text>
+        <text x="772" y="294" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">(JSP)</text>
+
+        <!-- flechas numeradas -->
+        <path d="M628 202 L628 256" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrK)"/>
+        <text x="598" y="234" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)">② invoca</text>
+
+        <path d="M638 256 L660 202" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrK)"/>
+        <text x="648" y="235" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)">③ result.</text>
+
+        <path d="M700 202 L772 256" stroke="var(--color-tip-border)" stroke-width="1.5" marker-end="url(#arrT)"/>
+        <text x="728" y="232" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)">④ data push</text>
+
+        <path d="M822 256 L832 215" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrW)"/>
+        <text x="820" y="245" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">⑤ HTML</text>
+
+        <text x="700" y="345" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">Cada pieza tiene una sola responsabilidad</text>
+
+        <defs>
+          <marker id="arrW" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-text-3)"/>
+          </marker>
+          <marker id="arrK" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-key-border)"/>
+          </marker>
+          <marker id="arrT" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-tip-border)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>Progresión Model 0 → 1 → 2: cada paso separa una responsabilidad adicional</figcaption>
+    </figure>
+
+    <!-- Código: JSP Model 0 (el problema) -->
+    <div class="code-block">
+      <div class="code-header">JSP / Java — Model 0: el problema</div>
+      <pre><code>// Model 0 — TODO mezclado en la JSP:
+// persistencia + lógica + HTML en el mismo fichero
+
+&lt;% String descr = request.getParameter("descr");
+   // &#9888; Acceso directo a BD desde la JSP
+   Connection con = DriverManager.getConnection("url", "usr", "pwd");
+   Statement stm = con.createStatement();
+   ResultSet rs = stm.executeQuery("SELECT ... WHERE descr LIKE '%" + descr + "%'");
+%&gt;
+&lt;ul&gt;
+&lt;% while (rs.next()) &#123;
+     if (rs.getDouble("precio") &lt; 150) &#123; // &#8592; regla de negocio aquí
+%&gt;
+  &lt;li&gt;&lt;%= rs.getString("nombre") %&gt;, &lt;%= rs.getDouble("precio") %&gt;&#8364;&lt;/li&gt;
+&lt;% &#125;&#125; %&gt;
+&lt;/ul&gt;
+// Resultado: ni buen Java ni buen HTML
+// Imposible probar con JUnit. Imposible reutilizar. Pesadilla de mantenimiento.</code></pre>
+    </div>
+
+    <div class="callout callout-warning">
+      El parámetro <code>descr</code> viene directamente del usuario y se concatena en la query SQL
+      sin ninguna sanitización. Esto es una vulnerabilidad de <strong>SQL Injection</strong>: el atacante
+      puede manipular el valor de <code>descr</code> para acceder a datos que no debería o destruir la
+      base de datos (ejemplo: <code>'; DROP TABLE Items; --</code>). La solución es usar
+      <code>PreparedStatement</code> con marcadores <code>?</code>, que separa el código SQL de los datos
+      de usuario.
+    </div>
+
+    <div class="callout callout-relation">
+      Relación con JDBC: <code>PreparedStatement</code> y sus marcadores <code>?</code> son exactamente
+      la solución a SQL Injection. Ver bloque JDBC, sección <code>#prepared-statement</code>.
+    </div>
+
+    <!-- Código: Controller MVC (Model 2) -->
+    <div class="code-block">
+      <div class="code-header">Java — Model 2: el Controlador separa responsabilidades</div>
+      <pre><code>// Model 2 — El controlador separa las responsabilidades
+public class ListadoController extends HttpServlet &#123;
+
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) &#123;
+
+    // 1. Recoger entrada (única responsabilidad de la capa de presentación)
+    String descr = request.getParameter("descr");
+
+    // 2. Invocar lógica de negocio (sin HTML, sin HTTP)
+    List&lt;Item&gt; items = itemService.buscarPorDescripcion(descr);
+
+    // 3. Data push: depositar el resultado en la request para la vista
+    request.setAttribute("items", items);
+
+    // 4. Seleccionar y activar la vista (la vista NO sabe nada de lo anterior)
+    RequestDispatcher disp = request.getRequestDispatcher("listado.jsp");
+    disp.forward(request, response);
+  &#125;
+&#125;
+
+// La vista (listado.jsp) SOLO renderiza — no tiene lógica:
+// &lt;% for (Item it : (List&lt;Item&gt;) request.getAttribute("items")) &#123; %&gt;
+//   &lt;li&gt;&lt;%= it.getNombre() %&gt;&lt;/li&gt;
+// &lt;% &#125; %&gt;</code></pre>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Model 0</th>
+          <th>Model 1</th>
+          <th>Model 2 (MVC)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Quién recibe la petición</strong></td>
+          <td>La JSP/PHP directamente</td>
+          <td>La JSP directamente</td>
+          <td>El Controlador (Servlet)</td>
+        </tr>
+        <tr>
+          <td><strong>Dónde está la lógica</strong></td>
+          <td>En la JSP/PHP</td>
+          <td>En clases separadas, pero invocadas desde la JSP</td>
+          <td>En el Controlador + Servicios</td>
+        </tr>
+        <tr>
+          <td><strong>Quién selecciona la vista</strong></td>
+          <td>La propia JSP</td>
+          <td>La propia JSP</td>
+          <td>El Controlador</td>
+        </tr>
+        <tr>
+          <td><strong>Vista contiene lógica</strong></td>
+          <td>Sí, toda</td>
+          <td>Sí, coordina y renderiza</td>
+          <td>No: solo renderiza</td>
+        </tr>
+        <tr>
+          <td><strong>Reutilización de lógica</strong></td>
+          <td>Ninguna</td>
+          <td>Parcial (copiar en cada JSP)</td>
+          <td>Completa (el controller se llama una sola vez)</td>
+        </tr>
+        <tr>
+          <td><strong>Testabilidad</strong></td>
+          <td>Imposible (JUnit no puede probar JSP fácilmente)</td>
+          <td>Difícil</td>
+          <td>Alta (el controller es Java puro)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      En Model 1, si hay que cambiar la vista de lista a tabla, hay que replicar toda la lógica de consulta
+      en la nueva JSP. Esta repetición viola DRY y es la razón concreta por la que Model 1 no escala.
+      El controller de Model 2 elige la vista: ambas vistas reciben los mismos datos sin repetir nada.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECCIÓN 4 — Patrón MVC (Model 2)
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="patron-mvc" class="content-section">
+    <h2>Patrón MVC (Model 2)</h2>
+
+    <div class="callout callout-examen">
+      Peso MUY ALTO. El flujo MVC es el concepto más preguntado del bloque según el profesor. Saber
+      explicar de memoria los 5 pasos de una petición y la diferencia data push / data pull.
+      Referencia: P4, P5, P6.
+    </div>
+
+    <!-- Diagrama 5 — Flujo completo MVC -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" aria-label="Flujo completo de una petición MVC con los 5 pasos numerados">
+
+        <!-- Navegador -->
+        <rect x="20" y="160" width="90" height="60" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <rect x="30" y="168" width="70" height="36" rx="3" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <line x1="30" y1="178" x2="100" y2="178" stroke="var(--color-border)" stroke-width="1"/>
+        <rect x="34" y="182" width="58" height="16" rx="2" fill="var(--color-code-bg)"/>
+        <text x="65" y="238" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Navegador</text>
+
+        <!-- Respuesta -->
+        <rect x="670" y="160" width="90" height="60" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="715" y="188" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">Respuesta</text>
+        <text x="715" y="204" font-family="var(--font-display)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">HTML / JSON</text>
+
+        <!-- Controlador (centro-arriba) -->
+        <rect x="290" y="60" width="200" height="80" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="2"/>
+        <text x="390" y="88" font-family="var(--font-display)" font-size="13" font-weight="700" fill="var(--color-accent)" text-anchor="middle">Controlador</text>
+        <text x="390" y="106" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Recibe petición · Invoca servicios</text>
+        <text x="390" y="120" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Selecciona vista · Gestiona permisos</text>
+
+        <!-- Modelo (abajo-izquierda) -->
+        <rect x="120" y="280" width="200" height="80" rx="6" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="2"/>
+        <text x="220" y="308" font-family="var(--font-display)" font-size="13" font-weight="700" fill="var(--color-key-text)" text-anchor="middle">Modelo</text>
+        <text x="220" y="326" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Lógica de negocio · Entidades</text>
+        <text x="220" y="342" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Capa de persistencia</text>
+
+        <!-- Vista (abajo-derecha) -->
+        <rect x="460" y="280" width="200" height="80" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="2"/>
+        <text x="560" y="308" font-family="var(--font-display)" font-size="13" font-weight="700" fill="var(--color-tip-text)" text-anchor="middle">Vista</text>
+        <text x="560" y="326" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Solo renderiza · Usa datos del request</text>
+        <text x="560" y="342" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Genera HTML</text>
+
+        <!-- ① Petición → Controlador -->
+        <path d="M110 190 L290 100" stroke="var(--color-accent)" stroke-width="2" fill="none" marker-end="url(#arrMvcA)"/>
+        <rect x="130" y="128" width="120" height="20" rx="3" fill="var(--color-accent-light)"/>
+        <text x="190" y="142" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-accent)" text-anchor="middle">① Petición HTTP</text>
+
+        <!-- ② Controlador → Modelo -->
+        <path d="M330 140 L250 280" stroke="var(--color-key-border)" stroke-width="1.5" fill="none" marker-end="url(#arrMvcK)"/>
+        <text x="256" y="216" font-family="var(--font-display)" font-size="10" fill="var(--color-key-text)">② invoca lógica</text>
+
+        <!-- ③ Modelo → Controlador -->
+        <path d="M280 280 L360 140" stroke="var(--color-key-border)" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arrMvcK)"/>
+        <text x="340" y="230" font-family="var(--font-display)" font-size="10" fill="var(--color-key-text)">③ devuelve resultado</text>
+
+        <!-- ④ Controlador → Vista (data push) -->
+        <path d="M450 140 L530 280" stroke="var(--color-tip-border)" stroke-width="2" fill="none" marker-end="url(#arrMvcT)"/>
+        <rect x="464" y="192" width="130" height="20" rx="3" fill="var(--color-key-bg)"/>
+        <text x="529" y="206" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">④ setAttribute() — data push</text>
+
+        <!-- ⑤ Vista → Respuesta -->
+        <path d="M660 320 L670 215" stroke="var(--color-tip-border)" stroke-width="1.5" fill="none" marker-end="url(#arrMvcT)"/>
+        <text x="636" y="278" font-family="var(--font-display)" font-size="10" fill="var(--color-tip-text)">⑤ forward()</text>
+        <text x="628" y="292" font-family="var(--font-display)" font-size="10" fill="var(--color-tip-text)">genera HTML</text>
+
+        <!-- nota data push vs data pull -->
+        <rect x="20" y="370" width="740" height="22" rx="4" fill="var(--color-surface-2)"/>
+        <text x="390" y="385" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Data push: el controlador deposita los datos en la vista. La vista NO busca los datos (eso sería data pull / Model 1).</text>
+
+        <defs>
+          <marker id="arrMvcA" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arrMvcK" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-key-border)"/>
+          </marker>
+          <marker id="arrMvcT" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-tip-border)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>Los 5 pasos del flujo MVC: petición → controlador → modelo → data push → vista → respuesta</figcaption>
+    </figure>
+
+    <!-- Diagrama 6 — MVC dentro de la arquitectura en capas -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" aria-label="MVC mapeado sobre las 3 capas de la arquitectura">
+
+        <text x="160" y="26" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-text)" text-anchor="middle">Arquitectura en capas</text>
+        <text x="520" y="26" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-text)" text-anchor="middle">MVC mapeado a capas</text>
+
+        <!-- columna izquierda — capas -->
+        <rect x="20"  y="42" width="280" height="62" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="160" y="78" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-accent)" text-anchor="middle">Presentación</text>
+
+        <rect x="20"  y="118" width="280" height="62" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="160" y="154" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Lógica de negocio</text>
+
+        <rect x="20"  y="194" width="280" height="62" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="160" y="230" font-family="var(--font-display)" font-size="13" font-weight="600" fill="var(--color-text)" text-anchor="middle">Persistencia</text>
+
+        <!-- flecha doble central -->
+        <path d="M340 149 L340 151" stroke="none"/>
+        <text x="340" y="154" font-family="var(--font-display)" font-size="11" fill="var(--color-text-3)" text-anchor="middle">↔</text>
+        <rect x="302" y="120" width="76" height="62" rx="0" fill="none"/>
+        <text x="340" y="138" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">MVC ≠ sustituye</text>
+        <text x="340" y="152" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">las capas.</text>
+        <text x="340" y="166" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">MVC organiza</text>
+        <text x="340" y="180" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">la presentación.</text>
+
+        <!-- columna derecha — MVC -->
+        <rect x="380"  y="42" width="280" height="62" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="520" y="68" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)" text-anchor="middle">Controlador + Vista</text>
+        <text x="520" y="86" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">(Servlet + JSP / Thymeleaf)</text>
+
+        <rect x="380"  y="118" width="280" height="62" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="520" y="144" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Modelo</text>
+        <text x="520" y="162" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">(servicios + entidades del dominio)</text>
+
+        <rect x="380"  y="194" width="280" height="62" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="520" y="220" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-text)" text-anchor="middle">DAO / Repositorios</text>
+        <text x="520" y="238" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">(JPA, JDBC, Spring Data)</text>
+      </svg>
+      <figcaption>MVC no reemplaza las capas: organiza la capa de presentación en Controlador + Vista</figcaption>
+    </figure>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>✓ <strong>Código estructurado</strong></td>
+          <td>Reutilización, legibilidad y mantenibilidad mejoradas</td>
+        </tr>
+        <tr>
+          <td>✓ <strong>Desarrollo en equipo</strong></td>
+          <td>Diseñadores trabajan en vistas; programadores en controladores y modelo</td>
+        </tr>
+        <tr>
+          <td>✓ <strong>Mismo modelo, distintas vistas</strong></td>
+          <td>La API REST y la vista HTML pueden reutilizar el mismo controlador</td>
+        </tr>
+        <tr>
+          <td>✓ <strong>Testabilidad</strong></td>
+          <td>El controlador y el modelo son clases Java puras → JUnit</td>
+        </tr>
+        <tr>
+          <td>✗ <strong>Más ficheros</strong></td>
+          <td>Más piezas a coordinar; curva de aprendizaje inicial</td>
+        </tr>
+        <tr>
+          <td>✗ <strong>Exige disciplina</strong></td>
+          <td>Fácil "contaminar" una vista con lógica de negocio si no hay revisión</td>
+        </tr>
+        <tr>
+          <td>✗ <strong>Malos usos</strong></td>
+          <td>Fat controllers (demasiada lógica en el controlador) / Modelos anémicos</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      Un <strong>fat controller</strong> ocurre cuando se pone lógica de negocio en el controlador
+      (validaciones de dominio, cálculos, reglas) en lugar de delegarlas al modelo/servicio.
+      Un <strong>modelo anémico</strong> ocurre cuando el modelo solo tiene getters/setters sin comportamiento real.
+      Ambos rompen la separación de responsabilidades.
+    </div>
+
+    <!-- ── CAMBIO C: forward() vs redirect() ── -->
+    <h3>forward() vs redirect()</h3>
+
+    <p style="max-width: var(--measure)">
+      Cuando el controlador ha terminado de procesar la petición y necesita entregar el resultado,
+      tiene dos mecanismos para pasar el control a la respuesta. Elegir el correcto tiene consecuencias
+      visibles para el usuario.
+    </p>
+
+    <figure class="svg-figure">
+      <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama comparativo forward() vs sendRedirect()">
+
+        <!-- título fila superior: forward -->
+        <text x="20" y="28" font-family="var(--font-display)" font-size="12" font-weight="700" fill="var(--color-accent)">forward()</text>
+        <text x="20" y="44" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">Server-side. La request original se reutiliza. URL en browser: igual.</text>
+
+        <!-- bloque servidor forward -->
+        <rect x="180" y="52" width="380" height="60" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="280" y="78" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)" text-anchor="middle">Controller</text>
+        <path d="M360 82 L400 82" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrFwdA)"/>
+        <text x="440" y="78" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)" text-anchor="middle">Vista</text>
+        <text x="370" y="74" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">forward</text>
+
+        <!-- browser → servidor (forward) -->
+        <rect x="20" y="56" width="100" height="52" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="70" y="87" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Browser</text>
+        <path d="M120 82 L180 82" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrFwdA)"/>
+        <text x="150" y="75" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">GET /ctrl</text>
+
+        <!-- respuesta HTML al browser (forward, misma request) -->
+        <path d="M560 82 L620 82" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrFwdA)"/>
+        <text x="640" y="87" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">HTML</text>
+        <text x="150" y="130" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">URL del browser no cambia (sigue siendo /controller)</text>
+
+        <!-- divisor -->
+        <line x1="0" y1="150" x2="760" y2="150" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
+
+        <!-- título fila inferior: redirect -->
+        <text x="20" y="174" font-family="var(--font-display)" font-size="12" font-weight="700" fill="var(--color-key-text)">sendRedirect()</text>
+        <text x="20" y="190" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">Client-side. El browser hace una nueva petición GET. URL en browser: cambia.</text>
+
+        <!-- 1er round-trip: browser → servidor POST -->
+        <rect x="20" y="198" width="100" height="52" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="70" y="229" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Browser</text>
+
+        <rect x="180" y="198" width="160" height="52" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="260" y="220" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Controller</text>
+        <text x="260" y="236" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">procesa POST</text>
+
+        <path d="M120 224 L180 224" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrFwdK)"/>
+        <text x="150" y="217" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)">POST</text>
+
+        <!-- 302 redirect -->
+        <path d="M340 224 L70 248" stroke="var(--color-key-border)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrFwdK)"/>
+        <text x="220" y="242" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)">302 + Location: /resultado</text>
+
+        <!-- 2do round-trip: browser → GET /resultado -->
+        <rect x="430" y="198" width="160" height="52" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="510" y="229" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Servidor</text>
+
+        <path d="M120 250 L430 224" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrFwdK)"/>
+        <text x="320" y="226" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)">GET /resultado</text>
+
+        <path d="M590 224 L650 224" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrFwdG)"/>
+        <text x="665" y="229" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">HTML</text>
+
+        <defs>
+          <marker id="arrFwdA" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arrFwdK" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-key-border)"/>
+          </marker>
+          <marker id="arrFwdG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-text-3)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>forward() es una transferencia interna en el servidor; sendRedirect() hace que el browser haga una nueva petición</figcaption>
+    </figure>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th><code>forward()</code></th>
+          <th><code>sendRedirect()</code></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Quién hace el salto</strong></td>
+          <td>El servidor (interno)</td>
+          <td>El navegador (recibe 302)</td>
+        </tr>
+        <tr>
+          <td><strong>Visibilidad en la URL</strong></td>
+          <td>La URL no cambia</td>
+          <td>La URL cambia a la nueva ruta</td>
+        </tr>
+        <tr>
+          <td><strong>La request original</strong></td>
+          <td>Se mantiene (se puede usar <code>request.getAttribute</code>)</td>
+          <td>Se pierde (nueva request)</td>
+        </tr>
+        <tr>
+          <td><strong>Round-trips</strong></td>
+          <td>1</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><strong>Cuándo usarlo</strong></td>
+          <td>Controlador → Vista (data push MVC)</td>
+          <td>Después de un POST exitoso (PRG pattern)</td>
+        </tr>
+        <tr>
+          <td><strong>Riesgo de no usarlo correctamente</strong></td>
+          <td>—</td>
+          <td>Al refrescar F5 después de un POST, el browser vuelve a enviar el formulario</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      <code>RequestDispatcher.forward()</code> se usa dentro del patrón MVC para pasar el control del
+      controlador a la vista. El resultado está en la misma request. <code>sendRedirect()</code> se usa
+      después de procesar un POST exitoso para evitar reenvíos del formulario al recargar la página
+      — eso es el patrón PRG.
+    </div>
+
+    <!-- ── CAMBIO D: Patrón PRG ── -->
+    <h3>Patrón PRG: Post-Redirect-Get</h3>
+
+    <div class="callout callout-examen">
+      Peso medio. El profesor lo confirma en el audio de tutoría. Es la solución directa al problema
+      de "doble submit". Muy probable como pregunta breve de teoría o como parte de un ejercicio MVC.
+    </div>
+
+    <p style="max-width: var(--measure)">
+      El patrón PRG resuelve un problema concreto y frecuente: si el usuario procesa un formulario POST
+      y después recarga la página (F5), el navegador reenvía el POST otra vez, creando un registro
+      duplicado en la base de datos. PRG lo evita intercalando un redirect después del POST.
+    </p>
+
+    <figure class="svg-figure">
+      <svg viewBox="0 0 780 240" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama del patrón PRG: Post-Redirect-Get en 4 pasos">
+
+        <!-- columnas de pasos -->
+        <text x="70" y="20" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text-2)" text-anchor="middle">① Browser GET</text>
+        <text x="260" y="20" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text-2)" text-anchor="middle">② Browser POST /guardar</text>
+        <text x="480" y="20" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text-2)" text-anchor="middle">③ 302 redirect /exito</text>
+        <text x="680" y="20" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-text-2)" text-anchor="middle">④ Browser GET /exito</text>
+
+        <!-- paso 1: formulario HTML -->
+        <rect x="20" y="34" width="100" height="52" rx="5" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="70" y="58" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-tip-text)" text-anchor="middle">Formulario</text>
+        <text x="70" y="72" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">HTML</text>
+
+        <!-- flecha 1→2 -->
+        <path d="M120 60 L190 60" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrPRG)"/>
+
+        <!-- paso 2: controlador procesa y guarda -->
+        <rect x="190" y="34" width="140" height="52" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="260" y="55" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Controlador</text>
+        <text x="260" y="69" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">procesa + guarda BD</text>
+
+        <!-- flecha 2→3 -->
+        <path d="M330 60 L390 60" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrPRG)"/>
+
+        <!-- paso 3: redirect -->
+        <rect x="390" y="34" width="160" height="52" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="470" y="55" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-accent)" text-anchor="middle">Redirect</text>
+        <text x="470" y="69" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">sendRedirect()</text>
+
+        <!-- flecha 3→4 -->
+        <path d="M550 60 L620 60" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrPRG)"/>
+
+        <!-- paso 4: confirmación GET -->
+        <rect x="620" y="34" width="140" height="52" rx="5" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="690" y="55" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-tip-text)" text-anchor="middle">Vista de</text>
+        <text x="690" y="69" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">confirmación</text>
+
+        <!-- caja advertencia sin PRG -->
+        <rect x="160" y="116" width="230" height="50" rx="5" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="275" y="138" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-warning-text)" text-anchor="middle">Sin PRG: F5 aquí = reenvía</text>
+        <text x="275" y="154" font-family="var(--font-display)" font-size="9" fill="var(--color-warning-text)" text-anchor="middle">el POST otra vez → datos duplicados</text>
+
+        <!-- flecha curva de la caja al paso 2 -->
+        <path d="M275 116 Q275 96 260 86" stroke="var(--color-warning-border)" stroke-width="1.5" fill="none" marker-end="url(#arrWarn)"/>
+
+        <defs>
+          <marker id="arrPRG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-text-3)"/>
+          </marker>
+          <marker id="arrWarn" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-warning-border)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>PRG: después del POST, el servidor responde con 302. El browser hace un GET final que es seguro recargar</figcaption>
+    </figure>
+
+    <div class="code-block">
+      <div class="code-header">Java — Patrón PRG con Spring MVC</div>
+      <pre><code>// Patrón PRG con Spring MVC
+@Controller
+public class PedidoController &#123;
+
+  // 1. Muestra el formulario (GET)
+  @GetMapping("/nuevo-pedido")
+  public String mostrarFormulario(Model model) &#123;
+    model.addAttribute("pedido", new Pedido());
+    return "formulario-pedido";   // vista: formulario
+  &#125;
+
+  // 2. Procesa el POST y hace REDIRECT (nunca forward después de POST)
+  @PostMapping("/nuevo-pedido")
+  public String procesarFormulario(@ModelAttribute Pedido pedido,
+                                   RedirectAttributes redirectAttrs) &#123;
+
+    pedidoService.guardar(pedido);  // guarda en BD
+
+    // Añadir mensaje de confirmación que sobreviva al redirect
+    redirectAttrs.addFlashAttribute("mensaje", "Pedido creado correctamente");
+
+    // REDIRECT → el browser hará GET a /confirmacion
+    // Si el usuario pulsa F5, solo recarga el GET, no reprocesa el POST
+    return "redirect:/confirmacion";
+  &#125;
+
+  // 3. Recibe el GET final, muestra confirmación
+  @GetMapping("/confirmacion")
+  public String mostrarConfirmacion() &#123;
+    return "confirmacion";   // vista: mensaje de éxito
+  &#125;
+&#125;</code></pre>
+    </div>
+
+    <div class="callout callout-warning">
+      Si tras un POST el controlador hace <code>forward()</code> a la vista de confirmación (en lugar de
+      redirect), el usuario verá la confirmación pero la URL seguirá siendo <code>/nuevo-pedido</code>.
+      Al recargar F5, el navegador reenviará el POST original, guardando el pedido dos veces.
+      PRG es la solución estándar a este problema.
+    </div>
+
+    <!-- ── CAMBIO E: Patrón Front Controller ── -->
+    <h3>Patrón Front Controller</h3>
+
+    <div class="callout callout-examen">
+      Peso medio. Es el tercero de los patrones web del temario junto con MVC y PRG. La clave es
+      entender qué problema resuelve y cómo Spring MVC lo implementa con DispatcherServlet.
+    </div>
+
+    <p style="max-width: var(--measure)">
+      Sin Front Controller, cada funcionalidad de la aplicación tiene su propio Servlet con su propia
+      URL: <code>/ListadoServlet</code>, <code>/CrearServlet</code>, <code>/EditarServlet</code>…
+      Esto significa que la lógica transversal (autenticación, logging, codificación de caracteres)
+      hay que replicarla en cada Servlet o ponerla en código compartido que cada Servlet tiene que
+      acordarse de llamar.
+    </p>
+    <p style="max-width: var(--measure)">
+      El patrón Front Controller centraliza toda la recepción de peticiones en un
+      <strong>único punto de entrada</strong> que: (1) aplica la lógica transversal una sola vez,
+      (2) decodifica la petición para determinar qué controlador específico debe atenderla, y
+      (3) delega a dicho controlador. En Spring MVC este rol lo tiene el <code>DispatcherServlet</code>.
+    </p>
+
+    <figure class="svg-figure">
+      <svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg" aria-label="Comparación sin Front Controller vs con Front Controller (DispatcherServlet de Spring)">
+
+        <!-- divisor vertical -->
+        <line x1="390" y1="10" x2="390" y2="270" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
+
+        <!-- ── MITAD IZQUIERDA: Sin Front Controller ── -->
+        <text x="195" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-warning-text)" text-anchor="middle">Sin Front Controller</text>
+
+        <!-- browser izquierdo -->
+        <rect x="20" y="44" width="70" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="55" y="74" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Browser</text>
+
+        <!-- 3 servlets, cada uno con lógica transversal -->
+        <rect x="160" y="44" width="130" height="40" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="225" y="62" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-warning-text)" text-anchor="middle">ListadoServlet</text>
+        <text x="225" y="76" font-family="var(--font-display)" font-size="8" fill="var(--color-warning-text)" text-anchor="middle">auth + log + encoding</text>
+
+        <rect x="160" y="100" width="130" height="40" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="225" y="118" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-warning-text)" text-anchor="middle">CrearServlet</text>
+        <text x="225" y="132" font-family="var(--font-display)" font-size="8" fill="var(--color-warning-text)" text-anchor="middle">auth + log + encoding</text>
+
+        <rect x="160" y="156" width="130" height="40" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="225" y="174" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-warning-text)" text-anchor="middle">EditarServlet</text>
+        <text x="225" y="188" font-family="var(--font-display)" font-size="8" fill="var(--color-warning-text)" text-anchor="middle">auth + log + encoding</text>
+
+        <!-- flechas browser → 3 servlets -->
+        <path d="M90 64  L160 64"  stroke="var(--color-text-3)" stroke-width="1.2" marker-end="url(#arrFC)"/>
+        <path d="M90 69  L160 120" stroke="var(--color-text-3)" stroke-width="1.2" marker-end="url(#arrFC)"/>
+        <path d="M90 74  L160 176" stroke="var(--color-text-3)" stroke-width="1.2" marker-end="url(#arrFC)"/>
+
+        <text x="195" y="228" font-family="var(--font-display)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">Lógica transversal duplicada</text>
+
+        <!-- ── MITAD DERECHA: Con Front Controller ── -->
+        <text x="585" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-tip-text)" text-anchor="middle">Con Front Controller (Spring)</text>
+
+        <!-- browser derecho -->
+        <rect x="400" y="100" width="70" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="435" y="130" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Browser</text>
+
+        <!-- DispatcherServlet -->
+        <rect x="490" y="76" width="160" height="100" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="2"/>
+        <text x="570" y="100" font-family="var(--font-display)" font-size="10" font-weight="700" fill="var(--color-accent)" text-anchor="middle">DispatcherServlet</text>
+        <text x="570" y="114" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">(Front Controller)</text>
+        <text x="570" y="132" font-family="var(--font-display)" font-size="8" fill="var(--color-accent)" text-anchor="middle">auth + log + encoding</text>
+        <text x="570" y="145" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)" text-anchor="middle">una sola vez</text>
+        <text x="570" y="160" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)" text-anchor="middle">+ enrutamiento</text>
+
+        <!-- flecha browser → DispatcherServlet -->
+        <path d="M470 125 L490 125" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrFCA)"/>
+
+        <!-- 3 controllers sin lógica transversal -->
+        <rect x="670" y="44" width="100" height="34" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="720" y="66" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">ListadoController</text>
+
+        <rect x="670" y="108" width="100" height="34" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="720" y="130" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">CrearController</text>
+
+        <rect x="670" y="172" width="100" height="34" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="720" y="194" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">EditarController</text>
+
+        <!-- flechas DispatcherServlet → 3 controllers -->
+        <path d="M650 104 L670  61" stroke="var(--color-accent)" stroke-width="1.2" marker-end="url(#arrFCA)"/>
+        <path d="M650 126 L670 125" stroke="var(--color-accent)" stroke-width="1.2" marker-end="url(#arrFCA)"/>
+        <path d="M650 148 L670 189" stroke="var(--color-accent)" stroke-width="1.2" marker-end="url(#arrFCA)"/>
+
+        <text x="585" y="228" font-family="var(--font-display)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">Lógica transversal centralizada</text>
+
+        <defs>
+          <marker id="arrFC" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-text-3)"/>
+          </marker>
+          <marker id="arrFCA" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-accent)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>Front Controller centraliza la recepción de peticiones: lógica transversal en un solo punto</figcaption>
+    </figure>
+
+    <div class="callout callout-key">
+      El <code>DispatcherServlet</code> de Spring MVC es un Front Controller. Se mapea para recibir
+      <strong>todas</strong> las peticiones de la aplicación. Internamente, consulta los
+      <code>HandlerMapping</code> para determinar qué <code>@Controller</code> debe atender cada URL
+      y lo invoca. Los <code>@Controller</code> se escriben sin conocer nada de la infraestructura
+      de enrutamiento.
+    </div>
+
+    <div class="callout callout-relation">
+      <strong>Relación con Servlets/JSP:</strong> El patrón MVC se implementa en la práctica con Servlets
+      como controladores y JSP como vistas. El <code>RequestDispatcher.forward()</code> es el mecanismo de
+      data push. Ver bloque Servlets/JSP para la implementación completa.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECCIÓN 5 — Estilos arquitectónicos modernos
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="estilos-arquitectonicos" class="content-section">
+    <h2>Estilos arquitectónicos modernos</h2>
+
+    <div class="callout callout-examen">
+      Peso medio. El profesor valora entender la diferencia conceptual entre arquitectura en capas
+      clásica, Clean Architecture y microservicios. No hace falta memorizar variantes; sí saber
+      por qué cada estilo existe.
+    </div>
+
+    <p style="max-width: var(--measure)">
+      La arquitectura en capas clásica es la base, pero tiene limitaciones cuando el dominio es complejo:
+      los servicios tienden a acumular responsabilidades y el modelo se vuelve anémico. La respuesta de
+      la industria ha sido una familia de estilos centrados en el dominio.
+    </p>
+
+    <!-- Diagrama 7 — Tres estilos comparados -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg" aria-label="Comparación de tres estilos arquitectónicos: capas clásicas, hexagonal y Clean Architecture">
+
+        <!-- divisores -->
+        <line x1="273" y1="10" x2="273" y2="310" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
+        <line x1="546" y1="10" x2="546" y2="310" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
+
+        <!-- ── Capas clásicas ── -->
+        <text x="136" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)" text-anchor="middle">Capas clásicas (layered)</text>
+
+        <rect x="36" y="42" width="200" height="40" rx="4" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+        <text x="136" y="68" font-family="var(--font-display)" font-size="11" fill="var(--color-accent)" text-anchor="middle">UI / Presentación</text>
+        <path d="M136 82 L136 96" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrCl)"/>
+
+        <rect x="36" y="96" width="200" height="40" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <text x="136" y="122" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Servicios</text>
+        <path d="M136 136 L136 150" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrCl)"/>
+
+        <rect x="36" y="150" width="200" height="40" rx="4" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="136" y="176" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)" text-anchor="middle">Dominio</text>
+        <path d="M136 190 L136 204" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrCl)"/>
+
+        <rect x="36" y="204" width="200" height="40" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="136" y="230" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Persistencia (JPA)</text>
+
+        <!-- problema capas clásicas -->
+        <path d="M36 180 L36 224" stroke="var(--color-warning-border)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="8" y="204" font-family="var(--font-display)" font-size="8" fill="var(--color-warning-text)" transform="rotate(-90, 8, 204)">Riesgo acoplamiento</text>
+
+        <text x="136" y="270" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Sencillo, riesgo de acoplamiento</text>
+
+        <!-- ── Hexagonal ── -->
+        <text x="409" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)" text-anchor="middle">Hexagonal / Ports &amp; Adapters</text>
+
+        <!-- hexágono dominio -->
+        <polygon points="409,90 450,68 491,90 491,134 450,156 409,134" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="2"/>
+        <text x="450" y="116" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Dominio</text>
+
+        <!-- adaptadores -->
+        <rect x="288" y="60" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="323" y="78" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">HTTP</text>
+        <path d="M358 73 L409 100" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrHex)"/>
+
+        <rect x="288" y="100" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="323" y="118" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">CLI</text>
+        <path d="M358 113 L409 112" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrHex)"/>
+
+        <rect x="288" y="140" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="323" y="158" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Tests</text>
+        <path d="M358 153 L409 125" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrHex)"/>
+
+        <rect x="530" y="60" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="565" y="78" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">BD</text>
+        <path d="M491 100 L530 73" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrHex2)"/>
+
+        <rect x="530" y="100" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="565" y="118" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Email</text>
+        <path d="M491 112 L530 113" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrHex2)"/>
+
+        <rect x="530" y="140" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="565" y="158" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">API ext.</text>
+        <path d="M491 125 L530 153" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrHex2)"/>
+
+        <text x="409" y="270" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">El dominio no conoce la infraestructura</text>
+
+        <!-- ── Clean Architecture ── -->
+        <text x="683" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)" text-anchor="middle">Clean Architecture</text>
+
+        <!-- círculos concéntricos -->
+        <circle cx="683" cy="145" r="82" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <circle cx="683" cy="145" r="60" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+        <circle cx="683" cy="145" r="40" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <circle cx="683" cy="145" r="20" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="2"/>
+        <text x="683" y="149" font-family="var(--font-display)" font-size="8" font-weight="700" fill="var(--color-key-text)" text-anchor="middle">Entidades</text>
+        <text x="683" y="118" font-family="var(--font-display)" font-size="8" fill="var(--color-accent)" text-anchor="middle">Casos de uso</text>
+        <text x="683" y="92" font-family="var(--font-display)" font-size="8" fill="var(--color-text-2)" text-anchor="middle">Interfaces</text>
+        <text x="683" y="75" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)" text-anchor="middle">Frameworks</text>
+
+        <text x="683" y="270" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Dependencias solo apuntan hacia adentro</text>
+
+        <defs>
+          <marker id="arrCl" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-text-3)"/>
+          </marker>
+          <marker id="arrHex" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arrHex2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-key-border)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>Tres estilos arquitectónicos: capas clásicas, hexagonal y Clean Architecture</figcaption>
+    </figure>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Estilo</th>
+          <th>Ideal para</th>
+          <th>Riesgo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Capas clásicas</strong></td>
+          <td>Apps medianas, equipos pequeños, MVC estándar</td>
+          <td>Los servicios acumulan responsabilidades; el dominio se vuelve anémico</td>
+        </tr>
+        <tr>
+          <td><strong>Clean / Hexagonal</strong></td>
+          <td>Dominio complejo, tests exhaustivos, cambios frecuentes de infraestructura</td>
+          <td>Mayor complejidad inicial; sobreingeniería en apps sencillas</td>
+        </tr>
+        <tr>
+          <td><strong>CQRS</strong></td>
+          <td>Lectura y escritura tienen modelos muy distintos o escalan diferente</td>
+          <td>Sincronización entre modelos de lectura y escritura</td>
+        </tr>
+        <tr>
+          <td><strong>Microservicios</strong></td>
+          <td>Equipos independientes, escalabilidad por servicio, alta disponibilidad</td>
+          <td>Complejidad operacional, latencia de red, transacciones distribuidas</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      <strong>Big Ball of Mud</strong> es el antipatrón arquitectónico de referencia: código sin diseño modular,
+      donde cada parte depende de todo lo demás. Surge de añadir funcionalidades sin un diseño previo.
+      La consecuencia es que ningún cambio es seguro sin riesgo de romper otra parte.
+    </div>
+
+    <!-- Código: separación dominio / infraestructura -->
+    <div class="code-block">
+      <div class="code-header">Java — Separación dominio / infraestructura</div>
+      <pre><code>// &#10007; MAL — el servicio de dominio conoce la infraestructura JPA
+@Service
+public class PedidoService &#123;
+  @Autowired
+  private PedidoRepository repo;  // JPA: el dominio depende de Spring Data
+
+  public void crearPedido(Pedido p) &#123;
+    repo.save(p);  // la lógica de dominio está acoplada al ORM
+  &#125;
+&#125;
+
+// &#10003; BIEN — el dominio define una interfaz; la infraestructura la implementa
+public interface PedidoRepository &#123;   // &#8592; en el paquete de dominio
+  void guardar(Pedido p);
+&#125;
+
+// La implementación JPA está en la capa de infraestructura:
+@Repository
+public class PedidoRepositoryJPA implements PedidoRepository &#123;
+  // ... usa Spring Data / JPA aquí
+&#125;
+// Resultado: el dominio no conoce JPA. Se puede cambiar por MongoDB o ficheros.</code></pre>
+    </div>
+
+    <div class="callout callout-relation">
+      <strong>Relación con Inyección de Dependencias:</strong> La inversión de dependencias descrita aquí
+      es la que motiva el uso de <code>@Autowired</code> / <code>@Inject</code> en Spring. El contenedor
+      de Spring inyecta la implementación concreta; el dominio solo declara la interfaz. Ver bloque
+      Servlets/JSP para la implementación práctica.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECCIÓN 6 — Patrones de renderizado web
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="patrones-renderizado" class="content-section">
+    <h2>Patrones de renderizado web</h2>
+
+    <div class="callout callout-examen">
+      Peso alto. El profesor puede preguntar SSR vs CSR en la parte de teoría. Saber el flujo de
+      cada uno y cuándo usar cada uno. SPA vs MPA es contexto necesario.
+    </div>
+
+    <!-- Diagrama 8 — SSR vs CSR -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 780 420" xmlns="http://www.w3.org/2000/svg" aria-label="Flujos de petición SSR (Server Side Rendering) vs CSR (Client Side Rendering)">
+
+        <!-- divisor horizontal -->
+        <line x1="0" y1="210" x2="780" y2="210" stroke="var(--color-border)" stroke-width="1"/>
+
+        <!-- ══ SSR ══ -->
+        <rect x="10" y="10" width="60" height="14" rx="3" fill="var(--color-accent)" />
+        <text x="40" y="22" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-surface)" text-anchor="middle">SSR</text>
+        <text x="100" y="22" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)">Server Side Rendering</text>
+
+        <!-- paso 1 SSR -->
+        <rect x="10" y="40" width="80" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="50" y="70" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Browser</text>
+        <path d="M90 65 L210 65" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrSSR)"/>
+        <text x="150" y="58" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">GET /página</text>
+
+        <!-- servidor SSR -->
+        <rect x="210" y="40" width="160" height="50" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="290" y="62" font-family="var(--font-display)" font-size="11" fill="var(--color-accent)" text-anchor="middle">Servidor</text>
+        <text x="290" y="78" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">consulta datos + genera HTML</text>
+
+        <!-- flecha respuesta SSR -->
+        <path d="M370 65 L490 65" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrSSR)"/>
+        <text x="430" y="58" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">HTML completo</text>
+
+        <!-- browser renderiza -->
+        <rect x="490" y="40" width="100" height="50" rx="5" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="540" y="65" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">Renderiza</text>
+        <text x="540" y="80" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">inmediatamente</text>
+
+        <text x="400" y="115" font-family="var(--font-body)" font-size="11" fill="var(--color-text-3)" text-anchor="middle">1 round-trip. HTML completo con datos. Tiempo al primer render: rápido.</text>
+
+        <!-- ══ CSR ══ -->
+        <rect x="10" y="220" width="60" height="14" rx="3" fill="var(--color-text-2)" />
+        <text x="40" y="232" font-family="var(--font-display)" font-size="11" font-weight="700" fill="var(--color-surface)" text-anchor="middle">CSR</text>
+        <text x="100" y="232" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)">Client Side Rendering</text>
+
+        <!-- paso 1 CSR -->
+        <rect x="10" y="248" width="80" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="50" y="278" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Browser</text>
+        <path d="M90 273 L210 273" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrCSR)"/>
+        <text x="150" y="266" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)">GET /app</text>
+
+        <!-- servidor app shell -->
+        <rect x="210" y="248" width="140" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <text x="280" y="270" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" text-anchor="middle">Servidor</text>
+        <text x="280" y="286" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">HTML mínimo + bundle JS</text>
+
+        <path d="M350 273 L440 273" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arrCSR)"/>
+        <text x="395" y="266" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)">HTML + JS</text>
+
+        <!-- browser ejecuta JS -->
+        <rect x="440" y="248" width="110" height="50" rx="5" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="495" y="270" font-family="var(--font-display)" font-size="11" fill="var(--color-warning-text)" text-anchor="middle">Browser</text>
+        <text x="495" y="286" font-family="var(--font-display)" font-size="9" fill="var(--color-warning-text)" text-anchor="middle">ejecuta JS</text>
+
+        <!-- fetch API -->
+        <path d="M495 298 L495 338" stroke="var(--color-warning-border)" stroke-width="1.5" marker-end="url(#arrCSR2)"/>
+        <text x="505" y="324" font-family="var(--font-display)" font-size="9" fill="var(--color-warning-text)">fetch JSON</text>
+
+        <rect x="440" y="338" width="110" height="40" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="495" y="362" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">Servidor API</text>
+
+        <path d="M550 358 L640 358" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrCSR)"/>
+        <text x="595" y="352" font-family="var(--font-display)" font-size="9" fill="var(--color-text-3)">JSON</text>
+
+        <!-- browser renderiza -->
+        <rect x="640" y="340" width="110" height="56" rx="5" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="695" y="363" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">Actualiza DOM</text>
+        <text x="695" y="379" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">Renderiza</text>
+
+        <text x="390" y="404" font-family="var(--font-body)" font-size="11" fill="var(--color-text-3)" text-anchor="middle">2+ round-trips. Blank inicial hasta que carga el JS y hace el fetch.</text>
+
+        <defs>
+          <marker id="arrSSR" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arrCSR" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-text-2)"/>
+          </marker>
+          <marker id="arrCSR2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-warning-border)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>SSR: 1 round-trip, HTML listo. CSR: 2+ round-trips, blank inicial mientras carga el JS</figcaption>
+    </figure>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>SSR</th>
+          <th>CSR</th>
+          <th>SSG (Static)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Dónde se genera el HTML</strong></td>
+          <td>Servidor, en cada petición</td>
+          <td>Cliente (navegador), con JS</td>
+          <td>Build time, una sola vez</td>
+        </tr>
+        <tr>
+          <td><strong>Datos frescos</strong></td>
+          <td>Siempre (cada petición consulta la BD)</td>
+          <td>Sí, vía fetch/AJAX</td>
+          <td>No (los datos son del momento del build)</td>
+        </tr>
+        <tr>
+          <td><strong>Tiempo hasta primer render</strong></td>
+          <td>Rápido (HTML llega completo)</td>
+          <td>Lento (espera JS + fetch)</td>
+          <td>Muy rápido (HTML estático preconstruido)</td>
+        </tr>
+        <tr>
+          <td><strong>Carga en servidor</strong></td>
+          <td>Alta (genera HTML por petición)</td>
+          <td>Baja (solo sirve JSON / assets)</td>
+          <td>Ninguna en runtime (solo archivos)</td>
+        </tr>
+        <tr>
+          <td><strong>SEO</strong></td>
+          <td>Excelente (los crawlers ven HTML completo)</td>
+          <td>Difícil (los crawlers no ejecutan JS)</td>
+          <td>Excelente</td>
+        </tr>
+        <tr>
+          <td><strong>Ejemplo típico</strong></td>
+          <td>Spring MVC + Thymeleaf, PHP, JSP</td>
+          <td>Vue SPA, React SPA</td>
+          <td>Astro, Jekyll, Hugo</td>
+        </tr>
+        <tr>
+          <td><strong>Cuándo usarlo</strong></td>
+          <td>Apps con datos muy dinámicos y SEO importante</td>
+          <td>Dashboards sin SEO, alta interactividad</td>
+          <td>Blogs, documentación, contenido estático</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="max-width: var(--measure)">
+      Un patrón intermedio es <strong>Universal Rendering</strong> (también llamado SSR con hidratación):
+      el servidor genera el HTML completo (como SSR puro) y lo envía al cliente, que puede renderizarlo
+      inmediatamente. Pero además, el bundle JavaScript que se descarga "toma el control" de ese HTML ya
+      renderizado, adjuntando los event listeners y el estado interactivo. A este proceso se le llama
+      <strong>hidratación</strong>. Es el enfoque de frameworks como Next.js y Nuxt: el usuario ve el
+      contenido rápido (SSR) pero la página se convierte en una SPA totalmente interactiva después de
+      la hidratación.
+    </p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Universal Rendering (SSR + hidratación)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Dónde se genera el HTML</strong></td>
+          <td>Servidor (primera carga) + cliente (navegación posterior)</td>
+        </tr>
+        <tr>
+          <td><strong>Datos frescos</strong></td>
+          <td>Sí</td>
+        </tr>
+        <tr>
+          <td><strong>Tiempo hasta primer render</strong></td>
+          <td>Rápido (como SSR)</td>
+        </tr>
+        <tr>
+          <td><strong>Carga en servidor</strong></td>
+          <td>Moderada</td>
+        </tr>
+        <tr>
+          <td><strong>SEO</strong></td>
+          <td>Excelente</td>
+        </tr>
+        <tr>
+          <td><strong>Ejemplo típico</strong></td>
+          <td>Next.js, Nuxt, Angular Universal</td>
+        </tr>
+        <tr>
+          <td><strong>Cuándo usarlo</strong></td>
+          <td>Apps que necesitan SEO Y alta interactividad</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-tip">
+      El problema de la hidratación es que hay que descargar, parsear y ejecutar todo el JavaScript
+      aunque el usuario no interactúe con la mayor parte de la página.
+      <strong>Island Architecture</strong> (el enfoque de Astro, el framework de este proyecto) resuelve
+      esto hidratando solo los componentes interactivos de la página ("islas"), dejando el resto como
+      HTML estático puro.
+    </div>
+
+    <div class="callout callout-key">
+      <strong>SPA (Single Page Application):</strong> solo se carga una página HTML inicial. El contenido
+      se actualiza manipulando el DOM con JavaScript, sin recargar la página. El intercambio de datos se hace
+      vía AJAX/fetch con JSON. <strong>MPA (Multi-Page Application):</strong> cada interacción carga una
+      página HTML nueva desde el servidor. El patrón clásico Servlets + JSP es una MPA con SSR.
+    </div>
+
+    <div class="callout callout-tip">
+      <strong>Cuándo elegir:</strong> si el contenido cambia con cada usuario → SSR o fetch/AJAX.
+      Si el contenido es igual para todos y cambia poco → SSG. Si la app es un dashboard con mucha
+      interactividad y sin necesidad de SEO → CSR. Los frameworks modernos (Next.js, Astro, Nuxt) mezclan
+      los tres según la ruta.
+    </div>
+
+    <!-- Código: fetch/AJAX desde el cliente -->
+    <div class="code-block">
+      <div class="code-header">JavaScript — Fetch / AJAX desde el cliente (CSR básico)</div>
+      <pre><code>// CSR: el cliente pide datos al servidor tras cargar la página
+async function cargarProductos() &#123;
+  try &#123;
+    const response = await fetch('/api/productos?categoria=electronica');
+
+    if (!response.ok) &#123;
+      throw new Error(`Error HTTP: $&#123;response.status&#125;`);
+    &#125;
+
+    const productos = await response.json();  // el servidor devuelve JSON
+
+    // Actualizar el DOM con los datos recibidos
+    const lista = document.getElementById('lista-productos');
+    lista.innerHTML = productos
+      .map(p => `&lt;li&gt;$&#123;p.nombre&#125; — $&#123;p.precio&#125;&#8364;&lt;/li&gt;`)
+      .join('');
+
+  &#125; catch (error) &#123;
+    console.error('No se pudieron cargar los productos:', error);
+  &#125;
+&#125;
+// En SSR, esta lógica estaría en el servidor (Servlet/Controlador Spring)
+// y el HTML ya vendría con los datos al cliente.</code></pre>
+    </div>
+
+    <div class="callout callout-relation">
+      <strong>Relación con JS + AJAX:</strong> El patrón CSR y fetch se desarrolla en profundidad en el
+      bloque JS + AJAX, incluyendo el diseño de APIs REST con <code>@RestController</code> en Spring.
+      Este bloque da el contexto arquitectónico; el bloque JS+AJAX da la implementación.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECCIÓN 7 — Stack tecnológico Java (Jakarta EE)
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="tecnologias-java" class="content-section">
+    <h2>Stack tecnológico Java: Jakarta EE</h2>
+
+    <div class="callout callout-examen">
+      Peso bajo. Contexto para entender las prácticas. Saber qué es un WAR, qué hace Tomcat y la
+      diferencia Servlet / JSP. No memorizar web.xml.
+    </div>
+
+    <p style="max-width: var(--measure)">
+      Java EE (ahora Jakarta EE) es una especificación estándar que define cómo deben funcionar
+      los servidores de aplicaciones Java. Los servidores de aplicaciones completos (GlassFish,
+      WildFly, JBoss) la implementan en su totalidad —EJB, JMS, CDI, Servlet, JSP…— y pasan el
+      test de compatibilidad TCK.
+    </p>
+    <p style="max-width: var(--measure)">
+      Apache Tomcat es un caso especial: implementa solo el subconjunto de la especificación relativo
+      a Servlets y JSP. No implementa EJB ni la mayor parte de las APIs empresariales. Para el
+      desarrollo web con Spring (que es lo que usamos en prácticas), Tomcat es suficiente porque
+      Spring provee sus propias implementaciones de las capas empresariales.
+    </p>
+
+    <div class="callout callout-tip">
+      En Spring Boot, Tomcat se embebe directamente dentro del JAR ejecutable de la aplicación.
+      No hace falta instalar ni configurar un servidor externo. Esta es una de las razones por las
+      que Spring Boot simplifica enormemente el despliegue.
+    </div>
+
+    <h3>Context: la ruta raíz de la aplicación</h3>
+
+    <p style="max-width: var(--measure)">
+      Cuando una aplicación se despliega en Tomcat, se le asigna un nombre de contexto
+      (context path): el segmento de URL que identifica la aplicación dentro del servidor.
+      Si la aplicación se llama <code>HelloApp</code>, su context path es <code>/HelloApp</code>
+      y todas sus URLs comienzan con ese prefijo.
+    </p>
+    <p style="max-width: var(--measure)">
+      La URL completa de un recurso tiene la forma:
+      <code>http://host:puerto/contextPath/recurso?queryString</code>.
+      Ejemplo: <code>http://localhost:8080/HelloApp/SayHello.jsp?name=Fran</code>.
+      En Spring Boot con servidor embebido, el context path por defecto es <code>/</code> (la raíz).
+    </p>
+
+    <!-- Diagrama 9 — Estructura WAR y Tomcat -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg" aria-label="Estructura del fichero WAR y Tomcat como contenedor de aplicaciones">
+
+        <!-- ── Árbol WAR ── -->
+        <text x="20" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)">Estructura del fichero WAR</text>
+
+        <!-- nodo raíz -->
+        <text x="20" y="54" font-family="var(--font-mono)" font-size="12" fill="var(--color-accent)">/MiApp.war</text>
+        <!-- rama estáticos -->
+        <line x1="36" y1="60" x2="36" y2="78" stroke="var(--color-border)" stroke-width="1"/>
+        <line x1="36" y1="78" x2="52" y2="78" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="56" y="82" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">/index.html, /css/, /js/</text>
+        <text x="200" y="82" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">← Recursos estáticos</text>
+
+        <!-- rama WEB-INF -->
+        <line x1="36" y1="60" x2="36" y2="104" stroke="var(--color-border)" stroke-width="1"/>
+        <line x1="36" y1="104" x2="52" y2="104" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="56" y="108" font-family="var(--font-mono)" font-size="11" font-weight="600" fill="var(--color-warning-text)">/WEB-INF/</text>
+        <text x="200" y="108" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">← No accesible desde el navegador</text>
+
+        <!-- subnodos WEB-INF -->
+        <line x1="72" y1="110" x2="72" y2="130" stroke="var(--color-border)" stroke-width="1"/>
+        <line x1="72" y1="130" x2="88" y2="130" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="92" y="134" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">web.xml</text>
+        <text x="220" y="134" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">← Descriptor de despliegue (opcional en Servlet 3+)</text>
+
+        <line x1="72" y1="110" x2="72" y2="152" stroke="var(--color-border)" stroke-width="1"/>
+        <line x1="72" y1="152" x2="88" y2="152" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="92" y="156" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">classes/</text>
+        <text x="220" y="156" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">← Clases compiladas: Servlets + modelo</text>
+
+        <line x1="72" y1="110" x2="72" y2="174" stroke="var(--color-border)" stroke-width="1"/>
+        <line x1="72" y1="174" x2="88" y2="174" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="92" y="178" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">lib/</text>
+        <text x="220" y="178" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">← Librerías JAR de la aplicación</text>
+
+        <!-- rama JSPs -->
+        <line x1="36" y1="60" x2="36" y2="196" stroke="var(--color-border)" stroke-width="1"/>
+        <line x1="36" y1="196" x2="52" y2="196" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="56" y="200" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)">*.jsp</text>
+        <text x="200" y="200" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">← JavaServer Pages (vistas)</text>
+
+        <!-- ── Tomcat ── -->
+        <text x="430" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)">Apache Tomcat (contenedor)</text>
+
+        <rect x="430" y="40" width="300" height="180" rx="8" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="580" y="64" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-accent)" text-anchor="middle">Apache Tomcat</text>
+
+        <rect x="450" y="76" width="240" height="32" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="570" y="97" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" text-anchor="middle">/webapps/electrosa.war</text>
+
+        <rect x="450" y="116" width="240" height="32" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="570" y="137" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" text-anchor="middle">/webapps/ejemplo.war</text>
+
+        <rect x="450" y="156" width="240" height="32" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="570" y="177" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" text-anchor="middle">/webapps/ROOT/</text>
+
+        <text x="580" y="236" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Puerto 8080</text>
+        <text x="580" y="254" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Recibe HTTP, encamina al Servlet correcto por URL</text>
+        <text x="580" y="270" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Gestiona pool JDBC y ciclo de vida de Servlets</text>
+      </svg>
+      <figcaption>Estructura del WAR y rol de Tomcat como contenedor de aplicaciones Jakarta EE</figcaption>
+    </figure>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Servlet</th>
+          <th>JSP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Qué es</strong></td>
+          <td>Clase Java que extiende <code>HttpServlet</code></td>
+          <td>Plantilla HTML con código Java intercalado <code>&lt;% %&gt;</code></td>
+        </tr>
+        <tr>
+          <td><strong>Para qué se usa</strong></td>
+          <td>Controladores: recibir petición, invocar lógica, seleccionar vista</td>
+          <td>Vistas: generar el HTML de respuesta con datos dinámicos</td>
+        </tr>
+        <tr>
+          <td><strong>Cómo se escribe</strong></td>
+          <td>Java puro: <code>out.println("&lt;html&gt;")</code> para generar HTML</td>
+          <td>HTML con huecos: <code>&lt;%= item.getNombre() %&gt;</code> para insertar datos</td>
+        </tr>
+        <tr>
+          <td><strong>Lo que hace el contenedor</strong></td>
+          <td>Instancia la clase y llama <code>doGet()</code> / <code>doPost()</code></td>
+          <td>Compila el JSP a una clase <code>HttpServlet</code> Java antes de ejecutar</td>
+        </tr>
+        <tr>
+          <td><strong>Ventaja</strong></td>
+          <td>Lógica clara, fácil de testear</td>
+          <td>El diseñador puede entender el HTML; el programador añade los huecos</td>
+        </tr>
+        <tr>
+          <td><strong>Inconveniente</strong></td>
+          <td>Generar HTML en Java es tedioso y mezcla capas</td>
+          <td>Si se abusa, mezcla lógica con presentación (Model 0)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Código: Servlet mínimo -->
+    <div class="code-block">
+      <div class="code-header">Java — Servlet mínimo con anotación (Jakarta EE)</div>
+      <pre><code>// Servlet mínimo con Jakarta EE (Servlet 5+)
+// La anotación @WebServlet sustituye al web.xml para el mapeo de URL
+
+@WebServlet("/productos")        // &#8592; mapeo de URL: /contexto/productos
+public class ProductosController extends HttpServlet &#123;
+
+  @Override
+  protected void doGet(HttpServletRequest request,
+                       HttpServletResponse response)
+      throws ServletException, IOException &#123;
+
+    // 1. Recoger parámetros de la petición
+    String categoria = request.getParameter("cat");
+
+    // 2. Invocar la capa de negocio (no lógica aquí)
+    List&lt;Producto&gt; productos = productoService.listarPorCategoria(categoria);
+
+    // 3. Data push: depositar resultado para la vista
+    request.setAttribute("productos", productos);
+
+    // 4. Delegar a la vista (forward mantiene la misma petición)
+    request.getRequestDispatcher("/WEB-INF/vistas/productos.jsp")
+           .forward(request, response);
+    // Nota: los JSP están en WEB-INF para que no sean accesibles directamente
+  &#125;
+&#125;</code></pre>
+    </div>
+
+    <div class="callout callout-tip">
+      Poner los JSP dentro de <code>/WEB-INF/vistas/</code> es una práctica habitual: los ficheros en
+      <code>WEB-INF</code> no son accesibles directamente desde el navegador por URL. Así se fuerza que
+      toda petición pase por un Servlet controlador, evitando que el usuario llegue a una vista sin los
+      datos que necesita.
+    </div>
+
+    <div class="callout callout-relation">
+      <strong>Relación con Spring MVC:</strong> Spring Boot embebe un Tomcat directamente en el JAR ejecutable.
+      No es necesario desplegar un WAR en un servidor externo. Los <code>@Controller</code> y
+      <code>@RestController</code> de Spring son una abstracción de alto nivel sobre los Servlets de
+      Jakarta EE. Ver bloque Servlets/JSP para la implementación práctica con Spring.
+    </div>
+  </section>
+
 </BlockLayout>
+
+<style>
+  .content-section {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .content-section:last-child {
+    border-bottom: none;
+  }
+
+  .content-section h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: var(--leading-tight);
+    color: var(--color-text);
+    margin-bottom: var(--space-5);
+    margin-top: 0;
+  }
+
+  .content-section h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: var(--leading-snug);
+    color: var(--color-text);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-4);
+  }
+
+  .content-section p {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--color-text);
+    margin-bottom: var(--space-4);
+  }
+
+  /* SVG figures */
+  .svg-figure {
+    margin: var(--space-5) 0;
+  }
+
+  .svg-figure svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .svg-figure figcaption {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-3);
+    text-align: center;
+    margin-top: var(--space-2);
+    font-style: italic;
+  }
+
+  /* Code blocks */
+  .code-block {
+    border: 1px solid var(--color-code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: var(--space-5) 0;
+  }
+
+  .code-header {
+    background: var(--color-surface-2);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    color: var(--color-text-2);
+    border-bottom: 1px solid var(--color-code-border);
+  }
+
+  .code-block pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    overflow-x: auto;
+    background: var(--color-code-bg);
+  }
+
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: var(--leading-loose);
+    color: var(--color-text);
+  }
+
+  /* Tables */
+  .comparison-table {
+    margin: var(--space-5) 0;
+  }
+</style>

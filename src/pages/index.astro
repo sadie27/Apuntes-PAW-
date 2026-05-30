@@ -12,6 +12,7 @@ const blocks = [
     name: 'Fundamentos',
     description: 'HTTP, HTML y CSS: fundamentos del protocolo web y del lado cliente',
     status: 'complete' as const,
+    priority: { label: 'Baja', cls: 'badge-prob-baja' },
   },
   {
     number: '02',
@@ -19,13 +20,15 @@ const blocks = [
     name: 'JDBC',
     description: 'Connection, Statement, ResultSet, patrón DAO y alternativas ORM',
     status: 'complete' as const,
+    priority: { label: 'Baja', cls: 'badge-prob-baja' },
   },
   {
     number: '03',
     slug: 'arquitectura',
     name: 'Arquitectura',
-    description: 'MVC, capas, separación de responsabilidades',
-    status: 'pending' as const,
+    description: 'Capas, MVC, Model 0–2, estilos arquitectónicos, SSR vs CSR y stack Jakarta EE',
+    status: 'complete' as const,
+    priority: { label: 'Muy alta', cls: 'badge-prob-alta' },
   },
   {
     number: '04',
@@ -33,6 +36,7 @@ const blocks = [
     name: 'Servlets / JSP',
     description: 'Contenido web dinámico en el servidor con Java',
     status: 'pending' as const,
+    priority: { label: 'Muy alta', cls: 'badge-prob-alta' },
   },
   {
     number: '05',
@@ -40,6 +44,7 @@ const blocks = [
     name: 'Seguridad',
     description: 'Autenticación, autorización, sesiones',
     status: 'pending' as const,
+    priority: { label: 'Alta', cls: 'badge-prob-media' },
   },
   {
     number: '06',
@@ -47,6 +52,7 @@ const blocks = [
     name: 'JavaScript',
     description: 'DOM, eventos, programación cliente',
     status: 'pending' as const,
+    priority: { label: 'Alta', cls: 'badge-prob-media' },
   },
   {
     number: '07',
@@ -54,6 +60,7 @@ const blocks = [
     name: 'JS + AJAX',
     description: 'Comunicación asíncrona, fetch API, DOM dinámico',
     status: 'pending' as const,
+    priority: { label: 'Alta', cls: 'badge-prob-media' },
   },
   {
     number: '08',
@@ -61,6 +68,7 @@ const blocks = [
     name: 'Examen',
     description: 'Conv. 2026: filtro AuthFilter, API REST Spring y DOM en pseudocódigo',
     status: 'complete' as const,
+    priority: null,
   },
 ];
 
@@ -108,14 +116,20 @@ const statusClass: Record<string, string> = {
                     <span class="card-number" aria-hidden="true">{block.number}</span>
                     <h2 class="card-name">{block.name}</h2>
                     <p class="card-description">{block.description}</p>
-                    <span class={statusClass[block.status]}>{statusLabel[block.status]}</span>
+                    <span class="card-badges">
+                      {block.priority && <span class={`badge ${block.priority.cls}`}>{block.priority.label}</span>}
+                      <span class={statusClass[block.status]}>{statusLabel[block.status]}</span>
+                    </span>
                   </div>
                 ) : (
                   <a href={`${base}${block.slug}`} class="block-card block-card--link">
                     <span class="card-number" aria-hidden="true">{block.number}</span>
                     <h2 class="card-name">{block.name}</h2>
                     <p class="card-description">{block.description}</p>
-                    <span class={statusClass[block.status]}>{statusLabel[block.status]}</span>
+                    <span class="card-badges">
+                      {block.priority && <span class={`badge ${block.priority.cls}`}>{block.priority.label}</span>}
+                      <span class={statusClass[block.status]}>{statusLabel[block.status]}</span>
+                    </span>
                   </a>
                 )}
               </li>
@@ -252,5 +266,12 @@ const statusClass: Record<string, string> = {
     flex: 1;
     max-width: none;
     margin-bottom: var(--space-2);
+  }
+
+  .card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    align-items: center;
   }
 </style>

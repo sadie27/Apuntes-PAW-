@@ -3,10 +3,13 @@ import BlockLayout from '../layouts/BlockLayout.astro';
 
 const sections = [
   { id: "formato",        label: "Formato del examen" },
+  { id: "guia-prioridad", label: "Guía de prioridad" },
   { id: "conv-2026",      label: "Convocatoria 2026" },
   { id: "filtro-auth",    label: "Ej. 1 — Filtro de autenticación" },
   { id: "api-rest",       label: "Ej. 2 — API REST usuarios" },
   { id: "html-multipart", label: "Ej. 3 — HTML multipart + JS DOM" },
+  { id: "ejercicio-mvc",  label: "Ej. 4 — MVC aplicado" },
+  { id: "no-entra",       label: "Lo que no entra" },
 ];
 ---
 
@@ -18,15 +21,15 @@ const sections = [
 >
 
 <!-- ============================================================
-     BLOQUE EXAMEN — Convocatorias y ejercicios resueltos
+     BLOQUE EXAMEN — Guía de prioridad + Convocatorias resueltas
      ============================================================ -->
 
 <header class="block-header">
   <span class="block-number">08</span>
   <h1>Examen</h1>
   <p class="block-lead">
-    Convocatorias anteriores con ejercicios resueltos, pseudocódigo comentado,
-    diagramas y análisis de errores frecuentes.
+    Guía de prioridad, ejercicios de la convocatoria 2026 con solución modelo
+    comentada, diagramas y lo que el profesor confirmó en tutoría.
   </p>
 </header>
 
@@ -36,59 +39,208 @@ const sections = [
 <section id="formato" class="content-section">
   <h2>Formato del examen</h2>
   <p>
-    La asignatura evalúa dos partes diferenciadas con peso aproximado del 50% cada una.
-    La parte teórica puede ser tipo test, preguntas de desarrollo, o ambas según la convocatoria.
-    La parte práctica consiste en 3–4 ejercicios en los que se pide diseñar e implementar
-    en pseudocódigo: no es necesario que el código compile, pero sí que demuestre conocer
-    la estructura, las clases involucradas y el flujo correcto.
+    La asignatura evalúa con ~4 puntos de teoría y ~5–6 puntos de práctica.
+    El profesor confirmó que la teoría será principalmente <strong>desarrollo escrito</strong>,
+    no tipo test. Si hay alguna pregunta de test, siempre irá acompañada de una pregunta de
+    desarrollo. El pseudocódigo está <strong>explícitamente permitido</strong> en todos los ejercicios.
   </p>
 
   <table class="comparison-table">
     <thead>
       <tr>
         <th>Parte</th>
+        <th>Puntos</th>
         <th>Formato</th>
-        <th>Contenido</th>
-        <th>Peso aproximado</th>
+        <th>Nota del profesor</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td>Teoría</td>
-        <td>Test o desarrollo (varía por convocatoria)</td>
-        <td>Conceptos de todos los bloques del temario</td>
-        <td>~50%</td>
+        <td>&lt; 5 pts</td>
+        <td>Desarrollo escrito (no test)</td>
+        <td>"Os pondré desarrollar la parte de teoría"</td>
       </tr>
       <tr>
         <td>Práctica</td>
-        <td>3–4 ejercicios</td>
-        <td>Pseudocódigo: Servlets, filtros, JDBC, API REST, JS, HTML</td>
-        <td>~50%</td>
+        <td>5–6 pts</td>
+        <td>3 ejercicios en pseudocódigo</td>
+        <td>"El examen va a estar ligado a las prácticas"</td>
       </tr>
     </tbody>
   </table>
 
-  <div class="callout callout-warning">
-    CSS prácticamente no aparece en los ejercicios del examen (o con peso muy reducido).
-    Priorizar el estudio de: Filtros/Servlets, JDBC, API REST con Spring, JS DOM y seguridad.
+  <div class="callout callout-key">
+    Pseudocódigo coherente es suficiente. El profesor dijo explícitamente: «La implementación
+    concreta de la sintaxis me importa menos. Si pones @Get en lugar de @GetMapping, me vale.»
+    Lo que se valora es la arquitectura y el porqué.
   </div>
 
-  <div class="callout callout-tip">
-    En los ejercicios prácticos, el profesor valora que se conozcan las clases correctas
-    (<code>HttpServletRequest</code>, <code>HttpSession</code>, <code>Filter</code>,
-    <code>@RestController</code>…), el flujo lógico y las comprobaciones de seguridad.
-    El código no necesita ser 100% sintácticamente correcto.
+  <div class="callout callout-warning">
+    El tipo test puro es improbable. El profesor dijo «no creo» cuando se le preguntó.
+    Preparar las respuestas para desarrollar, no para reconocer.
   </div>
 </section>
 
 <!-- =========================================================== -->
-<!-- 2. CONVOCATORIA 2026                                         -->
+<!-- 2. GUÍA DE PRIORIDAD                                        -->
+<!-- =========================================================== -->
+<section id="guia-prioridad" class="content-section">
+  <h2>Guía de prioridad — qué estudiar primero</h2>
+  <p>
+    Basada en la tutoría con el profesor. Cada bloque tiene asignada una prioridad de examen:
+    no indica puntuación exacta, sino dónde invertir el tiempo de estudio.
+  </p>
+
+  <!-- SVG: mapa de prioridad de bloques -->
+  <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa de prioridad de bloques para el examen" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <style>
+        .svg-pr { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+      </style>
+    </defs>
+
+    <!-- Columna MUY ALTA -->
+    <rect x="10" y="10" width="210" height="200" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="115" y="36" text-anchor="middle" class="svg-pr" font-size="12" font-weight="700" fill="oklch(35% 0.12 155)">MUY ALTA</text>
+    <line x1="10" y1="44" x2="220" y2="44" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="115" y="70"  text-anchor="middle" class="svg-pr" font-size="12" fill="oklch(35% 0.12 155)">Arquitectura</text>
+    <text x="115" y="100" text-anchor="middle" class="svg-pr" font-size="12" fill="oklch(35% 0.12 155)">Servlets / JSP</text>
+
+    <!-- Columna ALTA -->
+    <rect x="255" y="10" width="210" height="200" rx="6" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="360" y="36" text-anchor="middle" class="svg-pr" font-size="12" font-weight="700" fill="oklch(38% 0.12 75)">ALTA</text>
+    <line x1="255" y1="44" x2="465" y2="44" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="360" y="70"  text-anchor="middle" class="svg-pr" font-size="12" fill="oklch(38% 0.12 75)">Seguridad</text>
+    <text x="360" y="100" text-anchor="middle" class="svg-pr" font-size="12" fill="oklch(38% 0.12 75)">JavaScript (DOM+Eventos)</text>
+    <text x="360" y="130" text-anchor="middle" class="svg-pr" font-size="12" fill="oklch(38% 0.12 75)">JS + AJAX (fetch/CORS)</text>
+
+    <!-- Columna BAJA -->
+    <rect x="500" y="10" width="210" height="200" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="605" y="36" text-anchor="middle" class="svg-pr" font-size="12" font-weight="700" fill="oklch(62% 0.010 264)">BAJA / SALTAR</text>
+    <line x1="500" y1="44" x2="710" y2="44" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="605" y="70"  text-anchor="middle" class="svg-pr" font-size="12" fill="oklch(62% 0.010 264)">Fundamentos (solo HTTP)</text>
+    <text x="605" y="100" text-anchor="middle" class="svg-pr" font-size="12" fill="oklch(62% 0.010 264)">JDBC (solo DataSource)</text>
+    <text x="605" y="130" text-anchor="middle" class="svg-pr" font-size="12" fill="oklch(62% 0.010 264)">CSS → saltar</text>
+  </svg>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Bloque</th>
+        <th>Prioridad</th>
+        <th>Qué estudiar</th>
+        <th>Qué saltar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Arquitectura</td>
+        <td><span class="badge badge-prob-alta">Muy alta</span></td>
+        <td>Capas, MVC, REST, SSR vs CSR, flujo completo</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Servlets / JSP</td>
+        <td><span class="badge badge-prob-alta">Muy alta</span></td>
+        <td>Filtros, MVC, sesión, PRG, forwarding</td>
+        <td>EL-JSTL en profundidad</td>
+      </tr>
+      <tr>
+        <td>Seguridad</td>
+        <td><span class="badge badge-prob-media">Alta</span></td>
+        <td>Auth por sesión, flujo del filtro, CSRF/XSS</td>
+        <td>Criptografía</td>
+      </tr>
+      <tr>
+        <td>JavaScript</td>
+        <td><span class="badge badge-prob-media">Alta</span></td>
+        <td>DOM completo, Eventos, async/await</td>
+        <td>Vue 3 (solo qué hace)</td>
+      </tr>
+      <tr>
+        <td>JS + AJAX</td>
+        <td><span class="badge badge-prob-media">Alta</span></td>
+        <td>fetch, Promesas, consumir API, CORS conceptual</td>
+        <td>Vue 3 directivas</td>
+      </tr>
+      <tr>
+        <td>Fundamentos</td>
+        <td><span class="badge badge-prob-baja">Baja</span></td>
+        <td>Solo HTTP: métodos, status codes, request/response</td>
+        <td>HTML avanzado, CSS</td>
+      </tr>
+      <tr>
+        <td>JDBC</td>
+        <td><span class="badge badge-prob-baja">Baja</span></td>
+        <td>Solo DataSource y pool de conexiones</td>
+        <td>API JDBC raw, SQL</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Ejercicios esperados</h3>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Ejercicio</th>
+        <th>Probabilidad</th>
+        <th>Resumen</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Filtro de autenticación</td>
+        <td><span class="badge badge-prob-alta">Muy alta</span></td>
+        <td><code>doFilter()</code>, sesión, redirect, URL de retorno</td>
+      </tr>
+      <tr>
+        <td>API REST + controlador Spring</td>
+        <td><span class="badge badge-prob-alta">Muy alta</span></td>
+        <td>Diseño endpoints, razonar métodos HTTP, código del controlador</td>
+      </tr>
+      <tr>
+        <td>JS dado un HTML</td>
+        <td><span class="badge badge-prob-alta">Muy alta</span></td>
+        <td>Manipulación DOM, eventos, o formulario multipart</td>
+      </tr>
+      <tr>
+        <td>MVC aplicado a caso concreto</td>
+        <td><span class="badge badge-prob-media">Media</span></td>
+        <td>Flujo completo, responsabilidades por capa</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Lo que dijo el profesor</h3>
+
+  <blockquote class="cita-profesor">
+    "Si tenéis clara la arquitectura y los conceptos, la teoría va a ser muy práctica."
+  </blockquote>
+
+  <blockquote class="cita-profesor">
+    "Lo que importa es que entendáis la lógica, la arquitectura y el porqué de cada cosa, más que el código concreto."
+  </blockquote>
+
+  <blockquote class="cita-profesor">
+    "Si en lugar de @GetMapping me pones solo @Get, me vale. Me importa que tengáis la idea de la arquitectura."
+  </blockquote>
+
+  <blockquote class="cita-profesor">
+    "El examen va a estar bastante ligado a las prácticas."
+  </blockquote>
+</section>
+
+<!-- =========================================================== -->
+<!-- 3. CONVOCATORIA 2026                                         -->
 <!-- =========================================================== -->
 <section id="conv-2026" class="content-section">
   <h2>Convocatoria 2026</h2>
   <p>
-    Examen de la convocatoria ordinaria 2026. Parte teórica no reproducida.
-    A continuación, los tres ejercicios prácticos con solución modelo comentada.
+    Ejercicios de la convocatoria 2026. La parte teórica no se reproduce. Los tres ejercicios
+    prácticos se muestran con solución modelo comentada y diagramas. La probabilidad de aparición
+    de cada ejercicio está confirmada por el profesor en tutoría.
   </p>
 
   <!-- SVG: mapa visual del examen -->
@@ -112,8 +264,8 @@ const sections = [
     <!-- Columna izquierda: TEORÍA -->
     <text x="190" y="64" text-anchor="middle" class="svg-label" font-size="13" font-weight="700" fill="oklch(18% 0.012 264)">TEORÍA</text>
     <text x="190" y="82" text-anchor="middle" class="svg-label" font-size="11" fill="oklch(62% 0.010 264)">(~50% de la nota)</text>
-    <text x="190" y="108" text-anchor="middle" class="svg-body" font-size="12" fill="oklch(42% 0.012 264)">Test / Desarrollo</text>
-    <text x="190" y="126" text-anchor="middle" class="svg-body" font-size="12" fill="oklch(42% 0.012 264)">(todos los bloques)</text>
+    <text x="190" y="108" text-anchor="middle" class="svg-body" font-size="12" fill="oklch(42% 0.012 264)">Desarrollo escrito</text>
+    <text x="190" y="126" text-anchor="middle" class="svg-body" font-size="12" fill="oklch(42% 0.012 264)">(arquitectura y conceptos)</text>
     <!-- Columna derecha: PRÁCTICA -->
     <text x="570" y="64" text-anchor="middle" class="svg-label" font-size="13" font-weight="700" fill="oklch(18% 0.012 264)">PRÁCTICA</text>
     <text x="570" y="82" text-anchor="middle" class="svg-label" font-size="11" fill="oklch(62% 0.010 264)">(~50% de la nota)</text>
@@ -124,10 +276,16 @@ const sections = [
 </section>
 
 <!-- =========================================================== -->
-<!-- 3. EJERCICIO 1 — FILTRO DE AUTENTICACIÓN                    -->
+<!-- 4. EJERCICIO 1 — FILTRO DE AUTENTICACIÓN                    -->
 <!-- =========================================================== -->
 <section id="filtro-auth" class="content-section">
   <h3>Ejercicio 1 — Filtro de autenticación en Jakarta EE / Tomcat</h3>
+
+  <div class="callout callout-examen">
+    Probabilidad muy alta según tutoría. El filtro de la práctica P5 (Spring MVC)
+    es el ejemplo más mencionado por el profesor. Memorizar el flujo:
+    comprobar sesión → guardar URL de retorno → redirect → return → chain.doFilter().
+  </div>
 
   <div class="enunciado">
     ¿Cómo implementar un filtro de autenticación en Jakarta EE/Tomcat? ¿Qué responsabilidades tiene?
@@ -314,10 +472,16 @@ public class AuthFilter implements Filter &#123;
 </section>
 
 <!-- =========================================================== -->
-<!-- 4. EJERCICIO 2 — API REST USUARIOS                          -->
+<!-- 5. EJERCICIO 2 — API REST USUARIOS                          -->
 <!-- =========================================================== -->
 <section id="api-rest" class="content-section">
   <h3>Ejercicio 2 — Diseño de API REST para gestión de usuarios</h3>
+
+  <div class="callout callout-examen">
+    Probabilidad muy alta. El profesor valora razonar qué método HTTP usar y por qué,
+    no la sintaxis exacta. Tener clara la diferencia PUT vs PATCH y por qué no hay DELETE
+    según el enunciado.
+  </div>
 
   <div class="enunciado">
     Diseña una API REST para gestionar usuarios con las siguientes restricciones: el listado y la
@@ -420,12 +584,12 @@ public class AuthFilter implements Filter &#123;
     <text x="420" y="166" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.14 264)">POST</text>
     <text x="420" y="181" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.14 264)">autenticar (público)</text>
 
-    <!-- /{id} -->
+    <!-- /&#123;id&#125; -->
     <line x1="580" y1="68" x2="580" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <rect x="500" y="90" width="160" height="38" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <text x="580" y="113" text-anchor="middle" class="svg-ep-mono" font-size="12" fill="oklch(18% 0.012 264)">&#123;id&#125;</text>
 
-    <!-- Subramas de /{id} -->
+    <!-- Subramas de /&#123;id&#125; -->
     <line x1="580" y1="128" x2="580" y2="148" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <line x1="510" y1="148" x2="650" y2="148" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
 
@@ -445,7 +609,7 @@ public class AuthFilter implements Filter &#123;
     <line x1="650" y1="148" x2="650" y2="168" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <rect x="600" y="170" width="100" height="32" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <text x="650" y="182" text-anchor="middle" class="svg-ep" font-size="11" fill="oklch(62% 0.010 264)">DELETE</text>
-    <text x="650" y="196" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(62% 0.010 264)">✗ no impl.</text>
+    <text x="650" y="196" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(62% 0.010 264)">no impl.</text>
 
     <!-- Leyenda -->
     <rect x="20" y="240" width="12" height="12" rx="2" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
@@ -561,13 +725,9 @@ public class UsuarioController &#123;
                                HttpServletRequest req) &#123;
         verificarAutenticacion(req);
 
-        // Mapear los campos recibidos a una entidad nueva (nunca usar el objeto
-        // recibido directamente para evitar inyectar campos no deseados)
         UsuarioEntity entidad = new UsuarioEntity();
         entidad.setNombre(nuevo.getNombre());
-        // ... mapear resto de campos ...
-
-        return usuarioRepository.save(entidad);  // devuelve la entidad con ID asignado
+        return usuarioRepository.save(entidad);
     &#125;
 
     @PutMapping("/&#123;id&#125;")
@@ -577,9 +737,7 @@ public class UsuarioController &#123;
         verificarAutenticacion(req);
         UsuarioEntity existente = usuarioRepository.findById(id)
                                   .orElseThrow(() -&gt; new NotFoundException("..."));
-        // PUT reemplaza TODOS los campos
         existente.setNombre(datos.getNombre());
-        // ... actualizar todos los campos ...
         return usuarioRepository.save(existente);
     &#125;
 
@@ -590,21 +748,18 @@ public class UsuarioController &#123;
         verificarAutenticacion(req);
         UsuarioEntity existente = usuarioRepository.findById(id)
                                   .orElseThrow(() -&gt; new NotFoundException("..."));
-        // PATCH actualiza SOLO los campos presentes en el body
         if (campos.containsKey("nombre")) &#123;
             existente.setNombre((String) campos.get("nombre"));
         &#125;
-        // ... comprobar y actualizar resto de campos opcionales ...
         return usuarioRepository.save(existente);
     &#125;
 
     // DELETE no implementado → requisito explícito del enunciado
 
-    // ── Helper privado ───────────────────────────────────────────────────
     private void verificarAutenticacion(HttpServletRequest req) &#123;
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("user") == null) &#123;
-            throw new NotAuthorizedException("Acción no permitida");  // → 401/403
+            throw new NotAuthorizedException("Acción no permitida");
         &#125;
     &#125;
 &#125;</code></pre>
@@ -631,10 +786,16 @@ public class UsuarioController &#123;
 </section>
 
 <!-- =========================================================== -->
-<!-- 5. EJERCICIO 3 — HTML MULTIPART + JS DOM                    -->
+<!-- 6. EJERCICIO 3 — HTML MULTIPART + JS DOM                    -->
 <!-- =========================================================== -->
 <section id="html-multipart" class="content-section">
   <h3>Ejercicio 3 — Formulario de subida de archivos y manipulación del DOM</h3>
+
+  <div class="callout callout-examen">
+    Probabilidad alta (confirmada en notas de clase). Saber de memoria:
+    enctype="multipart/form-data" + method="POST" + input type="file".
+    La parte de JS DOM (childNodes vs children) es base de cualquier ejercicio JS.
+  </div>
 
   <!-- Parte A -->
   <h4>A) Formulario HTML para subida de archivos</h4>
@@ -663,19 +824,13 @@ public class UsuarioController &#123;
 --&gt;
 &lt;form action="/subir" method="POST" enctype="multipart/form-data"&gt;
 
-  &lt;!-- Input de tipo file: genera el botón "Examinar..." del SO --&gt;
   &lt;input
     type="file"
     id="archivo"
     name="archivo"
     accept="image/*"
   /&gt;
-  &lt;!--
-    accept="image/*"  → filtro visual en el diálogo del SO (opcional)
-    El servidor DEBE validar el tipo igualmente; accept no es seguridad
-  --&gt;
 
-  &lt;!-- Contenedor vacío que JS rellenará con la previsualización --&gt;
   &lt;img
     id="preview"
     src=""
@@ -737,23 +892,18 @@ public class UsuarioController &#123;
     <pre><code>const inputArchivo = document.getElementById("archivo");
 const imgPreview   = document.getElementById("preview");
 
-// 'change' se dispara cuando el usuario selecciona un archivo
 inputArchivo.addEventListener("change", function(event) &#123;
-    const archivo = event.target.files[0];  // files es un FileList; [0] = primer archivo
+    const archivo = event.target.files[0];
 
-    if (!archivo) return;  // el usuario canceló el diálogo
+    if (!archivo) return;
 
     const reader = new FileReader();
 
-    // 'load' se dispara cuando FileReader termina de leer
     reader.addEventListener("load", function() &#123;
-        // result contiene la imagen como data URL (base64):
-        // "data:image/jpeg;base64,/9j/4AAQSkZJRgAB..."
         imgPreview.src           = reader.result;
         imgPreview.style.display = "block";
     &#125;);
 
-    // Leer el archivo como data URL (base64) → adecuado para mostrar en &lt;img&gt;
     reader.readAsDataURL(archivo);
 &#125;);</code></pre>
   </div>
@@ -804,39 +954,32 @@ div.children[0];</code></pre>
     <text x="154" y="28" text-anchor="middle" class="svg-cn" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">childNodes</text>
     <text x="154" y="46" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(todos los nodos)</text>
 
-    <!-- Nodo raíz -->
     <rect x="40" y="60" width="228" height="32" rx="4" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
     <text x="154" y="80" text-anchor="middle" class="svg-cn-mono" font-size="12" fill="oklch(35% 0.14 264)">&lt;div id="mio"&gt;</text>
 
-    <!-- Líneas del árbol -->
     <line x1="154" y1="92" x2="154" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <line x1="60" y1="108" x2="248" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
 
-    <!-- Nodo texto \n [0] -->
     <line x1="60" y1="108" x2="60" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <rect x="15" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
     <text x="60" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(38% 0.12 75)">"\n"</text>
     <text x="60" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(38% 0.12 75)">[0] texto</text>
 
-    <!-- Nodo <span> [1] -->
     <line x1="154" y1="108" x2="154" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <rect x="109" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
     <text x="154" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;span&gt;</text>
     <text x="154" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[1] elemento</text>
 
-    <!-- Nodo texto \n [2] -->
     <line x1="204" y1="108" x2="204" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <rect x="159" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
     <text x="204" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(38% 0.12 75)">"\n"</text>
     <text x="204" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(38% 0.12 75)">[2] texto</text>
 
-    <!-- Nodo <input> [3] -->
     <line x1="248" y1="108" x2="248" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <rect x="203" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
     <text x="248" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;input&gt;</text>
     <text x="248" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[3] elemento</text>
 
-    <!-- Estadísticas -->
     <text x="154" y="210" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(18% 0.012 264)">childNodes.length = 4</text>
     <text x="154" y="232" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(35% 0.14 264)">childNodes[1] = &lt;span&gt;</text>
     <text x="154" y="252" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(hay un "\n" antes)</text>
@@ -851,27 +994,22 @@ div.children[0];</code></pre>
     <text x="485" y="28" text-anchor="middle" class="svg-cn" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">children</text>
     <text x="485" y="46" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(solo elementos HTML)</text>
 
-    <!-- Nodo raíz -->
     <rect x="371" y="60" width="228" height="32" rx="4" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
     <text x="485" y="80" text-anchor="middle" class="svg-cn-mono" font-size="12" fill="oklch(35% 0.14 264)">&lt;div id="mio"&gt;</text>
 
-    <!-- Líneas del árbol (solo 2 hijos) -->
     <line x1="485" y1="92" x2="485" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <line x1="420" y1="108" x2="550" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
 
-    <!-- <span> [0] -->
     <line x1="420" y1="108" x2="420" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <rect x="370" y="126" width="100" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
     <text x="420" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;span&gt;</text>
     <text x="420" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[0] elemento</text>
 
-    <!-- <input> [1] -->
     <line x1="550" y1="108" x2="550" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <rect x="500" y="126" width="100" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
     <text x="550" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;input&gt;</text>
     <text x="550" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[1] elemento</text>
 
-    <!-- Estadísticas -->
     <text x="485" y="210" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(18% 0.012 264)">children.length = 2</text>
     <text x="485" y="232" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(35% 0.12 155)">children[0] = &lt;span&gt;</text>
     <text x="485" y="252" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(siempre el primer elemento)</text>
@@ -885,25 +1023,17 @@ div.children[0];</code></pre>
     <pre><code>const div = document.getElementById("mio");
 
 // ── childNodes: TODOS los nodos (texto, elementos, comentarios) ──────
-// Si el HTML tiene espacios o saltos de línea entre etiquetas,
-// esos son nodos de texto y CUENTAN en childNodes
 const nodo = div.childNodes[1];
 // CUIDADO: [1] puede ser un nodo de texto, no el primer &lt;elemento&gt;
 
-// Iteración con childNodes → hay que filtrar por tipo
 for (let c of div.childNodes) &#123;
-    if (c.nodeType === Node.ELEMENT_NODE) &#123;  // nodeType 1 = Element (HTML)
-        // Solo procesamos nodos que son elementos HTML
+    if (c.nodeType === Node.ELEMENT_NODE) &#123;
         console.log(c.tagName);
     &#125;
-    // Otros tipos:
-    // nodeType 3 = Text (texto y espacios en blanco)
-    // nodeType 8 = Comment (comentarios HTML)
 &#125;
 
 // ── children: SOLO elementos HTML ────────────────────────────────────
-// Equivalente a childNodes filtrado a nodeType === 1
-const primerElemento = div.children[0];  // siempre el primer &lt;elemento&gt;, sin texto</code></pre>
+const primerElemento = div.children[0];</code></pre>
   </div>
 
   <table class="comparison-table">
@@ -950,8 +1080,207 @@ const primerElemento = div.children[0];  // siempre el primer &lt;elemento&gt;, 
 
   <div class="callout callout-key">
     Regla práctica: si necesitas iterar solo por elementos HTML, usa <code>children</code> o
-    <code>querySelectorAll()</code>. Si necesitas acceder también a nodos de texto (por ejemplo,
-    para manipular el contenido textual directo), usa <code>childNodes</code>.
+    <code>querySelectorAll()</code>. Si necesitas acceder también a nodos de texto, usa <code>childNodes</code>.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 7. EJERCICIO 4 — MVC APLICADO                               -->
+<!-- =========================================================== -->
+<section id="ejercicio-mvc" class="content-section">
+  <h3>Ejercicio 4 — MVC aplicado a una funcionalidad concreta</h3>
+
+  <div class="callout callout-examen">
+    Probabilidad media. El profesor mencionó en el audio que podría aparecer como combinación
+    de teoría + práctica: primero MVC en abstracto, luego aplicarlo a un caso dado. Puede
+    integrarse dentro de otro ejercicio en lugar de ser independiente.
+  </div>
+
+  <div class="enunciado">
+    Te muestro esta pantalla / funcionalidad. ¿Cómo la implementarías en MVC? ¿Qué responsabilidades
+    tiene cada capa? Describe el flujo completo de la petición.
+  </div>
+
+  <p>
+    Este ejercicio evalúa si se entiende MVC como arquitectura, no como framework. La respuesta debe
+    cubrir tres cosas: las responsabilidades de cada capa (controlador, servicio, repositorio/DAO),
+    el flujo de la petición de principio a fin, y el porqué de esa separación.
+  </p>
+
+  <!-- SVG: flujo MVC de una petición típica -->
+  <svg viewBox="0 0 560 340" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de capas MVC y flujo de petición" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
+    <defs>
+      <marker id="arrow-mvc-down" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="oklch(62% 0.010 264)"/>
+      </marker>
+      <marker id="arrow-mvc-up" markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto">
+        <path d="M8,0 L8,6 L0,3 z" fill="oklch(62% 0.010 264)"/>
+      </marker>
+      <style>
+        .svg-mvc { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+        .svg-mvc-sm { font-family: 'Literata', Georgia, serif; }
+      </style>
+    </defs>
+
+    <!-- Capa 1: Presentación -->
+    <rect x="60" y="20" width="340" height="80" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="230" y="52" text-anchor="middle" class="svg-mvc" font-size="13" font-weight="700" fill="oklch(35% 0.14 264)">Presentación</text>
+    <text x="230" y="70" text-anchor="middle" class="svg-mvc" font-size="11" fill="oklch(35% 0.14 264)">Controlador / Servlet / @Controller</text>
+    <text x="230" y="86" text-anchor="middle" class="svg-mvc-sm" font-size="10" fill="oklch(42% 0.012 264)">Recibe petición, delega, devuelve vista o JSON</text>
+
+    <!-- Flecha bajando 1→2 -->
+    <line x1="200" y1="100" x2="200" y2="138" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-down)"/>
+    <!-- Flecha subiendo 2→1 -->
+    <line x1="260" y1="140" x2="260" y2="102" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-up)"/>
+
+    <!-- Capa 2: Lógica de negocio -->
+    <rect x="60" y="140" width="340" height="80" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="230" y="172" text-anchor="middle" class="svg-mvc" font-size="13" font-weight="700" fill="oklch(35% 0.12 155)">Lógica de negocio</text>
+    <text x="230" y="190" text-anchor="middle" class="svg-mvc" font-size="11" fill="oklch(35% 0.12 155)">Service / @Service</text>
+    <text x="230" y="206" text-anchor="middle" class="svg-mvc-sm" font-size="10" fill="oklch(42% 0.012 264)">Aplica reglas de negocio, coordina repositorios</text>
+
+    <!-- Flecha bajando 2→3 -->
+    <line x1="200" y1="220" x2="200" y2="258" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-down)"/>
+    <!-- Flecha subiendo 3→2 -->
+    <line x1="260" y1="260" x2="260" y2="222" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-up)"/>
+
+    <!-- Capa 3: Datos -->
+    <rect x="60" y="260" width="340" height="60" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="230" y="285" text-anchor="middle" class="svg-mvc" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">Datos</text>
+    <text x="230" y="301" text-anchor="middle" class="svg-mvc" font-size="11" fill="oklch(42% 0.012 264)">Repository / DAO / @Repository — acceso a BD</text>
+
+    <!-- HTTP Request -->
+    <text x="30" y="65" text-anchor="end" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">HTTP</text>
+    <text x="30" y="79" text-anchor="end" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">Request →</text>
+    <line x1="32" y1="60" x2="58" y2="60" stroke="oklch(82% 0.08 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-down)"/>
+
+    <!-- HTTP Response -->
+    <text x="530" y="65" text-anchor="start" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">← HTTP</text>
+    <text x="530" y="79" text-anchor="start" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">Response</text>
+    <line x1="402" y1="60" x2="428" y2="60" stroke="oklch(82% 0.08 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-up)"/>
+  </svg>
+
+  <!-- Bloque de código Java -->
+  <div class="code-block">
+    <div class="code-header">Java</div>
+    <pre><code>// Flujo MVC completo — ejemplo de "obtener detalle de un pedido"
+
+// 1. CONTROLADOR — recibe la petición HTTP, delega al servicio
+@Controller
+public class PedidoController &#123;
+
+    @Autowired
+    private PedidoService pedidoService;
+
+    @GetMapping("/pedidos/&#123;id&#125;")
+    public String detalle(@PathVariable Long id, Model model) &#123;
+        PedidoDTO pedido = pedidoService.obtenerPedido(id);  // delega al servicio
+        model.addAttribute("pedido", pedido);                // pasa datos a la vista
+        return "pedidos/detalle";                            // nombre de la plantilla
+    &#125;
+&#125;
+
+// 2. SERVICIO — lógica de negocio, orquesta repositorios
+@Service
+public class PedidoService &#123;
+
+    @Autowired
+    private PedidoRepository pedidoRepository;
+
+    @Transactional(readOnly = true)
+    public PedidoDTO obtenerPedido(Long id) &#123;
+        Pedido entidad = pedidoRepository.findById(id)
+                         .orElseThrow(() -&gt; new NotFoundException("Pedido no encontrado"));
+        return mapToDTO(entidad);
+    &#125;
+&#125;
+
+// 3. REPOSITORIO — acceso a datos, sin lógica de negocio
+@Repository
+public interface PedidoRepository extends JpaRepository&lt;Pedido, Long&gt; &#123;
+    // JPA genera el SQL; el repositorio solo declara qué se necesita
+&#125;</code></pre>
+  </div>
+
+  <div class="callout callout-key">
+    La pregunta clave de este ejercicio es el porqué: ¿por qué hay una capa de servicio entre el
+    controlador y el repositorio? Respuesta: porque la lógica de negocio no pertenece al controlador
+    (que solo coordina HTTP) ni al repositorio (que solo accede a datos). El servicio es el único
+    que entiende las reglas del dominio.
+  </div>
+
+  <div class="callout callout-tip">
+    Para el diagrama en el examen: trazar tres cajas apiladas con sus responsabilidades + flecha de
+    petición + flecha de respuesta. Tarda 30 segundos y demuestra que se entiende la arquitectura.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 8. LO QUE NO ENTRA                                          -->
+<!-- =========================================================== -->
+<section id="no-entra" class="content-section">
+  <h2>Lo que no entra / importa menos</h2>
+  <p>
+    Confirmado por el profesor en tutoría. Estudiar esto es tiempo mal invertido en las últimas
+    horas antes del examen.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Tema</th>
+        <th>Estado</th>
+        <th>Nota del profesor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>CSS (layout, flexbox, etc.)</td>
+        <td><span class="badge badge-prob-baja">Saltar</span></td>
+        <td>"CSS nada" — notas de clase</td>
+      </tr>
+      <tr>
+        <td>HTML avanzado</td>
+        <td><span class="badge badge-prob-baja">Saltar</span></td>
+        <td>Solo enctype multipart si entra algo</td>
+      </tr>
+      <tr>
+        <td>API JDBC raw (código)</td>
+        <td><span class="badge badge-prob-baja">Saltar</span></td>
+        <td>Solo DataSource + pool como concepto</td>
+      </tr>
+      <tr>
+        <td>Sintaxis exacta de anotaciones</td>
+        <td><span class="badge badge-prob-baja">Ignorar</span></td>
+        <td>"La implementación concreta me importa menos"</td>
+      </tr>
+      <tr>
+        <td>Vue 3 directivas</td>
+        <td><span class="badge badge-prob-baja">Saltar</span></td>
+        <td>Solo entender qué hace la reactividad</td>
+      </tr>
+      <tr>
+        <td>Tipo test puro</td>
+        <td><span class="badge badge-prob-baja">Improbable</span></td>
+        <td>"No creo"; si hay, siempre con desarrollo</td>
+      </tr>
+      <tr>
+        <td>Internacionalización (i18n)</td>
+        <td><span class="badge badge-prob-baja">Saltar</span></td>
+        <td>Confirmado en tutoría</td>
+      </tr>
+      <tr>
+        <td>Filtros de catálogo (P7)</td>
+        <td><span class="badge badge-prob-baja">Saltar</span></td>
+        <td>Parte de menor importancia de P7</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-tip">
+    Regla de los últimos 30 minutos antes del examen: repasar solo el diagrama del filtro de
+    autenticación, la tabla de endpoints REST y la diferencia childNodes vs children. Si eso
+    está claro, el práctico está cubierto.
   </div>
 </section>
 
