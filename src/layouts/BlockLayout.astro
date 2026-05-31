@@ -37,6 +37,10 @@ const { title, blockNumber, blockName, sections } = Astro.props;
       </main>
     </div>
     <Footer />
+    <button class="sidebar-fab" aria-label="Ver índice de la página" aria-expanded="false">
+      Índice
+    </button>
+    <div class="sidebar-overlay" aria-hidden="true"></div>
   </body>
 </html>
 
@@ -69,4 +73,131 @@ const { title, blockNumber, blockName, sections } = Astro.props;
     max-width: var(--measure-wide);
     padding: var(--space-7) var(--space-6);
   }
+
+  /* ── FAB — oculto en escritorio ── */
+  .sidebar-fab {
+    display: none;
+  }
+
+  /* ── Overlay ── */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: oklch(18% 0.012 264 / 0.35);
+    z-index: calc(var(--z-sidebar) - 1);
+    opacity: 0;
+    transition: opacity 250ms var(--ease-out);
+  }
+
+  .sidebar-overlay.is-visible {
+    display: block;
+    opacity: 1;
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 900px) {
+    .block-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .block-sidebar {
+      position: fixed;
+      top: var(--navbar-height);
+      left: 0;
+      width: 280px;
+      height: calc(100dvh - var(--navbar-height));
+      overflow-y: auto;
+      background: var(--color-bg);
+      border-right: 1px solid var(--color-border);
+      z-index: var(--z-sidebar);
+      padding: var(--space-5) var(--space-4);
+      /* Estado cerrado */
+      transform: translateX(-100%);
+      visibility: hidden;
+      transition:
+        transform 280ms var(--ease-drawer),
+        visibility 0ms 280ms;
+    }
+
+    .block-sidebar.is-open {
+      transform: translateX(0);
+      visibility: visible;
+      transition:
+        transform 280ms var(--ease-drawer),
+        visibility 0ms 0ms;
+    }
+
+    .sidebar-fab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      bottom: var(--space-6);
+      right: var(--space-5);
+      z-index: var(--z-sidebar);
+      background: var(--color-accent);
+      color: oklch(100% 0 0);
+      border: none;
+      border-radius: 20px;
+      padding: var(--space-3) var(--space-5);
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 16px oklch(48% 0.18 264 / 0.30);
+      transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .sidebar-fab:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px oklch(48% 0.18 264 / 0.38);
+      }
+    }
+
+    .sidebar-fab:active {
+      transform: scale(0.97);
+      transition: transform 80ms var(--ease-out);
+    }
+
+    .sidebar-fab[aria-expanded="true"] {
+      display: none;
+    }
+  }
 </style>
+
+<script>
+  const fab = document.querySelector('.sidebar-fab') as HTMLButtonElement | null;
+  const sidebar = document.querySelector('.block-sidebar') as HTMLElement | null;
+  const overlay = document.querySelector('.sidebar-overlay') as HTMLElement | null;
+
+  if (fab && sidebar && overlay) {
+    fab.addEventListener('click', openSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    sidebar.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeSidebar);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSidebar();
+    });
+
+    function openSidebar() {
+      sidebar!.classList.add('is-open');
+      overlay!.classList.add('is-visible');
+      fab!.setAttribute('aria-expanded', 'true');
+      fab!.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+      sidebar!.classList.remove('is-open');
+      overlay!.classList.remove('is-visible');
+      fab!.setAttribute('aria-expanded', 'false');
+      fab!.removeAttribute('aria-hidden');
+      document.body.style.overflow = '';
+    }
+  }
+</script>

@@ -371,3 +371,8 @@ blockquote.cita-profesor {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─── Responsive mobile parcial ─────────────────────────────────── */
+/* Breakpoint de referencia para hamburguesa y sidebar: 900px        */
+/* No se puede usar como CSS custom property en @media queries.      */
+/* Documentado aquí como referencia. Valor: 900px                   */
