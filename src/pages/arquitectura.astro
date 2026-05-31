@@ -191,11 +191,13 @@ const sections = [
         <path d="M340 120 L340 148" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrGray)"/>
         <path d="M340 228 L340 256" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrGray)"/>
 
-        <!-- flechas navegador ↔ presentación -->
-        <path d="M110 150 L150 100" stroke="var(--color-accent)" stroke-width="1.5" fill="none" marker-end="url(#arrBlue)"/>
-        <path d="M150 82 L110 145" stroke="var(--color-accent)" stroke-width="1.5" fill="none" marker-end="url(#arrBlue)"/>
-        <text x="100" y="110" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">petición</text>
-        <text x="96" y="142" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)">respuesta</text>
+        <!-- flechas navegador ↔ presentación — separadas 14px en el borde izquierdo de Presentación -->
+        <!-- petición: Navegador → Presentación, llega al punto y=73 (arriba) -->
+        <path d="M110 140 L150 73" stroke="var(--color-accent)" stroke-width="1.5" fill="none" marker-end="url(#arrBlue)"/>
+        <text x="108" y="108" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)" text-anchor="middle">petición</text>
+        <!-- respuesta: Presentación → Navegador, sale del punto y=87 (abajo) -->
+        <path d="M150 87 L110 152" stroke="var(--color-accent)" stroke-width="1.5" fill="none" marker-end="url(#arrBlue)"/>
+        <text x="95" y="148" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)" text-anchor="middle">respuesta</text>
 
         <!-- flechas persistencia ↔ recursos -->
         <path d="M530 296 L610 120" stroke="var(--color-text-3)" stroke-width="1.5" fill="none" marker-end="url(#arrGray)"/>
@@ -742,7 +744,7 @@ public class ListadoController extends HttpServlet &#123;
     </p>
 
     <figure class="svg-figure">
-      <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama comparativo forward() vs sendRedirect()">
+      <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama comparativo forward() vs sendRedirect()">
 
         <!-- título fila superior: forward -->
         <text x="20" y="28" font-family="var(--font-display)" font-size="12" font-weight="700" fill="var(--color-accent)">forward()</text>
@@ -773,30 +775,32 @@ public class ListadoController extends HttpServlet &#123;
         <text x="20" y="174" font-family="var(--font-display)" font-size="12" font-weight="700" fill="var(--color-key-text)">sendRedirect()</text>
         <text x="20" y="190" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">Client-side. El browser hace una nueva petición GET. URL en browser: cambia.</text>
 
-        <!-- 1er round-trip: browser → servidor POST -->
-        <rect x="20" y="198" width="100" height="52" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <!-- Los tres actores: Browser (izquierda), Controller (centro), Servidor (derecha) -->
+        <rect x="20" y="204" width="100" height="42" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
         <text x="70" y="229" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Browser</text>
 
-        <rect x="180" y="198" width="160" height="52" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
-        <text x="260" y="220" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Controller</text>
-        <text x="260" y="236" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">procesa POST</text>
+        <rect x="200" y="204" width="150" height="42" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="275" y="222" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Controller</text>
+        <text x="275" y="238" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">procesa POST</text>
 
-        <path d="M120 224 L180 224" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrFwdK)"/>
-        <text x="150" y="217" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)">POST</text>
+        <rect x="440" y="204" width="150" height="42" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="515" y="229" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Servidor</text>
 
-        <!-- 302 redirect -->
-        <path d="M340 224 L70 248" stroke="var(--color-key-border)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrFwdK)"/>
-        <text x="220" y="242" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)">302 + Location: /resultado</text>
+        <!-- Paso 1: Browser → Controller (POST /comprar) -->
+        <path d="M120 216 L198 216" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrFwdK)"/>
+        <text x="159" y="210" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)" text-anchor="middle">POST /comprar</text>
 
-        <!-- 2do round-trip: browser → GET /resultado -->
-        <rect x="430" y="198" width="160" height="52" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
-        <text x="510" y="229" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">Servidor</text>
+        <!-- Paso 2: Controller → Browser (302 + Location, flecha punteada de vuelta) -->
+        <path d="M200 232 L122 244" stroke="var(--color-key-border)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrFwdK)"/>
+        <text x="158" y="252" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)" text-anchor="middle">302 → Location: /resultado</text>
 
-        <path d="M120 250 L430 224" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrFwdK)"/>
-        <text x="320" y="226" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)">GET /resultado</text>
+        <!-- Paso 3: Browser → Servidor (GET nueva petición, carril bajo) -->
+        <path d="M120 260 L438 260" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrFwdK)"/>
+        <text x="280" y="275" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)" text-anchor="middle">GET /resultado (nueva petición)</text>
 
-        <path d="M590 224 L650 224" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrFwdG)"/>
-        <text x="665" y="229" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">HTML</text>
+        <!-- HTML resultante -->
+        <path d="M592 225 L650 225" stroke="var(--color-text-3)" stroke-width="1.5" marker-end="url(#arrFwdG)"/>
+        <text x="665" y="230" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">HTML</text>
 
         <defs>
           <marker id="arrFwdA" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
@@ -1114,11 +1118,11 @@ public class PedidoController &#123;
 
     <!-- Diagrama 7 — Tres estilos comparados -->
     <figure class="svg-figure">
-      <svg viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg" aria-label="Comparación de tres estilos arquitectónicos: capas clásicas, hexagonal y Clean Architecture">
+      <svg viewBox="0 0 920 330" xmlns="http://www.w3.org/2000/svg" aria-label="Comparación de tres estilos arquitectónicos: capas clásicas, hexagonal y Clean Architecture">
 
-        <!-- divisores -->
-        <line x1="273" y1="10" x2="273" y2="310" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
-        <line x1="546" y1="10" x2="546" y2="310" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
+        <!-- divisores — columna central más ancha para el hexágono -->
+        <line x1="273" y1="10" x2="273" y2="320" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
+        <line x1="600" y1="10" x2="600" y2="320" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="5,4"/>
 
         <!-- ── Capas clásicas ── -->
         <text x="136" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)" text-anchor="middle">Capas clásicas (layered)</text>
@@ -1142,56 +1146,58 @@ public class PedidoController &#123;
         <path d="M36 180 L36 224" stroke="var(--color-warning-border)" stroke-width="1.5" stroke-dasharray="4,3"/>
         <text x="8" y="204" font-family="var(--font-display)" font-size="8" fill="var(--color-warning-text)" transform="rotate(-90, 8, 204)">Riesgo acoplamiento</text>
 
-        <text x="136" y="270" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Sencillo, riesgo de acoplamiento</text>
+        <text x="136" y="280" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Sencillo, riesgo de acoplamiento</text>
 
-        <!-- ── Hexagonal ── -->
-        <text x="409" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)" text-anchor="middle">Hexagonal / Ports &amp; Adapters</text>
+        <!-- ── Hexagonal — columna central más ancha (273..600) centro=436 ── -->
+        <text x="436" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)" text-anchor="middle">Hexagonal / Ports &amp; Adapters</text>
 
-        <!-- hexágono dominio -->
-        <polygon points="409,90 450,68 491,90 491,134 450,156 409,134" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="2"/>
-        <text x="450" y="116" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Dominio</text>
+        <!-- hexágono dominio más pequeño para dejar espacio a los adaptadores -->
+        <polygon points="436,92 466,75 496,92 496,128 466,145 436,128" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="2"/>
+        <text x="466" y="113" font-family="var(--font-display)" font-size="10" font-weight="600" fill="var(--color-key-text)" text-anchor="middle">Dominio</text>
 
-        <!-- adaptadores -->
-        <rect x="288" y="60" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
-        <text x="323" y="78" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">HTTP</text>
-        <path d="M358 73 L409 100" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrHex)"/>
+        <!-- adaptadores izquierda — bien separados del hexágono -->
+        <rect x="293" y="62" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="328" y="80" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">HTTP</text>
+        <path d="M363 75 L436 100" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrHex)"/>
 
-        <rect x="288" y="100" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
-        <text x="323" y="118" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">CLI</text>
-        <path d="M358 113 L409 112" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrHex)"/>
+        <rect x="293" y="98" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="328" y="116" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">CLI</text>
+        <path d="M363 111 L436 110" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrHex)"/>
 
-        <rect x="288" y="140" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
-        <text x="323" y="158" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Tests</text>
-        <path d="M358 153 L409 125" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrHex)"/>
+        <rect x="293" y="134" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="328" y="152" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Tests</text>
+        <path d="M363 147 L436 122" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrHex)"/>
 
-        <rect x="530" y="60" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
-        <text x="565" y="78" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">BD</text>
-        <path d="M491 100 L530 73" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrHex2)"/>
+        <!-- adaptadores derecha -->
+        <rect x="537" y="62" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="572" y="80" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">BD</text>
+        <path d="M496 100 L537 75" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrHex2)"/>
 
-        <rect x="530" y="100" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
-        <text x="565" y="118" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Email</text>
-        <path d="M491 112 L530 113" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrHex2)"/>
+        <rect x="537" y="98" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="572" y="116" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Email</text>
+        <path d="M496 110 L537 111" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrHex2)"/>
 
-        <rect x="530" y="140" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
-        <text x="565" y="158" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">API ext.</text>
-        <path d="M491 125 L530 153" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrHex2)"/>
+        <rect x="537" y="134" width="70" height="26" rx="3" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="572" y="152" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">API ext.</text>
+        <path d="M496 122 L537 147" stroke="var(--color-key-border)" stroke-width="1.5" marker-end="url(#arrHex2)"/>
 
-        <text x="409" y="270" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">El dominio no conoce la infraestructura</text>
+        <text x="436" y="280" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">El dominio no conoce la infraestructura</text>
 
-        <!-- ── Clean Architecture ── -->
-        <text x="683" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)" text-anchor="middle">Clean Architecture</text>
+        <!-- ── Clean Architecture — columna derecha (600..920) centro=760 ── -->
+        <text x="760" y="26" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text)" text-anchor="middle">Clean Architecture</text>
 
-        <!-- círculos concéntricos -->
-        <circle cx="683" cy="145" r="82" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
-        <circle cx="683" cy="145" r="60" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
-        <circle cx="683" cy="145" r="40" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
-        <circle cx="683" cy="145" r="20" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="2"/>
-        <text x="683" y="149" font-family="var(--font-display)" font-size="8" font-weight="700" fill="var(--color-key-text)" text-anchor="middle">Entidades</text>
-        <text x="683" y="118" font-family="var(--font-display)" font-size="8" fill="var(--color-accent)" text-anchor="middle">Casos de uso</text>
-        <text x="683" y="92" font-family="var(--font-display)" font-size="8" fill="var(--color-text-2)" text-anchor="middle">Interfaces</text>
-        <text x="683" y="75" font-family="var(--font-display)" font-size="8" fill="var(--color-text-3)" text-anchor="middle">Frameworks</text>
+        <!-- círculos concéntricos con radios más grandes (mín 22px grosor de anillo) -->
+        <circle cx="760" cy="155" r="105" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <circle cx="760" cy="155" r="80" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <circle cx="760" cy="155" r="55" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <circle cx="760" cy="155" r="28" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="2"/>
+        <!-- etiquetas centradas en cada anillo -->
+        <text x="760" y="159" font-family="var(--font-display)" font-size="9" font-weight="700" fill="var(--color-key-text)" text-anchor="middle">Entidades</text>
+        <text x="760" y="129" font-family="var(--font-display)" font-size="9" fill="var(--color-key-text)" text-anchor="middle">Casos de uso</text>
+        <text x="760" y="103" font-family="var(--font-display)" font-size="9" fill="var(--color-accent)" text-anchor="middle">Interfaces</text>
+        <text x="760" y="82" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">Frameworks</text>
 
-        <text x="683" y="270" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Dependencias solo apuntan hacia adentro</text>
+        <text x="760" y="280" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">Dependencias solo apuntan hacia adentro</text>
 
         <defs>
           <marker id="arrCl" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">

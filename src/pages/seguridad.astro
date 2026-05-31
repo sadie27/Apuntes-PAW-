@@ -155,12 +155,15 @@ const sections = [
 
     <p>En la web, permisos son URLs: controlar qué roles pueden acceder a qué URL equivale a controlar qué operaciones puede ejecutar cada tipo de usuario. Esto es lo que implementan los filtros de autenticación y los <code>security-constraint</code> del contenedor.</p>
 
-    <!-- SVG: Diagrama RBAC -->
+    <!-- SVG: Diagrama RBAC con colores por rol -->
     <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:var(--space-5) 0;">
       <defs>
-        <marker id="arrRbac" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L7,3 z" fill="var(--color-border-strong)"/>
-        </marker>
+        <!-- Marcadores de flecha por color de rol -->
+        <marker id="arrRbac"    markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="var(--color-border-strong)"/></marker>
+        <marker id="arrAdmin"   markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="oklch(48% 0.18 264)"/></marker>
+        <marker id="arrCliente" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="oklch(42% 0.16 155)"/></marker>
+        <marker id="arrGProd"   markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="oklch(48% 0.14 75)"/></marker>
+        <marker id="arrGPed"    markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="oklch(42% 0.15 310)"/></marker>
       </defs>
 
       <!-- Cabeceras columnas -->
@@ -168,7 +171,7 @@ const sections = [
       <text x="310" y="20" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Roles</text>
       <text x="555" y="20" text-anchor="middle" font-family="var(--font-display)" font-size="12" font-weight="600" fill="var(--color-text-2)">Permisos</text>
 
-      <!-- Usuarios -->
+      <!-- Usuarios (neutros) -->
       <rect x="20"  y="35" width="140" height="36" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
       <text x="90"  y="57" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">admin</text>
 
@@ -178,20 +181,24 @@ const sections = [
       <rect x="20"  y="135" width="140" height="36" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
       <text x="90"  y="157" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">gestor</text>
 
-      <!-- Roles -->
-      <rect x="220" y="35"  width="180" height="36" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
-      <text x="310" y="57"  text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Administrador</text>
+      <!-- Roles con color semántico por rol -->
+      <!-- Administrador: azul índigo -->
+      <rect x="220" y="35"  width="180" height="36" rx="6" fill="oklch(95% 0.04 264)" stroke="oklch(48% 0.18 264)" stroke-width="1.5"/>
+      <text x="310" y="57"  text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="oklch(48% 0.18 264)">Administrador</text>
 
-      <rect x="220" y="85"  width="180" height="36" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
-      <text x="310" y="107" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Cliente</text>
+      <!-- Cliente: verde -->
+      <rect x="220" y="85"  width="180" height="36" rx="6" fill="oklch(95% 0.04 155)" stroke="oklch(42% 0.16 155)" stroke-width="1.5"/>
+      <text x="310" y="107" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="oklch(42% 0.16 155)">Cliente</text>
 
-      <rect x="220" y="135" width="180" height="36" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
-      <text x="310" y="157" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Gestor productos</text>
+      <!-- Gestor productos: ámbar -->
+      <rect x="220" y="135" width="180" height="36" rx="6" fill="oklch(95% 0.04 75)" stroke="oklch(48% 0.14 75)" stroke-width="1.5"/>
+      <text x="310" y="157" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="oklch(48% 0.14 75)">Gestor productos</text>
 
-      <rect x="220" y="185" width="180" height="36" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
-      <text x="310" y="207" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="var(--color-accent)">Gestor pedidos</text>
+      <!-- Gestor pedidos: violeta -->
+      <rect x="220" y="185" width="180" height="36" rx="6" fill="oklch(95% 0.04 310)" stroke="oklch(42% 0.15 310)" stroke-width="1.5"/>
+      <text x="310" y="207" text-anchor="middle" font-family="var(--font-display)" font-size="11" font-weight="600" fill="oklch(42% 0.15 310)">Gestor pedidos</text>
 
-      <!-- Permisos -->
+      <!-- Permisos (neutros) -->
       <rect x="470" y="35"  width="170" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
       <text x="555" y="55"  text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">Ver productos</text>
 
@@ -207,27 +214,27 @@ const sections = [
       <rect x="470" y="215" width="170" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
       <text x="555" y="235" text-anchor="middle" font-family="var(--font-display)" font-size="10" fill="var(--color-text-2)">Gestionar pedidos</text>
 
-      <!-- Flechas: usuarios → roles -->
-      <line x1="160" y1="53"  x2="218" y2="53"  stroke="var(--color-border-strong)" stroke-width="1.2" marker-end="url(#arrRbac)"/>
-      <line x1="160" y1="103" x2="218" y2="103" stroke="var(--color-border-strong)" stroke-width="1.2" marker-end="url(#arrRbac)"/>
-      <line x1="160" y1="153" x2="218" y2="158" stroke="var(--color-border-strong)" stroke-width="1.2" marker-end="url(#arrRbac)"/>
-      <line x1="160" y1="153" x2="218" y2="200" stroke="var(--color-border-strong)" stroke-width="1.2" marker-end="url(#arrRbac)"/>
+      <!-- Flechas: usuarios → roles (con color del rol destino) -->
+      <line x1="160" y1="53"  x2="218" y2="53"  stroke="oklch(48% 0.18 264)" stroke-width="1.2" marker-end="url(#arrAdmin)"/>
+      <line x1="160" y1="103" x2="218" y2="103" stroke="oklch(42% 0.16 155)" stroke-width="1.2" marker-end="url(#arrCliente)"/>
+      <line x1="160" y1="153" x2="218" y2="158" stroke="oklch(48% 0.14 75)"  stroke-width="1.2" marker-end="url(#arrGProd)"/>
+      <line x1="160" y1="153" x2="218" y2="200" stroke="oklch(42% 0.15 310)" stroke-width="1.2" marker-end="url(#arrGPed)"/>
 
-      <!-- Flechas: roles → permisos -->
-      <!-- Admin → todos -->
-      <line x1="400" y1="53"  x2="468" y2="51"  stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
-      <line x1="400" y1="53"  x2="468" y2="96"  stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
-      <line x1="400" y1="53"  x2="468" y2="141" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
-      <line x1="400" y1="53"  x2="468" y2="186" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
-      <line x1="400" y1="53"  x2="468" y2="231" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
-      <!-- Cliente → 3 primeros -->
-      <line x1="400" y1="103" x2="468" y2="51"  stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
-      <line x1="400" y1="103" x2="468" y2="96"  stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
-      <line x1="400" y1="103" x2="468" y2="141" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
-      <!-- Gestor productos -->
-      <line x1="400" y1="153" x2="468" y2="186" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
-      <!-- Gestor pedidos -->
-      <line x1="400" y1="203" x2="468" y2="231" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arrRbac)"/>
+      <!-- Flechas: roles → permisos (coloreadas por rol, opacidad 0.8) -->
+      <!-- Admin (azul índigo) → todos los permisos -->
+      <line x1="400" y1="53"  x2="468" y2="51"  stroke="oklch(48% 0.18 264)" stroke-width="1" opacity="0.8" marker-end="url(#arrAdmin)"/>
+      <line x1="400" y1="53"  x2="468" y2="96"  stroke="oklch(48% 0.18 264)" stroke-width="1" opacity="0.8" marker-end="url(#arrAdmin)"/>
+      <line x1="400" y1="53"  x2="468" y2="141" stroke="oklch(48% 0.18 264)" stroke-width="1" opacity="0.8" marker-end="url(#arrAdmin)"/>
+      <line x1="400" y1="53"  x2="468" y2="186" stroke="oklch(48% 0.18 264)" stroke-width="1" opacity="0.8" marker-end="url(#arrAdmin)"/>
+      <line x1="400" y1="53"  x2="468" y2="231" stroke="oklch(48% 0.18 264)" stroke-width="1" opacity="0.8" marker-end="url(#arrAdmin)"/>
+      <!-- Cliente (verde) → 3 primeros -->
+      <line x1="400" y1="103" x2="468" y2="51"  stroke="oklch(42% 0.16 155)" stroke-width="1" opacity="0.8" marker-end="url(#arrCliente)"/>
+      <line x1="400" y1="103" x2="468" y2="96"  stroke="oklch(42% 0.16 155)" stroke-width="1" opacity="0.8" marker-end="url(#arrCliente)"/>
+      <line x1="400" y1="103" x2="468" y2="141" stroke="oklch(42% 0.16 155)" stroke-width="1" opacity="0.8" marker-end="url(#arrCliente)"/>
+      <!-- Gestor productos (ámbar) → Gestionar productos -->
+      <line x1="400" y1="153" x2="468" y2="186" stroke="oklch(48% 0.14 75)"  stroke-width="1" opacity="0.8" marker-end="url(#arrGProd)"/>
+      <!-- Gestor pedidos (violeta) → Gestionar pedidos -->
+      <line x1="400" y1="203" x2="468" y2="231" stroke="oklch(42% 0.15 310)" stroke-width="1" opacity="0.8" marker-end="url(#arrGPed)"/>
     </svg>
 
     <div class="callout callout-warning">

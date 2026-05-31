@@ -544,8 +544,8 @@ public class AuthFilter implements Filter &#123;
     </tbody>
   </table>
 
-  <!-- SVG: árbol de endpoints -->
-  <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" aria-label="Árbol de endpoints de la API REST de usuarios" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
+  <!-- SVG: árbol de endpoints — viewBox ampliado a 920px para espaciado uniforme -->
+  <svg viewBox="0 0 920 310" xmlns="http://www.w3.org/2000/svg" aria-label="Árbol de endpoints de la API REST de usuarios" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
     <defs>
       <style>
         .svg-ep { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
@@ -553,73 +553,70 @@ public class AuthFilter implements Filter &#123;
       </style>
     </defs>
 
-    <!-- Raíz /api/usuarios -->
-    <rect x="240" y="10" width="200" height="38" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <text x="340" y="33" text-anchor="middle" class="svg-ep-mono" font-size="13" fill="oklch(18% 0.012 264)">/api/usuarios</text>
+    <!-- Raíz /api/usuarios centrada en 460 -->
+    <rect x="360" y="10" width="200" height="38" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="460" y="33" text-anchor="middle" class="svg-ep-mono" font-size="13" fill="oklch(18% 0.012 264)">/api/usuarios</text>
 
-    <!-- Líneas del árbol desde raíz -->
-    <line x1="340" y1="48" x2="340" y2="68" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <line x1="100" y1="68" x2="580" y2="68" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <!-- Línea troncal y distribución horizontal de 4 nodos nivel 2 -->
+    <!-- Spacing: 920px, márgenes 40px → útil 840px / 4 nodos → 210px por nodo -->
+    <!-- Posiciones x: 40+105=145, 145+210=355, 355+210=565, 565+210=775 -->
+    <line x1="460" y1="48" x2="460" y2="68" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="145" y1="68" x2="775" y2="68" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
 
-    <!-- GET lista pública -->
-    <line x1="100" y1="68" x2="100" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="20" y="90" width="160" height="38" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
-    <text x="100" y="106" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.12 155)">GET</text>
-    <text x="100" y="120" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.12 155)">lista pública</text>
+    <!-- Nodo 1: GET lista pública (x=145) -->
+    <line x1="145" y1="68" x2="145" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="65" y="90" width="160" height="44" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="145" y="109" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.12 155)">GET</text>
+    <text x="145" y="126" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.12 155)">lista pública</text>
 
-    <!-- POST crear -->
-    <line x1="240" y1="68" x2="240" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="160" y="90" width="160" height="38" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
-    <text x="240" y="106" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.14 264)">POST</text>
-    <text x="240" y="120" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.14 264)">crear (auth)</text>
+    <!-- Nodo 2: POST crear (x=355) -->
+    <line x1="355" y1="68" x2="355" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="275" y="90" width="160" height="44" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="355" y="109" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.14 264)">POST</text>
+    <text x="355" y="126" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.14 264)">crear (auth)</text>
 
-    <!-- /login -->
-    <line x1="420" y1="68" x2="420" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="340" y="90" width="160" height="38" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <text x="420" y="113" text-anchor="middle" class="svg-ep-mono" font-size="12" fill="oklch(18% 0.012 264)">/login</text>
+    <!-- Nodo 3: /login (x=565) -->
+    <line x1="565" y1="68" x2="565" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="485" y="90" width="160" height="44" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="565" y="116" text-anchor="middle" class="svg-ep-mono" font-size="12" fill="oklch(18% 0.012 264)">/login</text>
+    <!-- Hijo de /login: POST autenticar -->
+    <line x1="565" y1="134" x2="565" y2="154" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="485" y="156" width="160" height="44" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="565" y="174" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.14 264)">POST</text>
+    <text x="565" y="190" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.14 264)">autenticar (público)</text>
 
-    <!-- POST login -->
-    <line x1="420" y1="128" x2="420" y2="148" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="340" y="150" width="160" height="38" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
-    <text x="420" y="166" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.14 264)">POST</text>
-    <text x="420" y="181" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(35% 0.14 264)">autenticar (público)</text>
-
-    <!-- /&#123;id&#125; -->
-    <line x1="580" y1="68" x2="580" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="500" y="90" width="160" height="38" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <text x="580" y="113" text-anchor="middle" class="svg-ep-mono" font-size="12" fill="oklch(18% 0.012 264)">&#123;id&#125;</text>
-
-    <!-- Subramas de /&#123;id&#125; -->
-    <line x1="580" y1="128" x2="580" y2="148" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <line x1="510" y1="148" x2="650" y2="148" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-
+    <!-- Nodo 4: {id} (x=775) -->
+    <line x1="775" y1="68" x2="775" y2="88" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="695" y="90" width="160" height="44" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="775" y="116" text-anchor="middle" class="svg-ep-mono" font-size="12" fill="oklch(18% 0.012 264)">&#123;id&#125;</text>
+    <!-- Subramas de {id}: 3 hijos en línea horizontal -->
+    <line x1="775" y1="134" x2="775" y2="154" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="700" y1="154" x2="850" y2="154" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
     <!-- GET detalle -->
-    <line x1="510" y1="148" x2="510" y2="168" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="460" y="170" width="100" height="32" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
-    <text x="510" y="182" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(35% 0.12 155)">GET</text>
-    <text x="510" y="196" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(35% 0.12 155)">detalle</text>
-
-    <!-- PUT/PATCH -->
-    <line x1="580" y1="148" x2="580" y2="168" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="530" y="170" width="100" height="32" rx="6" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
-    <text x="580" y="182" text-anchor="middle" class="svg-ep" font-size="11" font-weight="700" fill="oklch(38% 0.12 75)">PUT/PATCH</text>
-    <text x="580" y="196" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(38% 0.12 75)">actualizar</text>
-
-    <!-- DELETE tachado -->
-    <line x1="650" y1="148" x2="650" y2="168" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="600" y="170" width="100" height="32" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <text x="650" y="182" text-anchor="middle" class="svg-ep" font-size="11" fill="oklch(62% 0.010 264)">DELETE</text>
-    <text x="650" y="196" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(62% 0.010 264)">no impl.</text>
+    <line x1="700" y1="154" x2="700" y2="174" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="648" y="176" width="104" height="40" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="700" y="192" text-anchor="middle" class="svg-ep" font-size="10" font-weight="700" fill="oklch(35% 0.12 155)">GET</text>
+    <text x="700" y="207" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(35% 0.12 155)">detalle</text>
+    <!-- PUT/PATCH actualizar -->
+    <line x1="775" y1="154" x2="775" y2="174" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="720" y="176" width="110" height="40" rx="6" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="775" y="192" text-anchor="middle" class="svg-ep" font-size="10" font-weight="700" fill="oklch(38% 0.12 75)">PUT/PATCH</text>
+    <text x="775" y="207" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(38% 0.12 75)">actualizar</text>
+    <!-- DELETE no impl. -->
+    <line x1="850" y1="154" x2="850" y2="174" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="800" y="176" width="105" height="40" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="852" y="192" text-anchor="middle" class="svg-ep" font-size="10" fill="oklch(62% 0.010 264)">DELETE</text>
+    <text x="852" y="207" text-anchor="middle" class="svg-ep" font-size="9" fill="oklch(62% 0.010 264)">no impl.</text>
 
     <!-- Leyenda -->
-    <rect x="20" y="240" width="12" height="12" rx="2" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
-    <text x="38" y="251" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">GET (público)</text>
-    <rect x="140" y="240" width="12" height="12" rx="2" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
-    <text x="158" y="251" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">POST (crear/auth)</text>
-    <rect x="290" y="240" width="12" height="12" rx="2" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
-    <text x="308" y="251" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">PUT / PATCH</text>
-    <rect x="410" y="240" width="12" height="12" rx="2" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <text x="428" y="251" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">No implementado</text>
+    <rect x="20" y="255" width="12" height="12" rx="2" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="38" y="266" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">GET (público)</text>
+    <rect x="165" y="255" width="12" height="12" rx="2" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="183" y="266" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">POST (crear/auth)</text>
+    <rect x="340" y="255" width="12" height="12" rx="2" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="358" y="266" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">PUT / PATCH</text>
+    <rect x="475" y="255" width="12" height="12" rx="2" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="493" y="266" class="svg-ep" font-size="11" fill="oklch(42% 0.012 264)">No implementado</text>
   </svg>
 
   <table class="comparison-table">
@@ -940,8 +937,8 @@ div.children[0];</code></pre>
     propiedades.
   </p>
 
-  <!-- SVG: comparación childNodes vs children -->
-  <svg viewBox="0 0 640 310" xmlns="http://www.w3.org/2000/svg" aria-label="Comparación visual entre childNodes y children" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
+  <!-- SVG: comparación childNodes vs children — viewBox ampliado a 800px para los 4 nodos -->
+  <svg viewBox="0 0 800 310" xmlns="http://www.w3.org/2000/svg" aria-label="Comparación visual entre childNodes y children" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
     <defs>
       <style>
         .svg-cn { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
@@ -949,72 +946,78 @@ div.children[0];</code></pre>
       </style>
     </defs>
 
-    <!-- Panel izquierdo: childNodes -->
-    <rect x="1" y="1" width="308" height="308" rx="6" fill="oklch(100% 0 0)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <text x="154" y="28" text-anchor="middle" class="svg-cn" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">childNodes</text>
-    <text x="154" y="46" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(todos los nodos)</text>
+    <!-- Panel izquierdo: childNodes — 390px de ancho para los 4 nodos con 8px de gap -->
+    <rect x="1" y="1" width="388" height="308" rx="6" fill="oklch(100% 0 0)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="195" y="28" text-anchor="middle" class="svg-cn" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">childNodes</text>
+    <text x="195" y="46" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(todos los nodos)</text>
 
-    <rect x="40" y="60" width="228" height="32" rx="4" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
-    <text x="154" y="80" text-anchor="middle" class="svg-cn-mono" font-size="12" fill="oklch(35% 0.14 264)">&lt;div id="mio"&gt;</text>
+    <rect x="55" y="60" width="268" height="32" rx="4" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="189" y="80" text-anchor="middle" class="svg-cn-mono" font-size="12" fill="oklch(35% 0.14 264)">&lt;div id="mio"&gt;</text>
 
-    <line x1="154" y1="92" x2="154" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <line x1="60" y1="108" x2="248" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <!-- Distribución uniforme de 4 nodos: ancho 78px cada uno, gap 8px -->
+    <!-- posiciones centros: 50, 136, 222, 308 -->
+    <line x1="189" y1="92" x2="189" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="50" y1="108" x2="328" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
 
-    <line x1="60" y1="108" x2="60" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="15" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
-    <text x="60" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(38% 0.12 75)">"\n"</text>
-    <text x="60" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(38% 0.12 75)">[0] texto</text>
+    <!-- Nodo [0] "\n" texto -->
+    <line x1="50" y1="108" x2="50" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="10" y="126" width="78" height="32" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="49" y="141" text-anchor="middle" class="svg-cn-mono" font-size="10" fill="oklch(38% 0.12 75)">"\n"</text>
+    <text x="49" y="154" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(38% 0.12 75)">[0] texto</text>
 
-    <line x1="154" y1="108" x2="154" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="109" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
-    <text x="154" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;span&gt;</text>
-    <text x="154" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[1] elemento</text>
+    <!-- Nodo [1] <span> -->
+    <line x1="136" y1="108" x2="136" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="97" y="126" width="78" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="136" y="141" text-anchor="middle" class="svg-cn-mono" font-size="10" fill="oklch(35% 0.12 155)">&lt;span&gt;</text>
+    <text x="136" y="154" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[1] elem.</text>
 
-    <line x1="204" y1="108" x2="204" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="159" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
-    <text x="204" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(38% 0.12 75)">"\n"</text>
-    <text x="204" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(38% 0.12 75)">[2] texto</text>
+    <!-- Nodo [2] "\n" texto -->
+    <line x1="222" y1="108" x2="222" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="183" y="126" width="78" height="32" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="222" y="141" text-anchor="middle" class="svg-cn-mono" font-size="10" fill="oklch(38% 0.12 75)">"\n"</text>
+    <text x="222" y="154" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(38% 0.12 75)">[2] texto</text>
 
-    <line x1="248" y1="108" x2="248" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="203" y="126" width="90" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
-    <text x="248" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;input&gt;</text>
-    <text x="248" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[3] elemento</text>
+    <!-- Nodo [3] <input> -->
+    <line x1="308" y1="108" x2="308" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="269" y="126" width="78" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="308" y="141" text-anchor="middle" class="svg-cn-mono" font-size="10" fill="oklch(35% 0.12 155)">&lt;input&gt;</text>
+    <text x="308" y="154" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[3] elem.</text>
 
-    <text x="154" y="210" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(18% 0.012 264)">childNodes.length = 4</text>
-    <text x="154" y="232" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(35% 0.14 264)">childNodes[1] = &lt;span&gt;</text>
-    <text x="154" y="252" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(hay un "\n" antes)</text>
-    <rect x="20" y="268" width="268" height="28" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
-    <text x="154" y="286" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(38% 0.12 75)">Incluye nodos de texto y comentarios</text>
+    <text x="195" y="210" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(18% 0.012 264)">childNodes.length = 4</text>
+    <text x="195" y="232" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(35% 0.14 264)">childNodes[1] = &lt;span&gt;</text>
+    <text x="195" y="252" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(hay un "\n" antes)</text>
+    <rect x="20" y="268" width="348" height="28" rx="4" fill="oklch(97% 0.03 85)" stroke="oklch(82% 0.08 85)" stroke-width="1"/>
+    <text x="194" y="286" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(38% 0.12 75)">Incluye nodos de texto y comentarios</text>
 
     <!-- Divisor vertical -->
-    <line x1="320" y1="1" x2="320" y2="309" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="400" y1="1" x2="400" y2="309" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
 
-    <!-- Panel derecho: children -->
-    <rect x="331" y="1" width="308" height="308" rx="6" fill="oklch(100% 0 0)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <text x="485" y="28" text-anchor="middle" class="svg-cn" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">children</text>
-    <text x="485" y="46" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(solo elementos HTML)</text>
+    <!-- Panel derecho: children — centrado en x=600 -->
+    <rect x="411" y="1" width="388" height="308" rx="6" fill="oklch(100% 0 0)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="605" y="28" text-anchor="middle" class="svg-cn" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">children</text>
+    <text x="605" y="46" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(solo elementos HTML)</text>
 
-    <rect x="371" y="60" width="228" height="32" rx="4" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
-    <text x="485" y="80" text-anchor="middle" class="svg-cn-mono" font-size="12" fill="oklch(35% 0.14 264)">&lt;div id="mio"&gt;</text>
+    <rect x="471" y="60" width="268" height="32" rx="4" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="605" y="80" text-anchor="middle" class="svg-cn-mono" font-size="12" fill="oklch(35% 0.14 264)">&lt;div id="mio"&gt;</text>
 
-    <line x1="485" y1="92" x2="485" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <line x1="420" y1="108" x2="550" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="605" y1="92" x2="605" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <line x1="530" y1="108" x2="680" y2="108" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
 
-    <line x1="420" y1="108" x2="420" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="370" y="126" width="100" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
-    <text x="420" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;span&gt;</text>
-    <text x="420" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[0] elemento</text>
+    <line x1="530" y1="108" x2="530" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="480" y="126" width="100" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="530" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;span&gt;</text>
+    <text x="530" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[0] elemento</text>
 
-    <line x1="550" y1="108" x2="550" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <rect x="500" y="126" width="100" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
-    <text x="550" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;input&gt;</text>
-    <text x="550" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[1] elemento</text>
+    <line x1="680" y1="108" x2="680" y2="124" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <rect x="630" y="126" width="100" height="32" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="680" y="143" text-anchor="middle" class="svg-cn-mono" font-size="11" fill="oklch(35% 0.12 155)">&lt;input&gt;</text>
+    <text x="680" y="156" text-anchor="middle" class="svg-cn" font-size="9" fill="oklch(35% 0.12 155)">[1] elemento</text>
 
-    <text x="485" y="210" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(18% 0.012 264)">children.length = 2</text>
-    <text x="485" y="232" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(35% 0.12 155)">children[0] = &lt;span&gt;</text>
-    <text x="485" y="252" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(siempre el primer elemento)</text>
-    <rect x="350" y="268" width="268" height="28" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
-    <text x="485" y="286" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(35% 0.12 155)">Solo nodos element (nodeType === 1)</text>
+    <text x="605" y="210" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(18% 0.012 264)">children.length = 2</text>
+    <text x="605" y="232" text-anchor="middle" class="svg-cn" font-size="12" fill="oklch(35% 0.12 155)">children[0] = &lt;span&gt;</text>
+    <text x="605" y="252" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(62% 0.010 264)">(siempre el primer elemento)</text>
+    <rect x="420" y="268" width="370" height="28" rx="4" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="605" y="286" text-anchor="middle" class="svg-cn" font-size="11" fill="oklch(35% 0.12 155)">Solo nodos element (nodeType === 1)</text>
   </svg>
 
   <!-- Bloque de código JavaScript -->
@@ -1107,8 +1110,8 @@ const primerElemento = div.children[0];</code></pre>
     el flujo de la petición de principio a fin, y el porqué de esa separación.
   </p>
 
-  <!-- SVG: flujo MVC de una petición típica -->
-  <svg viewBox="0 0 560 340" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de capas MVC y flujo de petición" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
+  <!-- SVG: flujo MVC de una petición típica — viewBox ampliado a 700px para etiquetas laterales -->
+  <svg viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de capas MVC y flujo de petición" role="img" style="max-width:100%;display:block;margin:var(--space-5) 0;">
     <defs>
       <marker id="arrow-mvc-down" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
         <path d="M0,0 L0,6 L8,3 z" fill="oklch(62% 0.010 264)"/>
@@ -1122,42 +1125,41 @@ const primerElemento = div.children[0];</code></pre>
       </style>
     </defs>
 
+    <!-- Capas centradas: offset +70 → capas van de x=130 a x=570 (ancho 440px) -->
     <!-- Capa 1: Presentación -->
-    <rect x="60" y="20" width="340" height="80" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
-    <text x="230" y="52" text-anchor="middle" class="svg-mvc" font-size="13" font-weight="700" fill="oklch(35% 0.14 264)">Presentación</text>
-    <text x="230" y="70" text-anchor="middle" class="svg-mvc" font-size="11" fill="oklch(35% 0.14 264)">Controlador / Servlet / @Controller</text>
-    <text x="230" y="86" text-anchor="middle" class="svg-mvc-sm" font-size="10" fill="oklch(42% 0.012 264)">Recibe petición, delega, devuelve vista o JSON</text>
+    <rect x="130" y="20" width="440" height="80" rx="6" fill="oklch(97% 0.03 264)" stroke="oklch(82% 0.08 264)" stroke-width="1"/>
+    <text x="350" y="52" text-anchor="middle" class="svg-mvc" font-size="13" font-weight="700" fill="oklch(35% 0.14 264)">Presentación</text>
+    <text x="350" y="70" text-anchor="middle" class="svg-mvc" font-size="11" fill="oklch(35% 0.14 264)">Controlador / Servlet / @Controller</text>
+    <text x="350" y="86" text-anchor="middle" class="svg-mvc-sm" font-size="10" fill="oklch(42% 0.012 264)">Recibe petición, delega, devuelve vista o JSON</text>
 
-    <!-- Flecha bajando 1→2 -->
-    <line x1="200" y1="100" x2="200" y2="138" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-down)"/>
-    <!-- Flecha subiendo 2→1 -->
-    <line x1="260" y1="140" x2="260" y2="102" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-up)"/>
+    <!-- Flechas 1→2 y 2→1 -->
+    <line x1="310" y1="100" x2="310" y2="138" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-down)"/>
+    <line x1="390" y1="140" x2="390" y2="102" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-up)"/>
 
     <!-- Capa 2: Lógica de negocio -->
-    <rect x="60" y="140" width="340" height="80" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
-    <text x="230" y="172" text-anchor="middle" class="svg-mvc" font-size="13" font-weight="700" fill="oklch(35% 0.12 155)">Lógica de negocio</text>
-    <text x="230" y="190" text-anchor="middle" class="svg-mvc" font-size="11" fill="oklch(35% 0.12 155)">Service / @Service</text>
-    <text x="230" y="206" text-anchor="middle" class="svg-mvc-sm" font-size="10" fill="oklch(42% 0.012 264)">Aplica reglas de negocio, coordina repositorios</text>
+    <rect x="130" y="140" width="440" height="80" rx="6" fill="oklch(97% 0.03 155)" stroke="oklch(82% 0.08 155)" stroke-width="1"/>
+    <text x="350" y="172" text-anchor="middle" class="svg-mvc" font-size="13" font-weight="700" fill="oklch(35% 0.12 155)">Lógica de negocio</text>
+    <text x="350" y="190" text-anchor="middle" class="svg-mvc" font-size="11" fill="oklch(35% 0.12 155)">Service / @Service</text>
+    <text x="350" y="206" text-anchor="middle" class="svg-mvc-sm" font-size="10" fill="oklch(42% 0.012 264)">Aplica reglas de negocio, coordina repositorios</text>
 
-    <!-- Flecha bajando 2→3 -->
-    <line x1="200" y1="220" x2="200" y2="258" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-down)"/>
-    <!-- Flecha subiendo 3→2 -->
-    <line x1="260" y1="260" x2="260" y2="222" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-up)"/>
+    <!-- Flechas 2→3 y 3→2 -->
+    <line x1="310" y1="220" x2="310" y2="258" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-down)"/>
+    <line x1="390" y1="260" x2="390" y2="222" stroke="oklch(62% 0.010 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-up)"/>
 
     <!-- Capa 3: Datos -->
-    <rect x="60" y="260" width="340" height="60" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
-    <text x="230" y="285" text-anchor="middle" class="svg-mvc" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">Datos</text>
-    <text x="230" y="301" text-anchor="middle" class="svg-mvc" font-size="11" fill="oklch(42% 0.012 264)">Repository / DAO / @Repository — acceso a BD</text>
+    <rect x="130" y="260" width="440" height="60" rx="6" fill="oklch(96% 0.006 264)" stroke="oklch(88% 0.008 264)" stroke-width="1"/>
+    <text x="350" y="285" text-anchor="middle" class="svg-mvc" font-size="13" font-weight="700" fill="oklch(42% 0.012 264)">Datos</text>
+    <text x="350" y="301" text-anchor="middle" class="svg-mvc" font-size="11" fill="oklch(42% 0.012 264)">Repository / DAO / @Repository — acceso a BD</text>
 
-    <!-- HTTP Request -->
-    <text x="30" y="65" text-anchor="end" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">HTTP</text>
-    <text x="30" y="79" text-anchor="end" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">Request →</text>
-    <line x1="32" y1="60" x2="58" y2="60" stroke="oklch(82% 0.08 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-down)"/>
+    <!-- HTTP Request → etiqueta + flecha a la izquierda, con margen ≥16px del borde izquierdo -->
+    <text x="16" y="56" text-anchor="start" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">HTTP</text>
+    <text x="16" y="70" text-anchor="start" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">Request →</text>
+    <line x1="100" y1="60" x2="128" y2="60" stroke="oklch(82% 0.08 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-down)"/>
 
-    <!-- HTTP Response -->
-    <text x="530" y="65" text-anchor="start" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">← HTTP</text>
-    <text x="530" y="79" text-anchor="start" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">Response</text>
-    <line x1="402" y1="60" x2="428" y2="60" stroke="oklch(82% 0.08 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-up)"/>
+    <!-- ← HTTP Response — etiqueta a la derecha, con margen ≥16px del borde derecho (700px) -->
+    <text x="582" y="56" text-anchor="start" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">← HTTP</text>
+    <text x="582" y="70" text-anchor="start" class="svg-mvc" font-size="11" fill="oklch(62% 0.010 264)">Response</text>
+    <line x1="572" y1="60" x2="598" y2="60" stroke="oklch(82% 0.08 264)" stroke-width="1.5" marker-end="url(#arrow-mvc-up)"/>
   </svg>
 
   <!-- Bloque de código Java -->
