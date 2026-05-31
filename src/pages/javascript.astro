@@ -1,7 +1,1411 @@
 ---
 import BlockLayout from '../layouts/BlockLayout.astro';
-const sections: { id: string; label: string }[] = [];
+const sections = [
+  { id: "intro-js",            label: "¿Qué es JavaScript?" },
+  { id: "incluir-js",          label: "Incluir JS en HTML" },
+  { id: "fundamentos",         label: "Variables y tipos" },
+  { id: "funciones",           label: "Funciones y callbacks" },
+  { id: "arrays",              label: "Arrays y métodos" },
+  { id: "oop",                 label: "OOP y prototipos" },
+  { id: "entorno-navegador",   label: "Entorno del navegador" },
+  { id: "dom",                 label: "DOM: árbol y búsqueda" },
+  { id: "dom-manipulacion",    label: "DOM: manipulación" },
+  { id: "eventos",             label: "Eventos" },
+  { id: "propagacion",         label: "Propagación y delegación" },
+  { id: "varios",              label: "Varios: defer, hoisting…" },
+];
 ---
 <BlockLayout title="JavaScript" blockNumber={6} blockName="JavaScript" sections={sections}>
-  <p>Contenido pendiente.</p>
+
+  <h1>JavaScript</h1>
+  <p class="lead">Variables, DOM, eventos, callbacks, OOP y el entorno del navegador</p>
+
+  <!-- ===== SECCIÓN 1: INTRO JS ===== -->
+  <section id="intro-js">
+    <h2>¿Qué es JavaScript?</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo. Contexto general; no memorizar fechas ni versiones. El profesor dijo "lo que importa es la arquitectura y el flujo". Leer para situar conceptos.</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:700px;display:block;">
+        <title>Ecosistema JavaScript: ECMAScript, implementaciones y motores</title>
+        <defs>
+          <marker id="arr-js1" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-border-strong)"/>
+          </marker>
+        </defs>
+        <rect x="10" y="10" width="440" height="200" rx="8" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="26" y="32" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" font-weight="600">ECMAScript — el estándar (ECMA International)</text>
+        <rect x="26" y="42" width="408" height="158" rx="6" fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="42" y="62" font-family="var(--font-display)" font-size="12" fill="var(--color-text)" font-weight="600">JavaScript (implementación del estándar)</text>
+        <rect x="42" y="74" width="200" height="112" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="58" y="96" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)" font-weight="700">DOM (W3C/WHATWG)</text>
+        <text x="58" y="112" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">No forma parte de ECMAScript.</text>
+        <text x="58" y="127" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">Es una API del navegador</text>
+        <text x="58" y="142" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">que JS puede usar.</text>
+        <text x="480" y="30" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" font-weight="600">Motores JS</text>
+        <rect x="480" y="40" width="200" height="42" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="492" y="58" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" font-weight="500">SpiderMonkey</text>
+        <text x="492" y="74" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">Firefox · Mozilla</text>
+        <rect x="480" y="92" width="200" height="42" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="492" y="110" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" font-weight="500">V8</text>
+        <text x="492" y="126" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">Chrome / Node.js · Google</text>
+        <rect x="480" y="144" width="200" height="42" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="492" y="162" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" font-weight="500">JavaScriptCore</text>
+        <text x="492" y="178" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">Safari / Bun · Apple</text>
+        <line x1="480" y1="61" x2="436" y2="100" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-js1)"/>
+        <line x1="480" y1="113" x2="436" y2="120" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-js1)"/>
+        <line x1="480" y1="165" x2="436" y2="145" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-js1)"/>
+      </svg>
+    </div>
+
+    <p>JavaScript es un lenguaje interpretado, débilmente tipado y multiparadigma: soporta programación imperativa, funcional y basada en objetos. No tiene relación técnica con Java más allá de raíces sintácticas en C: son lenguajes distintos con filosofías distintas.</p>
+
+    <p>ECMAScript es el estándar que define el lenguaje; JavaScript es la implementación. El hito más importante fue ES6/ES2015, que introdujo clases, <code>let</code>/<code>const</code>, arrow functions, desestructuración y módulos. Desde ES2016 las versiones son anuales y más pequeñas.</p>
+
+    <p>En el navegador, JS tiene acceso al DOM (para manipular la página) y a los objetos del entorno del navegador (<code>window</code>, <code>location</code>, <code>history</code>…). También corre en servidor (Node.js, Deno) pero aquí nos centramos en el contexto del navegador.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Motor</th><th>Navegador / Entorno</th><th>Empresa</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>SpiderMonkey</td><td>Firefox</td><td>Mozilla</td></tr>
+        <tr><td>V8</td><td>Chrome, Node.js, Deno</td><td>Google</td></tr>
+        <tr><td>JavaScriptCore</td><td>Safari, Bun</td><td>Apple</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== SECCIÓN 2: INCLUIR JS ===== -->
+  <section id="incluir-js">
+    <h2>Incluir JS en HTML</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo. Saber la diferencia entre <code>defer</code> y <code>async</code> puede aparecer como pregunta corta. No memorizar más.</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:780px;display:block;">
+        <title>Carga de scripts: normal vs defer vs async</title>
+        <text x="10" y="55" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" font-weight="600">Normal</text>
+        <rect x="90" y="36" width="120" height="24" rx="3" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="100" y="52" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)">HTML parse</text>
+        <rect x="214" y="36" width="100" height="24" rx="3" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="220" y="52" font-family="var(--font-mono)" font-size="9" fill="var(--color-warning-text)">BLOQUEO: descarga</text>
+        <rect x="318" y="36" width="90" height="24" rx="3" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="324" y="52" font-family="var(--font-mono)" font-size="9" fill="var(--color-key-text)">BLOQUEO: ejecuta</text>
+        <rect x="412" y="36" width="120" height="24" rx="3" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="422" y="52" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)">HTML parse continúa</text>
+
+        <text x="10" y="135" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" font-weight="600">async</text>
+        <rect x="90" y="116" width="240" height="24" rx="3" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="100" y="132" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)">HTML parse (continuo)</text>
+        <rect x="90" y="96" width="140" height="16" rx="3" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+        <text x="96" y="107" font-family="var(--font-mono)" font-size="8" fill="var(--color-key-text)">descarga en paralelo</text>
+        <rect x="234" y="116" width="90" height="24" rx="3" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="240" y="132" font-family="var(--font-mono)" font-size="9" fill="var(--color-warning-text)">BLOQUEO: ejecuta</text>
+        <rect x="328" y="116" width="120" height="24" rx="3" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="338" y="132" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)">HTML parse continúa</text>
+
+        <text x="10" y="215" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" font-weight="600">defer</text>
+        <rect x="90" y="196" width="340" height="24" rx="3" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="100" y="212" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)">HTML parse completo</text>
+        <rect x="90" y="176" width="200" height="16" rx="3" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+        <text x="96" y="187" font-family="var(--font-mono)" font-size="8" fill="var(--color-key-text)">descarga en paralelo</text>
+        <rect x="434" y="196" width="90" height="24" rx="3" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="440" y="212" font-family="var(--font-mono)" font-size="9" fill="var(--color-key-text)">ejecuta script</text>
+        <line x1="434" y1="188" x2="434" y2="228" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="436" y="185" font-family="var(--font-mono)" font-size="8" fill="var(--color-accent)">DOMContentLoaded</text>
+
+        <rect x="570" y="60" width="14" height="10" rx="2" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="588" y="70" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">Parse HTML</text>
+        <rect x="570" y="78" width="14" height="10" rx="2" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="588" y="88" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">Bloqueo</text>
+        <rect x="570" y="96" width="14" height="10" rx="2" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+        <text x="588" y="106" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">Descarga paralela</text>
+        <rect x="570" y="114" width="14" height="10" rx="2" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="588" y="124" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">Ejecución script</text>
+      </svg>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Forma</th><th>Cuándo usar</th><th>Consideración</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>&lt;script&gt;</code> al final de <code>&lt;body&gt;</code></td><td>Forma clásica, compatibilidad total</td><td>El DOM ya existe cuando se ejecuta; bloquea la carga</td></tr>
+        <tr><td><code>&lt;script defer&gt;</code> en <code>&lt;head&gt;</code></td><td><strong>Forma recomendada</strong></td><td>Descarga en paralelo, ejecuta cuando DOM listo, antes de DOMContentLoaded</td></tr>
+        <tr><td><code>&lt;script async&gt;</code> en <code>&lt;head&gt;</code></td><td>Scripts independientes (analytics, ads)</td><td>Ejecuta en cuanto descarga; puede ejecutar antes de que DOM esté listo</td></tr>
+        <tr><td>Inline <code>&lt;script&gt;</code></td><td>Solo prototipado rápido</td><td>No reutilizable, no cacheado</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">html</div>
+      <pre><code>&lt;!-- 1. Script externo con defer (recomendado) --&gt;
+&lt;script src="app.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- 2. Script externo con async (scripts independientes) --&gt;
+&lt;script src="analytics.js" async&gt;&lt;/script&gt;
+
+&lt;!-- 3. Inline (solo casos muy específicos) --&gt;
+&lt;script&gt;
+  console.log("Ejecuta inmediatamente al parsear");
+&lt;/script&gt;</code></pre>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 3: FUNDAMENTOS ===== -->
+  <section id="fundamentos">
+    <h2>Variables y tipos</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso medio. var/let/const y hoisting son conceptos base que dan soporte a DOM y Eventos. Saber la diferencia entre == y ===, valores falsy y typeof para entender el código de las prácticas.</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:720px;display:block;">
+        <title>var vs let vs const: ámbito y hoisting visual</title>
+        <defs>
+          <marker id="arr-hoist" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-warning-text)"/>
+          </marker>
+        </defs>
+        <rect x="10" y="10" width="460" height="300" rx="8" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="22" y="30" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-2)" font-weight="600">function scope</text>
+        <rect x="30" y="40" width="420" height="200" rx="6" fill="var(--color-surface)" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <text x="44" y="60" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">if (condicion) &#123;</text>
+        <rect x="50" y="68" width="380" height="120" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="64" y="86" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">for (let i = 0; ...) &#123;</text>
+        <text x="70" y="108" font-family="var(--font-mono)" font-size="11" fill="var(--color-warning-text)" font-weight="700">var x = 5</text>
+        <text x="190" y="108" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">— scope de FUNCION (sube)</text>
+        <text x="70" y="130" font-family="var(--font-mono)" font-size="11" fill="var(--color-tip-text)" font-weight="700">let y = 10</text>
+        <text x="190" y="130" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">— scope de BLOQUE</text>
+        <text x="70" y="152" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)" font-weight="700">const Z = 20</text>
+        <text x="190" y="152" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">— scope de BLOQUE</text>
+        <text x="64" y="176" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">&#125;</text>
+        <text x="44" y="252" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">&#125;</text>
+        <line x1="140" y1="108" x2="140" y2="42" stroke="var(--color-warning-text)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-hoist)"/>
+        <text x="146" y="78" font-family="var(--font-body)" font-size="9" fill="var(--color-warning-text)">hoisted como undefined</text>
+        <rect x="50" y="40" width="30" height="26" rx="2" fill="oklch(97% 0.03 0 / 0.7)" stroke="oklch(82% 0.08 0)" stroke-width="1"/>
+        <text x="54" y="56" font-family="var(--font-mono)" font-size="7" fill="oklch(38% 0.12 0)">TDZ</text>
+        <rect x="500" y="30" width="12" height="10" rx="2" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="516" y="40" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">var — scope función</text>
+        <rect x="500" y="50" width="12" height="10" rx="2" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="516" y="60" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">let — scope bloque</text>
+        <rect x="500" y="70" width="12" height="10" rx="2" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="516" y="80" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">const — scope bloque</text>
+        <rect x="500" y="90" width="12" height="10" rx="2" fill="oklch(97% 0.03 0 / 0.7)" stroke="oklch(82% 0.08 0)" stroke-width="1"/>
+        <text x="516" y="100" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">TDZ (ReferenceError)</text>
+      </svg>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Característica</th><th><code>var</code></th><th><code>let</code></th><th><code>const</code></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Scope</td><td>Función</td><td>Bloque</td><td>Bloque</td></tr>
+        <tr><td>Hoisting</td><td>Sí (→ <code>undefined</code>)</td><td>Sí (pero TDZ)</td><td>Sí (pero TDZ)</td></tr>
+        <tr><td>Reasignable</td><td>Sí</td><td>Sí</td><td>No</td></tr>
+        <tr><td>Redeclarable en mismo scope</td><td>Sí</td><td>No</td><td>No</td></tr>
+        <tr><td>Uso recomendado</td><td>Evitar</td><td>Variables</td><td>Constantes y referencias</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      <p>Regla práctica: usar siempre <code>const</code> por defecto. Si el valor debe cambiar, usar <code>let</code>. Nunca usar <code>var</code> en código moderno.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — hoisting</div>
+      <pre><code>// Hoisting con var: eleva declaración como undefined
+console.log(result); // undefined (no error)
+var result = 5 + 10;
+
+// Hoisting con let: TDZ — ReferenceError
+console.log(result); // Uncaught ReferenceError
+let result = 5 + 10;</code></pre>
+    </div>
+
+    <h3>Valores falsy</h3>
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Valor</th><th>Tipo</th><th>Nota</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>false</code></td><td>boolean</td><td>El valor booleano false</td></tr>
+        <tr><td><code>0</code>, <code>-0</code>, <code>0n</code></td><td>number / bigint</td><td>Cero en cualquier variante numérica</td></tr>
+        <tr><td><code>""</code>, <code>''</code></td><td>string</td><td>Cadena vacía</td></tr>
+        <tr><td><code>null</code></td><td>object</td><td>Valor primitivo que representa ausencia intencional. <code>typeof null === 'object'</code> es un bug histórico que no se corrigió por compatibilidad con código existente.</td></tr>
+        <tr><td><code>undefined</code></td><td>undefined</td><td>Variable no inicializada</td></tr>
+        <tr><td><code>NaN</code></td><td>number</td><td>Not a Number</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <p>El operador <code>==</code> hace conversión de tipo (<code>1 == '1'</code> es <code>true</code>). Usar siempre <code>===</code> (identidad estricta) salvo que se quiera comparar <code>null == undefined</code>.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Tipo</th><th>Ejemplo</th><th><code>typeof</code> devuelve</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>number</td><td><code>42</code>, <code>3.14</code></td><td><code>"number"</code></td></tr>
+        <tr><td>string</td><td><code>"hola"</code></td><td><code>"string"</code></td></tr>
+        <tr><td>boolean</td><td><code>true</code></td><td><code>"boolean"</code></td></tr>
+        <tr><td>undefined</td><td><code>undefined</code></td><td><code>"undefined"</code></td></tr>
+        <tr><td>object (null)</td><td><code>null</code></td><td><code>"object"</code> — trampa histórica de JS</td></tr>
+        <tr><td>object</td><td><code>&#123;&#125;</code>, array</td><td><code>"object"</code></td></tr>
+        <tr><td>function</td><td><code>function()&#123;&#125;</code></td><td><code>"function"</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — comprobaciones seguras</div>
+      <pre><code>// Comprobar si una variable existe (sin ReferenceError)
+if (typeof miVar !== 'undefined') &#123; /* existe */ &#125;
+
+// Nullish coalescing (ES2020) — solo sustituye null/undefined, no 0 ni ""
+let metodo = pmethod ?? "GET";
+
+// Optional chaining (ES2020)
+let nombre = usuario?.perfil?.nombre; // undefined si cualquier parte es null
+
+// Cortocircuito con || — valor por defecto si falsy (0, "", null, undefined)
+let metodoFallback = pmethod || "GET";  // si pmethod es falsy, usa "GET"
+
+// Cortocircuito con && — ejecutar solo si truthy
+let nombreSeguro = usuario && usuario.nombre; // undefined si usuario es null/undefined
+
+// Diferencia clave:
+// || sustituye si es FALSY (incluyendo 0, "")
+// ?? sustituye solo si es null o undefined (preserva 0 y "")
+let puerto = config.puerto ?? 3000;  // preserva puerto=0 si está configurado así</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — template literals</div>
+      <pre><code>let nombre = 'Ana', rol = 'admin';
+// Concatenación clásica (evitar)
+let msg = 'Bienvenida ' + nombre + ', eres ' + rol;
+// Template literal (usar siempre)
+let msg2 = `Bienvenida $&#123;nombre&#125;, eres $&#123;rol&#125;`;
+// Multilinea:
+let html = `
+  &lt;div class="card"&gt;
+    &lt;h2&gt;$&#123;nombre&#125;&lt;/h2&gt;
+  &lt;/div&gt;
+`;</code></pre>
+    </div>
+
+    <p><strong>Estructuras de control:</strong> idénticas a Java (if/else, for, while, switch). Diferencias JS importantes:</p>
+    <div class="code-block">
+      <div class="code-block-header">javascript — for...in vs for...of</div>
+      <pre><code>const arr = [10, 20, , 40]; // array con hueco en pos 2
+
+// for...in: itera CLAVES (indices como strings) — NO usar con arrays
+for (let k in arr) &#123; console.log(k); &#125; // "0", "1", "3"
+
+// for...of (ES6): itera VALORES — usar con arrays
+for (let v of arr) &#123; console.log(v); &#125; // 10, 20, undefined, 40
+
+// for...in es para OBJETOS: itera claves enumerables
+const persona = &#123; nombre: 'Ana', edad: 30, rol: 'admin' &#125;;
+for (let clave in persona) &#123;
+  console.log(clave, ':', persona[clave]);
+&#125; // nombre:Ana, edad:30, rol:admin
+
+// Object.entries() + for...of — forma moderna para objetos
+for (let [clave, valor] of Object.entries(persona)) &#123;
+  console.log(clave, ':', valor);
+&#125;</code></pre>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 4: FUNCIONES ===== -->
+  <section id="funciones">
+    <h2>Funciones y callbacks</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. Las funciones son la base de los manejadores de eventos y callbacks del DOM. Dominar la diferencia entre declaración vs expresión, arrow function y cuándo usar cada una.</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:780px;display:block;">
+        <title>Cuatro formas de definir una función en JavaScript</title>
+        <rect x="10" y="10" width="760" height="58" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="22" y="32" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" font-weight="700">Declaración</text>
+        <text x="140" y="32" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)">function nombre(args) &#123; return ... &#125;</text>
+        <text x="22" y="56" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)">Hoisting completo — se puede llamar antes de declarar</text>
+        <rect x="10" y="76" width="760" height="58" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="22" y="98" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" font-weight="700">Expresión (anónima)</text>
+        <text x="200" y="98" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)">let f = function(args) &#123; return ... &#125;</text>
+        <text x="22" y="122" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)">Sin hoisting — solo usable después de la asignación</text>
+        <rect x="10" y="142" width="760" height="58" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="22" y="164" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" font-weight="700">Arrow function (ES6)</text>
+        <text x="200" y="164" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)">let f = (args) =&gt; expresion</text>
+        <text x="22" y="188" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)">No tiene su propio this — usar event.target en manejadores de evento</text>
+        <rect x="10" y="208" width="760" height="58" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="22" y="230" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" font-weight="700">Método de objeto</text>
+        <text x="200" y="230" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)">&#123; f: function() &#123;&#125; &#125;  o  &#123; f() &#123;&#125; &#125;</text>
+        <text x="22" y="254" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)">this = el objeto al que pertenece el método</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — funciones y arrow functions</div>
+      <pre><code>// Declaración (hoisting completo)
+function cuadrado(n) &#123;
+  return n * n;
+&#125;
+
+// Expresión (sin hoisting)
+const cuadrado2 = function(n) &#123;
+  return n * n;
+&#125;;
+
+// Arrow function — return implícito si hay una sola expresión
+const cuadrado3 = n =&gt; n * n;
+
+// Arrow function con cuerpo y callback
+const opera = (a, b, fn) =&gt; &#123;
+  const result = fn(a, b);
+  console.log(result);
+&#125;;
+
+opera(3, 4, (x, y) =&gt; x + y); // 7
+opera(3, 4, (x, y) =&gt; x * y); // 12</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p>Arrow functions NO tienen su propio <code>this</code>. Por eso NO deben usarse como manejadores de evento cuando se necesita <code>this</code> para referenciar el elemento. Usar <code>function</code> convencional o <code>event.target</code>.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — callbacks</div>
+      <pre><code>// Un callback es una función pasada como argumento a otra función
+function procesar(datos, callback) &#123;
+  const resultado = datos.map(x =&gt; x * 2);
+  callback(resultado);
+&#125;
+
+procesar([1, 2, 3], function(res) &#123;
+  console.log(res); // [2, 4, 6]
+&#125;);
+
+// El mismo patrón aparece en addEventListener:
+boton.addEventListener('click', function(event) &#123;
+  // Este literal función ES el callback
+&#125;);</code></pre>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>Relación directa con Eventos: los manejadores de evento son exactamente callbacks — literales función que el entorno invoca cuando ocurre el evento. Sin entender callbacks, los eventos no tienen sentido.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 5: ARRAYS ===== -->
+  <section id="arrays">
+    <h2>Arrays y métodos funcionales</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso medio. Los métodos <code>forEach</code>, <code>filter</code>, <code>map</code> y el encadenamiento aparecen en P8 (MiniTwitter) para construir la lista de tweets. Desestructuración y spread son útiles para entender el código moderno.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Método</th><th>¿Modifica el array?</th><th>Devuelve</th><th>Ejemplo breve</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>push(val)</code></td><td>Sí</td><td>nueva longitud</td><td><code>arr.push(5)</code> → añade al final</td></tr>
+        <tr><td><code>pop()</code></td><td>Sí</td><td>elemento eliminado</td><td><code>arr.pop()</code> → elimina el último</td></tr>
+        <tr><td><code>splice(i, n)</code></td><td>Sí</td><td>elementos eliminados</td><td><code>arr.splice(2, 1)</code> → elimina 1 desde pos 2</td></tr>
+        <tr><td><code>sort([fn])</code></td><td>Sí</td><td>el propio array</td><td><code>arr.sort((a,b) =&gt; a-b)</code> → orden numérico</td></tr>
+        <tr><td><code>concat(arr2)</code></td><td>No</td><td>nuevo array</td><td><code>[1,2].concat([3,4])</code> → <code>[1,2,3,4]</code></td></tr>
+        <tr><td><code>slice(i, j)</code></td><td>No</td><td>nuevo subarray</td><td><code>arr.slice(1, 3)</code> → copia posiciones 1-2</td></tr>
+        <tr><td><code>indexOf(val)</code></td><td>No</td><td>índice o -1</td><td><code>arr.indexOf(5)</code> → posición o -1</td></tr>
+        <tr><td><code>forEach(fn)</code></td><td>No</td><td>undefined</td><td>itera sin devolver nada</td></tr>
+        <tr><td><code>filter(fn)</code></td><td>No</td><td>nuevo array filtrado</td><td><code>arr.filter(x =&gt; x &gt; 0)</code> → positivos</td></tr>
+        <tr><td><code>map(fn)</code></td><td>No</td><td>nuevo array transformado</td><td><code>arr.map(x =&gt; x*2)</code> → duplicados</td></tr>
+        <tr><td><code>reduce(fn, init)</code></td><td>No</td><td>valor acumulado</td><td><code>arr.reduce((s,e) =&gt; s+e, 0)</code> → suma</td></tr>
+        <tr><td><code>find(fn)</code></td><td>No</td><td>primer elemento</td><td><code>arr.find(x =&gt; x &gt; 3)</code> → el primero</td></tr>
+        <tr><td><code>includes(val)</code></td><td>No</td><td>boolean</td><td><code>arr.includes(5)</code> → true/false</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <p><code>sort()</code> sin función comparadora convierte los elementos a string y los ordena lexicográficamente. <code>[10, 2, 1].sort()</code> devuelve <code>[1, 10, 2]</code>, no <code>[1, 2, 10]</code>. Siempre pasar la función: <code>arr.sort((a, b) => a - b)</code> para orden numérico ascendente, <code>(a, b) => b - a</code> para descendente.</p>
+    </div>
+
+    <h3>Parámetros del callback en métodos iteradores</h3>
+    <p>Los métodos <code>forEach</code>, <code>filter</code>, <code>map</code>, <code>reduce</code> y similares pasan al callback hasta tres argumentos:</p>
+    <div class="code-block">
+      <div class="code-block-header">javascript — callback con índice y array</div>
+      <pre><code>const frutas = ['manzana', 'pera', 'uva'];
+
+// forEach: (elemento, índice, arrayCompleto)
+frutas.forEach(function(fruta, indice, arr) &#123;
+  console.log(`$&#123;indice&#125;: $&#123;fruta&#125;`); // 0: manzana, 1: pera, 2: uva
+&#125;);
+
+// filter: devuelve true/false para cada elemento
+const largas = frutas.filter((f, i) =&gt; f.length &gt; 4); // ['manzana']
+
+// map: devuelve el valor transformado
+const mayus = frutas.map((f, i) =&gt; `$&#123;i&#125;-$&#123;f.toUpperCase()&#125;`);
+// ['0-MANZANA', '1-PERA', '2-UVA']
+
+// reduce: (acumulador, elemento, índice, array)
+const csv = frutas.reduce((acc, f, i) =&gt; &#123;
+  return i === 0 ? f : acc + ', ' + f;
+&#125;, '');
+// 'manzana, pera, uva'</code></pre>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 780 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:780px;display:block;">
+        <title>Pipeline de métodos encadenados: map luego filter</title>
+        <defs>
+          <marker id="arr-pipe" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-accent)"/>
+          </marker>
+        </defs>
+        <rect x="10" y="70" width="130" height="40" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="20" y="87" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">[1,2,3,4,5,6,7]</text>
+        <text x="20" y="102" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">array original</text>
+        <line x1="142" y1="90" x2="168" y2="90" stroke="var(--color-accent)" stroke-width="2" marker-end="url(#arr-pipe)"/>
+        <rect x="170" y="58" width="160" height="64" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="182" y="80" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)" font-weight="700">.map(e =&gt; e*e)</text>
+        <text x="182" y="98" font-family="var(--font-body)" font-size="9" fill="var(--color-key-text)">Transforma cada elemento</text>
+        <text x="182" y="112" font-family="var(--font-mono)" font-size="9" fill="var(--color-key-text)">[1,4,9,16,25,36,49]</text>
+        <line x1="332" y1="90" x2="358" y2="90" stroke="var(--color-accent)" stroke-width="2" marker-end="url(#arr-pipe)"/>
+        <rect x="360" y="58" width="200" height="64" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="372" y="80" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)" font-weight="700">.filter(e =&gt; e%2===0)</text>
+        <text x="372" y="98" font-family="var(--font-body)" font-size="9" fill="var(--color-key-text)">Filtra por condición</text>
+        <text x="372" y="112" font-family="var(--font-mono)" font-size="9" fill="var(--color-key-text)">[4, 16, 36]</text>
+        <line x1="562" y1="90" x2="588" y2="90" stroke="var(--color-accent)" stroke-width="2" marker-end="url(#arr-pipe)"/>
+        <rect x="590" y="70" width="100" height="40" rx="5" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="600" y="87" font-family="var(--font-mono)" font-size="11" fill="var(--color-tip-text)" font-weight="700">[4, 16, 36]</text>
+        <text x="600" y="102" font-family="var(--font-body)" font-size="9" fill="var(--color-tip-text)">resultado</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — métodos encadenados</div>
+      <pre><code>const numeros = [1, 2, 3, 4, 5, 6, 7];
+
+// Encadenamiento: cuadrados de los pares
+const resultado = numeros
+  .map(e =&gt; e * e)          // [1,4,9,16,25,36,49]
+  .filter(e =&gt; e % 2 === 0); // [4,16,36]
+
+resultado.forEach((val, i) =&gt; console.log(`[$&#123;i&#125;] = $&#123;val&#125;`));
+
+const suma = numeros.reduce((acc, val) =&gt; acc + val, 0); // 28</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — desestructuración y spread/rest</div>
+      <pre><code>// Desestructuración de array
+const items = [4, 11, 2, 23];
+const [primero, segundo, ...resto] = items;
+// primero=4, segundo=11, resto=[2,23]
+
+// Desestructuración de objeto
+const persona = &#123; nombre: 'Ana', rol: 'admin', edad: 30 &#125;;
+const &#123; nombre, rol &#125; = persona;
+
+// Spread: expandir array/objeto
+const copia = [...items, 99];           // [4,11,2,23,99]
+const obj2 = &#123; ...persona, edad: 31 &#125;;  // nuevo objeto con edad actualizada
+
+// Rest en parámetros
+function suma(...args) &#123;
+  return args.reduce((a, b) =&gt; a + b, 0);
+&#125;
+suma(1, 2, 3, 4); // 10</code></pre>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 6: OOP ===== -->
+  <section id="oop">
+    <h2>OOP y prototipos</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo-medio. Entender el concepto de prototype chain y la sintaxis de clase ES6 (constructor, métodos, getter). No hace falta memorizar herencia compleja. JS OOP es un "barniz" sobre prototipos.</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:720px;display:block;">
+        <title>Prototype chain en JavaScript</title>
+        <defs>
+          <marker id="arr-proto" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0,0 L0,8 L8,4 z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arr-lookup" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0,0 L0,8 L8,4 z" fill="var(--color-warning-text)"/>
+          </marker>
+        </defs>
+        <rect x="60" y="20" width="300" height="70" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="76" y="44" font-family="var(--font-mono)" font-size="12" fill="var(--color-text)" font-weight="700">punto1 = new Punto(1,1)</text>
+        <text x="76" y="62" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">propiedades propias: x:1, y:1</text>
+        <text x="76" y="78" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">[[Prototype]] →</text>
+        <line x1="210" y1="92" x2="210" y2="124" stroke="var(--color-accent)" stroke-width="2" marker-end="url(#arr-proto)"/>
+        <text x="216" y="113" font-family="var(--font-body)" font-size="9" fill="var(--color-accent)">[[Prototype]]</text>
+        <rect x="60" y="126" width="300" height="70" rx="6" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="76" y="150" font-family="var(--font-mono)" font-size="12" fill="var(--color-key-text)" font-weight="700">Punto.prototype</text>
+        <text x="76" y="168" font-family="var(--font-body)" font-size="10" fill="var(--color-key-text)">método: distancia()</text>
+        <text x="76" y="184" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">[[Prototype]] →</text>
+        <line x1="210" y1="198" x2="210" y2="230" stroke="var(--color-accent)" stroke-width="2" marker-end="url(#arr-proto)"/>
+        <text x="216" y="219" font-family="var(--font-body)" font-size="9" fill="var(--color-accent)">[[Prototype]]</text>
+        <rect x="60" y="232" width="300" height="70" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="76" y="256" font-family="var(--font-mono)" font-size="12" fill="var(--color-text)" font-weight="700">Object.prototype</text>
+        <text x="76" y="274" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">toString(), hasOwnProperty()…</text>
+        <text x="76" y="290" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)">[[Prototype]] → null</text>
+        <path d="M 390 55 Q 480 55 480 200 Q 480 280 370 280" stroke="var(--color-warning-text)" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-lookup)"/>
+        <text x="490" y="100" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" font-weight="600">prototype lookup</text>
+        <text x="490" y="116" font-family="var(--font-body)" font-size="9" fill="var(--color-warning-text)">punto1.distancia() sube</text>
+        <text x="490" y="130" font-family="var(--font-body)" font-size="9" fill="var(--color-warning-text)">la cadena hasta encontrar</text>
+        <text x="490" y="144" font-family="var(--font-body)" font-size="9" fill="var(--color-warning-text)">el método en prototype</text>
+      </svg>
+    </div>
+
+    <p>JavaScript no tiene clases en el sentido de Java o C++. El sistema de tipos subyacente sigue siendo prototype-based. La palabra clave <code>class</code> (ES6) simplifica la sintaxis de funciones constructoras pero introduce además diferencias reales: los métodos de clase son no-enumerables, siempre corre en strict mode, y no se puede invocar sin <code>new</code>. El callout a continuación los resume.</p>
+    <p>Cuando se busca un método, JS sube por la cadena de prototipos hasta encontrarlo o llegar a null.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Forma</th><th>Cuándo usarla</th><th>Ejemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Object literal <code>&#123;&#125;</code></td><td>Objeto único ad-hoc</td><td><code>const p = &#123; x:1, y:2 &#125;</code></td></tr>
+        <tr><td>Función constructora</td><td>Varias instancias, sin clases</td><td><code>function Punto(x,y) &#123; this.x=x &#125;</code></td></tr>
+        <tr><td><code>class</code> (ES6)</td><td>Preferida para OO moderna</td><td><code>class Punto &#123; constructor(x,y)&#123;&#125; &#125;</code></td></tr>
+        <tr><td><code>new Object()</code></td><td>Evitar — verboso</td><td><code>const p = new Object()</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — clase ES6</div>
+      <pre><code>class Rectangulo &#123;
+  constructor(alto, ancho) &#123;
+    this.alto = alto;
+    this.ancho = ancho;
+  &#125;
+
+  // Getter: se usa como propiedad (sin paréntesis)
+  get area() &#123;
+    return this.alto * this.ancho;
+  &#125;
+
+  perimetro() &#123;
+    return 2 * (this.alto + this.ancho);
+  &#125;
+&#125;
+
+const r = new Rectangulo(4, 6);
+console.log(r.area);        // 24 — getter, sin ()
+console.log(r.perimetro()); // 20 — método, con ()</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p>Aunque <code>typeof Rectangulo === 'function'</code>, class tiene diferencias importantes: no tiene hoisting completo, siempre corre en strict mode y no se puede llamar sin <code>new</code>.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — prototype directamente</div>
+      <pre><code>function Punto(x, y) &#123;
+  this.x = x;
+  this.y = y;
+&#125;
+
+// Añadir método al prototype: todos los Punto lo heredan
+Punto.prototype.distancia = function(p) &#123;
+  return Math.sqrt((p.x - this.x)**2 + (p.y - this.y)**2);
+&#125;;
+
+const p1 = new Punto(0, 0);
+const p2 = new Punto(3, 4);
+p1.distancia(p2); // 5</code></pre>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 7: ENTORNO NAVEGADOR ===== -->
+  <section id="entorno-navegador">
+    <h2>Entorno del navegador</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo. Saber que <code>window</code> es el contexto global y las propiedades principales de los objetos del navegador. <code>location.href</code> y <code>history.back()</code> pueden aparecer en ejercicios de JS dado un HTML.</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:700px;display:block;">
+        <title>Árbol de objetos del navegador: window y sus propiedades</title>
+        <defs>
+          <marker id="arr-nav" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-border-strong)"/>
+          </marker>
+          <marker id="arr-nav-acc" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-accent)"/>
+          </marker>
+        </defs>
+        <rect x="260" y="10" width="180" height="40" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="2"/>
+        <text x="320" y="35" font-family="var(--font-mono)" font-size="14" fill="var(--color-text)" font-weight="700">window</text>
+        <rect x="10" y="100" width="130" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="22" y="120" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" font-weight="600">navigator</text>
+        <text x="22" y="140" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">userAgent, platform</text>
+        <rect x="160" y="100" width="110" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="172" y="120" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" font-weight="600">screen</text>
+        <text x="172" y="140" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">width, height</text>
+        <rect x="290" y="100" width="120" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="302" y="120" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" font-weight="600">history</text>
+        <text x="302" y="140" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">back(), forward()</text>
+        <rect x="430" y="100" width="130" height="50" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="442" y="120" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" font-weight="600">location</text>
+        <text x="442" y="140" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">href, pathname, search</text>
+        <rect x="220" y="210" width="260" height="60" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="300" y="236" font-family="var(--font-mono)" font-size="13" fill="var(--color-key-text)" font-weight="700">document</text>
+        <text x="240" y="258" font-family="var(--font-body)" font-size="9" fill="var(--color-key-text)">Punto de entrada al DOM</text>
+        <line x1="310" y1="50" x2="75" y2="100" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-nav)"/>
+        <line x1="330" y1="50" x2="215" y2="100" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-nav)"/>
+        <line x1="350" y1="50" x2="350" y2="100" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-nav)"/>
+        <line x1="380" y1="50" x2="495" y2="100" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-nav)"/>
+        <line x1="350" y1="50" x2="350" y2="210" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-nav-acc)"/>
+        <text x="356" y="175" font-family="var(--font-body)" font-size="9" fill="var(--color-accent)">punto de entrada al DOM</text>
+      </svg>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Objeto</th><th>Uso más común</th><th>Ejemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>window</code></td><td>Contexto global; timers</td><td><code>window.setTimeout(fn, 1000)</code></td></tr>
+        <tr><td><code>navigator</code></td><td>Feature detection</td><td><code>if (navigator.geolocation) &#123;...&#125;</code></td></tr>
+        <tr><td><code>location</code></td><td>Redirigir / leer URL</td><td><code>location.href = '/login'</code></td></tr>
+        <tr><td><code>history</code></td><td>Navegación programática</td><td><code>history.back()</code></td></tr>
+        <tr><td><code>document</code></td><td>Punto de entrada al DOM</td><td><code>document.getElementById('id')</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — usos habituales del entorno</div>
+      <pre><code>// Redirigir a otra página
+window.location.href = '/login';
+window.location.assign('/dashboard'); // añade al historial
+
+// Feature detection antes de usar una API
+if ('geolocation' in navigator) &#123;
+  navigator.geolocation.getCurrentPosition(callback);
+&#125; else &#123;
+  console.warn('Geolocalización no disponible');
+&#125;
+
+// Timer: callback 1 vez después de 2 segundos
+setTimeout(() =&gt; console.log('pasaron 2 segundos'), 2000);
+
+// Timer repetitivo (cada 5 segundos)
+const id = setInterval(() =&gt; console.log('tick'), 5000);
+clearInterval(id); // cancelar</code></pre>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 8: DOM ÁRBOL ===== -->
+  <section id="dom">
+    <h2>DOM: árbol y búsqueda de elementos</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso muy alto. "JS dado un HTML" es uno de los ejercicios confirmados. Dominar <code>querySelector</code>, <code>getElementById</code>, <code>childNodes</code> vs <code>children</code>, <code>nodeType</code>. Es la base de P8 Part III (DOM manual).</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:720px;display:block;">
+        <title>El árbol DOM con nodos Element y Text</title>
+        <defs>
+          <marker id="arr-dom" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="var(--color-border-strong)"/>
+          </marker>
+        </defs>
+        <rect x="270" y="10" width="180" height="36" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="316" y="33" font-family="var(--font-mono)" font-size="12" fill="var(--color-text)" font-weight="700">Document</text>
+        <text x="290" y="55" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">nodeType=9</text>
+        <rect x="270" y="72" width="180" height="36" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="330" y="95" font-family="var(--font-mono)" font-size="12" fill="var(--color-key-text)" font-weight="700">&lt;html&gt;</text>
+        <line x1="360" y1="46" x2="360" y2="72" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-dom)"/>
+        <rect x="120" y="152" width="140" height="36" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="155" y="175" font-family="var(--font-mono)" font-size="12" fill="var(--color-key-text)" font-weight="600">&lt;head&gt;</text>
+        <line x1="280" y1="108" x2="190" y2="152" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-dom)"/>
+        <rect x="420" y="152" width="140" height="36" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="455" y="175" font-family="var(--font-mono)" font-size="12" fill="var(--color-key-text)" font-weight="600">&lt;body&gt;</text>
+        <line x1="440" y1="108" x2="490" y2="152" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-dom)"/>
+        <rect x="60" y="230" width="140" height="36" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="90" y="253" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)">&lt;title&gt;</text>
+        <line x1="190" y1="188" x2="130" y2="230" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-dom)"/>
+        <rect x="60" y="308" width="140" height="30" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="100" y="328" font-family="var(--font-mono)" font-size="10" fill="var(--color-tip-text)">"Título"</text>
+        <line x1="130" y1="266" x2="130" y2="308" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-dom)"/>
+        <rect x="360" y="230" width="170" height="36" rx="5" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="380" y="253" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)" font-weight="600">&lt;div id="lista"&gt;</text>
+        <line x1="490" y1="188" x2="445" y2="230" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-dom)"/>
+        <rect x="270" y="308" width="100" height="30" rx="4" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="290" y="328" font-family="var(--font-mono)" font-size="10" fill="var(--color-key-text)">&lt;p&gt; #1</text>
+        <line x1="400" y1="266" x2="320" y2="308" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-dom)"/>
+        <rect x="390" y="308" width="100" height="30" rx="4" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="410" y="328" font-family="var(--font-mono)" font-size="10" fill="var(--color-key-text)">&lt;p&gt; #2</text>
+        <line x1="445" y1="266" x2="440" y2="308" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-dom)"/>
+        <rect x="506" y="308" width="100" height="30" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="516" y="328" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)">text nodes</text>
+        <line x1="490" y1="266" x2="556" y2="308" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-dom)"/>
+        <rect x="610" y="152" width="12" height="10" rx="2" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="626" y="162" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">Element (nodeType=1)</text>
+        <rect x="610" y="172" width="12" height="10" rx="2" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="626" y="182" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">Text (nodeType=3)</text>
+        <rect x="610" y="192" width="12" height="10" rx="2" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <text x="626" y="202" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">Document (nodeType=9)</text>
+      </svg>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Propiedad</th><th>Devuelve</th><th>Incluye texto/espacios</th><th>Tipo devuelto</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>childNodes</code></td><td>Todos los nodos hijos</td><td>Sí (TextNode, CommentNode…)</td><td><code>NodeList</code></td></tr>
+        <tr><td><code>children</code></td><td>Solo hijos Element</td><td>No</td><td><code>HTMLCollection</code></td></tr>
+        <tr><td><code>firstChild</code></td><td>Primer nodo hijo</td><td>Sí (puede ser TextNode)</td><td>Node</td></tr>
+        <tr><td><code>firstElementChild</code></td><td>Primer hijo Element</td><td>No</td><td>Element</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <p>Trampa clásica: un <code>&lt;div&gt;</code> con tres <code>&lt;p&gt;</code> separados por saltos de línea tiene <strong>7</strong> childNodes (1 text + 1 p + 1 text + 1 p + 1 text + 1 p + 1 text), no 3. Usar siempre <code>children</code> si solo se quieren los elementos.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Método</th><th>Punto de partida</th><th>Devuelve</th><th>Nota</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>getElementById(id)</code></td><td>Solo <code>document</code></td><td>1 Element o null</td><td>Más rápido; id debe ser único</td></tr>
+        <tr><td><code>getElementsByTagName(tag)</code></td><td><code>document</code> o element</td><td>HTMLCollection (viva)</td><td><code>'*'</code> selecciona todos</td></tr>
+        <tr><td><code>getElementsByClassName(cls)</code></td><td><code>document</code> o element</td><td>HTMLCollection (viva)</td><td>—</td></tr>
+        <tr><td><code>querySelector(selector)</code></td><td><code>document</code> o element</td><td>1 Element o null</td><td>CSS selector; primer match</td></tr>
+        <tr><td><code>querySelectorAll(selector)</code></td><td><code>document</code> o element</td><td>NodeList (estática)</td><td>CSS selector; todos los match</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <p><strong>Colección viva vs estática:</strong> <code>getElementsByTagName</code> / <code>getElementsByClassName</code> devuelven una <code>HTMLCollection</code> viva — si se añaden o eliminan elementos del DOM que encajan, la colección se actualiza sola. <code>querySelectorAll</code> devuelve una <code>NodeList</code> estática — es una instantánea del momento en que se ejecutó. Para manipulación dinámica, <code>querySelectorAll</code> es más predecible.</p>
+    </div>
+
+    <div class="callout callout-key">
+      <p><code>Array.from(coleccion)</code>: <code>querySelectorAll</code> devuelve un <code>NodeList</code> y <code>getElementsByTagName</code> devuelve un <code>HTMLCollection</code>. Ninguno es un array real aunque parezcan uno. <code>Array.from()</code> los convierte en arrays para poder usar <code>forEach</code>, <code>map</code>, <code>filter</code>, etc. Alternativa: <code>[...nodelist]</code> (spread).</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — búsqueda de elementos</div>
+      <pre><code>// Por id (el más rápido)
+const menu = document.getElementById('menu');
+
+// Selector CSS: todos los links activos dentro de #nav
+const linksActivos = document.querySelectorAll('#nav a.active');
+
+// querySelector: primer input de tipo email
+const emailInput = document.querySelector('form input[type="email"]');
+
+// Recorrer resultados
+Array.from(linksActivos).forEach(link =&gt; &#123;
+  link.innerHTML = link.href;
+&#125;);
+
+// Navegar por el árbol
+const padre = emailInput.parentNode;
+const hermano = emailInput.nextElementSibling;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — leer y escribir contenido</div>
+      <pre><code>const div = document.getElementById('contenido');
+
+// innerHTML: HTML serializado
+div.innerHTML = '&lt;p&gt;Nuevo contenido&lt;/p&gt;'; // reemplaza TODO
+
+// textContent: texto plano (sin etiquetas, más seguro)
+div.textContent = 'Solo texto plano';
+
+// Atributos
+const img = document.getElementById('foto');
+img.src = 'nueva.jpg';
+img.setAttribute('alt', 'Nueva descripción');
+img.removeAttribute('alt');
+
+// Clases CSS
+div.classList.add('activo');
+div.classList.remove('inactivo');
+div.classList.toggle('visible');
+div.classList.contains('activo'); // true/false
+
+// Atributos data-*: &lt;div data-id="42" data-rol="admin"&gt;
+console.log(item.dataset.id);  // "42"
+console.log(item.dataset.rol); // "admin"</code></pre>
+    </div>
+
+    <h3>innerHTML vs textContent vs innerText</h3>
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Propiedad</th><th>Lee/escribe</th><th>Interpreta HTML</th><th>Respeta CSS visibility</th><th>Cuándo usar</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>innerHTML</code></td>
+          <td>HTML serializado</td>
+          <td>Sí (al escribir, parsea el HTML)</td>
+          <td>No</td>
+          <td>Insertar estructuras HTML complejas; ojo con XSS</td>
+        </tr>
+        <tr>
+          <td><code>textContent</code></td>
+          <td>Texto plano (sin etiquetas)</td>
+          <td>No (escapa los caracteres HTML)</td>
+          <td>No (incluye texto de elementos hidden)</td>
+          <td>Leer o escribir texto puro de forma segura</td>
+        </tr>
+        <tr>
+          <td><code>innerText</code></td>
+          <td>Texto visible</td>
+          <td>No</td>
+          <td>Sí (ignora texto de elementos ocultos con display:none)</td>
+          <td>Obtener exactamente el texto que el usuario ve; más lento que textContent</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-key">
+      <p>Regla práctica: para leer/escribir texto plano, usar siempre <code>textContent</code> — es más rápido, más predecible y no tiene riesgo XSS. Reservar <code>innerHTML</code> para cuando se necesita insertar etiquetas HTML reales.</p>
+    </div>
+
+    <h3>Leer valores de formulario</h3>
+    <div class="code-block">
+      <div class="code-block-header">javascript — formularios</div>
+      <pre><code>// Input de texto, email, password → .value
+const nombre = document.getElementById('nombre').value;
+const email  = document.querySelector('input[type="email"]').value;
+
+// Checkbox → .checked (boolean)
+const aceptado = document.getElementById('terminos').checked; // true/false
+
+// Select → .value o via .options y .selectedIndex
+const lista = document.getElementById('pais');
+const valorSeleccionado = lista.value;            // el value del option seleccionado
+const textoSeleccionado = lista.options[lista.selectedIndex].text; // el texto visible
+
+// Limpiar o cambiar valores desde JS
+document.getElementById('nombre').value = '';     // vaciar
+document.getElementById('activo').checked = true; // marcar checkbox
+
+// Acceso por nombre del formulario (forma clásica)
+// &lt;form name="miForm"&gt;&lt;input name="usuario"&gt;
+const usuario = document.miForm.usuario.value;
+// o: document.forms[0].elements['usuario'].value</code></pre>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 9: DOM MANIPULACIÓN ===== -->
+  <section id="dom-manipulacion">
+    <h2>DOM: manipulación del árbol</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso muy alto. P8 Part III (MiniTwitter) usa exactamente <code>createElement</code>, <code>innerHTML</code>, <code>replaceWith</code> y <code>remove</code> para gestionar los tweets dinámicamente. Es el ejercicio práctico más probable.</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 780 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:780px;display:block;">
+        <title>Operaciones DOM: ADD, REPLACE y REMOVE</title>
+        <defs>
+          <marker id="arr-manip" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-accent)"/>
+          </marker>
+        </defs>
+        <text x="10" y="30" font-family="var(--font-display)" font-size="12" fill="var(--color-tip-text)" font-weight="700">ADD — appendChild</text>
+        <rect x="10" y="38" width="120" height="60" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="22" y="58" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">ul#lista</text>
+        <rect x="22" y="64" width="90" height="18" rx="3" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="30" y="77" font-family="var(--font-mono)" font-size="9" fill="var(--color-key-text)">&lt;li&gt;item 1&lt;/li&gt;</text>
+        <text x="146" y="68" font-family="var(--font-mono)" font-size="9" fill="var(--color-accent)">appendChild(li.nuevo)</text>
+        <line x1="240" y1="70" x2="268" y2="70" stroke="var(--color-accent)" stroke-width="2" marker-end="url(#arr-manip)"/>
+        <rect x="270" y="38" width="120" height="78" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="282" y="58" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">ul#lista</text>
+        <rect x="282" y="64" width="90" height="18" rx="3" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="290" y="77" font-family="var(--font-mono)" font-size="9" fill="var(--color-key-text)">&lt;li&gt;item 1&lt;/li&gt;</text>
+        <rect x="282" y="86" width="90" height="18" rx="3" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="290" y="99" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)">&lt;li&gt;nuevo&lt;/li&gt;</text>
+
+        <text x="10" y="150" font-family="var(--font-display)" font-size="12" fill="var(--color-warning-text)" font-weight="700">REPLACE — replaceWith</text>
+        <rect x="10" y="158" width="120" height="52" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="22" y="178" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">div</text>
+        <rect x="22" y="184" width="90" height="18" rx="3" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="30" y="197" font-family="var(--font-mono)" font-size="9" fill="var(--color-warning-text)">&lt;p&gt;viejo&lt;/p&gt;</text>
+        <text x="146" y="190" font-family="var(--font-mono)" font-size="9" fill="var(--color-accent)">viejo.replaceWith(nuevo)</text>
+        <line x1="240" y1="186" x2="268" y2="186" stroke="var(--color-accent)" stroke-width="2" marker-end="url(#arr-manip)"/>
+        <rect x="270" y="158" width="120" height="52" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="282" y="178" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">div</text>
+        <rect x="282" y="184" width="90" height="18" rx="3" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="290" y="197" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)">&lt;p&gt;nuevo&lt;/p&gt;</text>
+
+        <text x="10" y="248" font-family="var(--font-display)" font-size="12" fill="oklch(38% 0.12 0)" font-weight="700">REMOVE — remove()</text>
+        <rect x="10" y="256" width="120" height="52" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="22" y="276" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">ul#lista</text>
+        <rect x="22" y="282" width="90" height="18" rx="3" fill="oklch(97% 0.03 0 / 0.8)" stroke="oklch(82% 0.08 0)" stroke-width="1"/>
+        <text x="30" y="295" font-family="var(--font-mono)" font-size="9" fill="oklch(38% 0.12 0)">&lt;li&gt;borrar&lt;/li&gt;</text>
+        <text x="146" y="290" font-family="var(--font-mono)" font-size="9" fill="var(--color-accent)">elemento.remove()</text>
+        <line x1="240" y1="288" x2="268" y2="288" stroke="var(--color-accent)" stroke-width="2" marker-end="url(#arr-manip)"/>
+        <rect x="270" y="256" width="120" height="52" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="282" y="276" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)">ul#lista</text>
+        <text x="282" y="300" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">(vacío)</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — crear y añadir elementos</div>
+      <pre><code>// 1. Crear elemento (aún no está en el DOM)
+const li = document.createElement('li');
+li.textContent = 'Nuevo elemento';
+li.className = 'item-lista';
+
+// 2. Añadir al final
+document.getElementById('miLista').appendChild(li);
+
+// 3. Insertar antes de un elemento existente
+const lista = document.getElementById('miLista');
+lista.insertBefore(li, lista.firstElementChild);
+
+// 4. Métodos modernos (sin necesitar el padre)
+const ref = document.getElementById('ref');
+ref.before(li);  // antes
+ref.after(li);   // después</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — eliminar y reemplazar</div>
+      <pre><code>// Eliminar (método moderno)
+const elemento = document.getElementById('borrar');
+elemento.remove();
+
+// Eliminar via padre (mayor compatibilidad)
+elemento.parentNode.removeChild(elemento);
+
+// Reemplazar (método moderno)
+const nuevo = document.createElement('p');
+nuevo.textContent = 'Texto nuevo';
+const viejo = document.getElementById('viejo');
+viejo.replaceWith(nuevo);
+
+// Via padre (DOM estándar)
+viejo.parentNode.replaceChild(nuevo, viejo);</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — innerHTML para construcción rápida</div>
+      <pre><code>function creaFilaTabla(nombre, email, rol) &#123;
+  const fila = document.createElement('tr');
+  fila.innerHTML = `
+    &lt;td&gt;$&#123;nombre&#125;&lt;/td&gt;
+    &lt;td&gt;$&#123;email&#125;&lt;/td&gt;
+    &lt;td&gt;&lt;span class="badge"&gt;$&#123;rol&#125;&lt;/span&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;button data-email="$&#123;email&#125;"&gt;Eliminar&lt;/button&gt;&lt;/td&gt;
+  `;
+  return fila; // aún no está en el DOM
+&#125;
+
+document.getElementById('tablaUsuarios')
+  .querySelector('tbody')
+  .appendChild(creaFilaTabla('Ana', 'ana@email.com', 'admin'));</code></pre>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>Usar <code>innerHTML</code> con datos de usuario sin sanitizar crea vulnerabilidades XSS. En las prácticas el contenido viene del servidor controlado, pero en producción siempre validar o usar <code>textContent</code> para texto plano.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Operación</th><th>Método moderno</th><th>Método DOM estándar (via padre)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Crear</td><td><code>document.createElement(tag)</code></td><td>igual</td></tr>
+        <tr><td>Leer HTML</td><td><code>el.innerHTML</code></td><td>igual</td></tr>
+        <tr><td>Leer texto</td><td><code>el.textContent</code></td><td>igual</td></tr>
+        <tr><td>Añadir al final</td><td><code>padre.appendChild(nuevo)</code></td><td>igual</td></tr>
+        <tr><td>Insertar antes</td><td><code>ref.before(nuevo)</code></td><td><code>padre.insertBefore(nuevo, ref)</code></td></tr>
+        <tr><td>Insertar después</td><td><code>ref.after(nuevo)</code></td><td>—</td></tr>
+        <tr><td>Reemplazar</td><td><code>viejo.replaceWith(nuevo)</code></td><td><code>padre.replaceChild(nuevo, viejo)</code></td></tr>
+        <tr><td>Eliminar</td><td><code>el.remove()</code></td><td><code>padre.removeChild(el)</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== SECCIÓN 10: EVENTOS ===== -->
+  <section id="eventos">
+    <h2>Modelo de eventos</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso muy alto. DOM y Eventos son "la base de los ejercicios prácticos" según el profesor. <code>addEventListener</code>, el objeto <code>Event</code>, <code>event.target</code> y <code>preventDefault()</code> son conceptos seguros en examen. Referencia directa: P8 Part III.</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:760px;display:block;">
+        <title>Los tres modos de registrar manejadores de eventos</title>
+        <rect x="10" y="10" width="740" height="64" rx="6" fill="oklch(97% 0.03 0 / 0.5)" stroke="oklch(82% 0.08 0)" stroke-width="1.5"/>
+        <text x="22" y="34" font-family="var(--font-display)" font-size="11" fill="oklch(38% 0.12 0)" font-weight="700">Evitar — Inline</text>
+        <text x="140" y="34" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">&lt;button onclick="miFuncion()"&gt;</text>
+        <text x="22" y="58" font-family="var(--font-body)" font-size="10" fill="oklch(38% 0.12 0)">No separación HTML/JS; no reutilizable; mezcla estructura y comportamiento</text>
+        <rect x="10" y="84" width="740" height="64" rx="6" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="22" y="108" font-family="var(--font-display)" font-size="11" fill="var(--color-warning-text)" font-weight="700">OK — Propiedad del elemento</text>
+        <text x="270" y="108" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">btn.onclick = function() &#123;&#125;</text>
+        <text x="22" y="132" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)">Solo permite 1 manejador por evento; el segundo sobreescribe el primero</text>
+        <rect x="10" y="158" width="740" height="64" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="22" y="182" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" font-weight="700">Preferido — addEventListener</text>
+        <text x="270" y="182" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)">btn.addEventListener('click', fn)</text>
+        <text x="22" y="206" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)">Múltiples manejadores; removeEventListener posible; separación completa</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — registrar manejadores</div>
+      <pre><code>// Correcto: función separada (pasar la función, sin paréntesis)
+function manejaClick(event) &#123;
+  console.log('Clicked:', event.target);
+&#125;
+boton.addEventListener('click', manejaClick);
+
+// Correcto: literal función
+boton.addEventListener('click', function(event) &#123;
+  console.log(event.target.value);
+&#125;);
+
+// Correcto: arrow (this = window — usar event.target en vez de this)
+boton.addEventListener('click', (event) =&gt; &#123;
+  console.log(event.target.value);
+&#125;);
+
+// INCORRECTO: invocar en lugar de pasar
+boton.addEventListener('click', manejaClick()); // MAL: ejecuta al registrar
+
+// Esperar a que el DOM esté listo
+document.addEventListener('DOMContentLoaded', () =&gt; &#123;
+  const boton = document.getElementById('enviar');
+  boton.addEventListener('click', manejaClick);
+&#125;);</code></pre>
+    </div>
+
+    <h3>Eliminar manejadores</h3>
+    <div class="code-block">
+      <div class="code-block-header">javascript — removeEventListener</div>
+      <pre><code>// Para poder eliminar un manejador, DEBE ser una función con nombre
+function manejaClick(event) &#123;
+  console.log('click', event.target);
+&#125;
+
+boton.addEventListener('click', manejaClick);
+
+// Más tarde, para eliminarlo (mismos argumentos: evento + función)
+boton.removeEventListener('click', manejaClick);
+
+// IMPOSIBLE eliminar funciones anónimas:
+boton.addEventListener('click', function(e) &#123; console.log(e); &#125;);
+// No hay forma de referenciar esa función para pasarla a removeEventListener
+// → Usar funciones con nombre cuando se prevé necesitar eliminarlas</code></pre>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Propiedad / Método</th><th>Qué contiene</th><th>Ejemplo de uso</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>event.type</code></td><td>Nombre del evento (sin "on")</td><td><code>"click"</code>, <code>"submit"</code>, <code>"keydown"</code></td></tr>
+        <tr><td><code>event.target</code></td><td>Elemento que originó el evento</td><td><code>event.target.value</code> → valor del input</td></tr>
+        <tr><td><code>event.currentTarget</code></td><td>Elemento donde está el manejador</td><td>Útil en delegación de eventos</td></tr>
+        <tr><td><code>event.preventDefault()</code></td><td>Cancela el comportamiento por defecto</td><td>Evitar que un form envíe, que un link navegue</td></tr>
+        <tr><td><code>event.stopPropagation()</code></td><td>Detiene la propagación del evento</td><td>Evitar que suba a elementos padre</td></tr>
+        <tr><td><code>event.key</code></td><td>Tecla pulsada (keydown/keyup)</td><td><code>"Enter"</code>, <code>"Escape"</code>, <code>"a"</code></td></tr>
+        <tr><td><code>event.clientX/Y</code></td><td>Posición del ratón en la ventana</td><td>Para drag &amp; drop o tooltips</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — preventDefault y event.target</div>
+      <pre><code>// Validar formulario antes de enviarlo
+const form = document.getElementById('miForm');
+form.addEventListener('submit', function(event) &#123;
+  const nombre = document.getElementById('nombre').value;
+  if (!nombre.trim()) &#123;
+    event.preventDefault(); // cancela el envío al servidor
+    document.getElementById('errorNombre').textContent = 'El nombre es obligatorio';
+  &#125;
+&#125;);
+
+// Prevenir navegación en un enlace
+document.getElementById('enlace').addEventListener('click', function(event) &#123;
+  event.preventDefault();
+  console.log('Quería ir a:', event.target.href);
+&#125;);
+
+// Gestionar tabs con event.target
+document.querySelectorAll('.tab').forEach(tab =&gt; &#123;
+  tab.addEventListener('click', function(event) &#123;
+    document.querySelectorAll('.tab').forEach(t =&gt; t.classList.remove('active'));
+    event.target.classList.add('active');
+  &#125;);
+&#125;);</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p><code>event.target</code> es el elemento que ORIGINÓ el evento (donde el usuario hizo clic). <code>event.currentTarget</code> (o <code>this</code> en function no arrow) es el elemento donde ESTÁ REGISTRADO el manejador. Son iguales si no hay delegación; distintos si la hay.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — DOMContentLoaded vs load</div>
+      <pre><code>// DOMContentLoaded: DOM construido, antes de cargar imágenes/CSS externos
+// Usar ESTE para registrar manejadores
+document.addEventListener('DOMContentLoaded', () =&gt; &#123;
+  inicializarApp();
+&#125;);
+
+// load: TODO cargado (HTML + CSS + imágenes + scripts)
+// Solo si necesitas dimensiones de imágenes, etc.
+window.addEventListener('load', () =&gt; &#123;
+  console.log('Todo cargado, incluyendo imágenes');
+&#125;);</code></pre>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>El material del profesor usa frecuentemente <code>window.onload = function() &#123;&#125;</code> para esperar a que el DOM esté listo antes de registrar manejadores. Es equivalente a <code>window.addEventListener('load', fn)</code> pero solo admite un manejador. La diferencia con <code>DOMContentLoaded</code>: <code>load</code> espera también a que las imágenes y hojas de estilo externas se descarguen; <code>DOMContentLoaded</code> se dispara antes, en cuanto el HTML está parseado.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 11: PROPAGACIÓN ===== -->
+  <section id="propagacion">
+    <h2>Propagación y delegación de eventos</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso medio-alto. La propagación (bubbling) es necesaria para entender la delegación de eventos, que aparece en P8. Saber la diferencia entre <code>event.target</code> y <code>this</code> en este contexto.</p>
+    </div>
+
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:760px;display:block;">
+        <title>Fases de propagación de un evento: captura, target y bubbling</title>
+        <defs>
+          <marker id="arr-cap" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arr-bub" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-warning-text)"/>
+          </marker>
+        </defs>
+        <rect x="240" y="10" width="160" height="36" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="295" y="33" font-family="var(--font-mono)" font-size="12" fill="var(--color-text)">window</text>
+        <rect x="255" y="72" width="130" height="36" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="290" y="95" font-family="var(--font-mono)" font-size="12" fill="var(--color-text)">document</text>
+        <line x1="320" y1="46" x2="320" y2="72" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <rect x="265" y="134" width="110" height="36" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="295" y="157" font-family="var(--font-mono)" font-size="12" fill="var(--color-text)">body</text>
+        <line x1="320" y1="108" x2="320" y2="134" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <rect x="272" y="196" width="96" height="36" rx="5" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="302" y="219" font-family="var(--font-mono)" font-size="12" fill="var(--color-text)">div</text>
+        <line x1="320" y1="170" x2="320" y2="196" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <rect x="262" y="258" width="116" height="36" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="2"/>
+        <text x="290" y="281" font-family="var(--font-mono)" font-size="12" fill="var(--color-key-text)" font-weight="700">button</text>
+        <line x1="320" y1="232" x2="320" y2="258" stroke="var(--color-border-strong)" stroke-width="1"/>
+        <text x="386" y="280" font-family="var(--font-body)" font-size="9" fill="var(--color-accent)" font-weight="600">Target phase</text>
+        <path d="M 140 30 Q 80 160 200 270" stroke="var(--color-accent)" stroke-width="2" stroke-dasharray="6,3" fill="none" marker-end="url(#arr-cap)"/>
+        <text x="30" y="100" font-family="var(--font-body)" font-size="10" fill="var(--color-accent)" font-weight="600">Captura</text>
+        <text x="30" y="114" font-family="var(--font-body)" font-size="9" fill="var(--color-accent)">(useCapture: true)</text>
+        <text x="30" y="128" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">De arriba hacia abajo</text>
+        <path d="M 440 270 Q 520 160 460 30" stroke="var(--color-warning-text)" stroke-width="2" fill="none" marker-end="url(#arr-bub)"/>
+        <text x="490" y="100" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" font-weight="600">Bubbling</text>
+        <text x="490" y="114" font-family="var(--font-body)" font-size="9" fill="var(--color-warning-text)">(por defecto)</text>
+        <text x="490" y="128" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)">De abajo hacia arriba</text>
+        <text x="240" y="345" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">El usuario hace clic en button</text>
+      </svg>
+    </div>
+
+    <div class="callout callout-tip">
+      <p><code>nodeName</code> y <code>tagName</code> devuelven el nombre de la etiqueta siempre en MAYÚSCULAS para elementos HTML (<code>"BUTTON"</code>, <code>"LI"</code>, <code>"DIV"</code>). Por eso el código usa <code>.toLowerCase()</code>. Alternativa moderna más legible: <code>event.target.matches('button')</code> o <code>event.target.matches('.mi-clase')</code> — acepta cualquier selector CSS y devuelve true/false.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — delegación de eventos</div>
+      <pre><code>// Sin delegación: un manejador por botón (no funciona para elementos dinámicos)
+document.querySelectorAll('#lista li button').forEach(btn =&gt; &#123;
+  btn.addEventListener('click', eliminarItem);
+&#125;);
+
+// Con delegación: un único manejador en el contenedor
+// Funciona también para elementos añadidos dinámicamente
+document.getElementById('lista').addEventListener('click', function(event) &#123;
+  if (event.target.nodeName.toLowerCase() !== 'button') return;
+
+  // event.target = el button; this/currentTarget = el ul#lista
+  const itemAEliminar = event.target.closest('li');
+  itemAEliminar.remove();
+&#125;);</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p><code>elemento.closest(selector)</code>: recorre el árbol hacia arriba desde el elemento actual hasta encontrar el ancestro más cercano (o el propio elemento) que cumpla el selector CSS. Devuelve <code>null</code> si no encuentra ninguno. Es el complemento perfecto para la delegación de eventos: saber en qué "item" ocurrió el clic aunque se haya pulsado en un hijo.</p>
+    </div>
+
+    <div class="callout callout-key">
+      <p>La delegación de eventos: poner el manejador en el contenedor en vez de en cada hijo. Ventajas: (1) un único manejador en vez de N, (2) funciona con elementos añadidos dinámicamente, (3) mejor rendimiento.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Propiedad</th><th>Qué referencia</th><th>Cuándo es igual a target</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>event.target</code></td><td>Elemento que originó el evento (donde el usuario clickó)</td><td>Siempre es el origen</td></tr>
+        <tr><td><code>event.currentTarget</code></td><td>Elemento donde está registrado el manejador</td><td>Sin delegación, igual que <code>target</code></td></tr>
+        <tr><td><code>this</code> (en <code>function</code>)</td><td>Igual que <code>currentTarget</code></td><td>Solo si la función no es arrow</td></tr>
+        <tr><td><code>this</code> (en arrow function)</td><td>El <code>this</code> del scope exterior (generalmente <code>window</code>)</td><td>Nunca usar para el elemento</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== SECCIÓN 12: VARIOS ===== -->
+  <section id="varios">
+    <h2>Varios: defer, hoisting, TypeScript, módulos</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo. Estos temas son "leer para contexto; no memorizar". Útiles para entender el código moderno y la P8 que usa módulos ES6.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Atributo</th><th>¿Bloquea parse?</th><th>¿Cuándo ejecuta?</th><th>Orden garantizado</th><th>Uso ideal</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Ninguno (por defecto)</td><td>Sí</td><td>Inmediatamente al descargarse</td><td>Sí</td><td>Evitar</td></tr>
+        <tr><td><code>async</code></td><td>No</td><td>Al terminar la descarga</td><td>No</td><td>Scripts independientes</td></tr>
+        <tr><td><code>defer</code></td><td>No</td><td>Tras HTML parse, antes de DOMContentLoaded</td><td>Sí</td><td>Scripts de app (preferido)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — hoisting detallado</div>
+      <pre><code>// var: declaración sube como undefined (no ReferenceError)
+console.log(a); // undefined
+var a = 5;
+
+// let/const: Temporal Dead Zone
+console.log(b); // ReferenceError: Cannot access 'b' before initialization
+let b = 5;
+
+// Funciones declaradas: hoisting COMPLETO (código + cuerpo)
+diHola(); // funciona
+function diHola() &#123; console.log('hola'); &#125;
+
+// Expresiones de función: solo la variable sube, no el cuerpo
+diAdios(); // TypeError: diAdios is not a function
+var diAdios = function() &#123; console.log('adios'); &#125;;</code></pre>
+    </div>
+
+    <h3>TypeScript — concepto clave</h3>
+    <p>TypeScript = JavaScript + tipado estático + interfaces + enums + generics. Se transpila a JavaScript estándar. Todo JS válido es TS válido.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>JavaScript</th><th>TypeScript</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>let x = 5;</code></td><td><code>let x: number = 5;</code></td></tr>
+        <tr><td><code>function suma(a, b)</code></td><td><code>function suma(a: number, b: number): number</code></td></tr>
+        <tr><td>Sin interfaces</td><td><code>interface Usuario &#123; nombre: string; rol: string; &#125;</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">javascript — módulos ES6</div>
+      <pre><code>// archivo: utils.js
+export function formatearFecha(fecha) &#123;
+  return fecha.toLocaleDateString('es-ES');
+&#125;
+export const VERSION = '1.0.0';
+
+// archivo principal: main.js
+import &#123; formatearFecha, VERSION &#125; from './utils.js';
+import * as utils from './utils.js'; // importar todo
+
+// En HTML: type="module" activa ES modules (defer por defecto)
+// &lt;script type="module" src="main.js"&gt;&lt;/script&gt;</code></pre>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>Relación con JS+AJAX (Bloque 7): los módulos ES6 son la base de <code>api.js</code> en P8 MiniTwitter, que exporta las funciones de fetch para ser importadas en el script principal.</p>
+    </div>
+  </section>
+
 </BlockLayout>
+
+<style>
+  .code-block {
+    border: 1px solid var(--color-code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: var(--space-5) 0;
+  }
+
+  .code-block-header {
+    background: var(--color-surface-2);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    color: var(--color-text-2);
+    border-bottom: 1px solid var(--color-code-border);
+  }
+
+  .code-block pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    overflow-x: auto;
+    line-height: var(--leading-normal);
+  }
+
+  .code-block code {
+    font-family: var(--font-mono);
+  }
+
+  section {
+    margin-bottom: var(--space-8);
+  }
+
+  h2 {
+    margin-top: var(--space-7);
+    margin-bottom: var(--space-4);
+  }
+
+  h3 {
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-3);
+  }
+
+  p {
+    max-width: var(--measure);
+    margin-bottom: var(--space-4);
+  }
+
+  .lead {
+    font-size: var(--text-md);
+    color: var(--color-text-2);
+    margin-bottom: var(--space-7);
+  }
+
+  table {
+    margin: var(--space-5) 0;
+  }
+</style>
