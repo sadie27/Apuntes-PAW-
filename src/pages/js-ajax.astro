@@ -1,7 +1,1222 @@
 ---
 import BlockLayout from '../layouts/BlockLayout.astro';
-const sections: { id: string; label: string }[] = [];
+const sections = [
+  { id: "intro-ajax",     label: "Qué es AJAX" },
+  { id: "json",           label: "JSON" },
+  { id: "xhr",            label: "XMLHttpRequest" },
+  { id: "fetch",          label: "API fetch" },
+  { id: "promesas",       label: "Promesas" },
+  { id: "async-await",    label: "async / await" },
+  { id: "fetch-avanzado", label: "fetch avanzado" },
+  { id: "sop-cors",       label: "SOP y CORS" },
+];
 ---
 <BlockLayout title="JS + AJAX" blockNumber={7} blockName="JS + AJAX" sections={sections}>
-  <p>Contenido pendiente.</p>
+
+  <h1>JS + AJAX</h1>
+  <p class="lead">AJAX, JSON, fetch, Promesas, async/await y CORS</p>
+
+  <!-- ===== SECCIÓN 1: INTRO AJAX ===== -->
+  <section id="intro-ajax">
+    <h2>Qué es AJAX</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. Concepto AJAX y diferencia con web tradicional son contexto necesario para entender fetch y Promesas. El examen se centra en fetch/async/CORS, pero AJAX como patrón puede aparecer en teoría. Sin referencia directa a práctica, pero P8 es su aplicación completa.</p>
+    </div>
+
+    <!-- SVG 1: Modelo tradicional vs AJAX -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 860 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:860px;display:block;">
+        <title>Modelo tradicional vs AJAX</title>
+        <defs>
+          <marker id="arr-ajax1" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arr-ajax2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-border-strong)"/>
+          </marker>
+        </defs>
+        <!-- Panel izquierdo: Web Tradicional -->
+        <rect x="10" y="10" width="400" height="300" rx="8" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="210" y="32" font-family="var(--font-display)" font-size="13" fill="var(--color-text)" font-weight="700" text-anchor="middle">Web Tradicional</text>
+        <!-- Franja cliente -->
+        <rect x="10" y="42" width="400" height="130" rx="0" fill="var(--color-surface-2)" stroke="none"/>
+        <text x="22" y="60" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)" font-weight="600">CLIENTE</text>
+        <!-- Bloques de actividad usuario -->
+        <rect x="22" y="68" width="70" height="88" rx="4" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="57" y="116" font-family="var(--font-body)" font-size="9" fill="var(--color-key-text)" text-anchor="middle">Actividad</text>
+        <rect x="172" y="68" width="70" height="88" rx="4" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="207" y="116" font-family="var(--font-body)" font-size="9" fill="var(--color-key-text)" text-anchor="middle">Actividad</text>
+        <rect x="322" y="68" width="70" height="88" rx="4" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="357" y="116" font-family="var(--font-body)" font-size="9" fill="var(--color-key-text)" text-anchor="middle">Actividad</text>
+        <!-- Texto "bloqueado" -->
+        <text x="135" y="105" font-family="var(--font-display)" font-size="9" fill="var(--color-warning-text)" text-anchor="middle" font-weight="600">bloqueado</text>
+        <text x="285" y="105" font-family="var(--font-display)" font-size="9" fill="var(--color-warning-text)" text-anchor="middle" font-weight="600">bloqueado</text>
+        <!-- Línea divisoria cliente/servidor -->
+        <line x1="10" y1="172" x2="410" y2="172" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- Franja servidor -->
+        <text x="22" y="192" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)" font-weight="600">SERVIDOR</text>
+        <!-- Flechas petición/respuesta: primer intercambio -->
+        <line x1="92" y1="156" x2="150" y2="200" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-ajax1)"/>
+        <text x="100" y="182" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">petición</text>
+        <line x1="150" y1="250" x2="130" y2="156" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-ajax2)"/>
+        <text x="155" y="212" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">respuesta</text>
+        <!-- Flechas segundo intercambio -->
+        <line x1="242" y1="156" x2="280" y2="200" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-ajax1)"/>
+        <text x="248" y="182" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">petición</text>
+        <line x1="300" y1="250" x2="280" y2="156" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-ajax2)"/>
+        <text x="305" y="212" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">respuesta</text>
+
+        <!-- Panel derecho: AJAX -->
+        <rect x="440" y="10" width="410" height="300" rx="8" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="645" y="32" font-family="var(--font-display)" font-size="13" fill="var(--color-text)" font-weight="700" text-anchor="middle">AJAX</text>
+        <!-- Franja cliente -->
+        <rect x="440" y="42" width="410" height="130" rx="0" fill="var(--color-surface-2)" stroke="none"/>
+        <text x="452" y="60" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)" font-weight="600">CLIENTE</text>
+        <!-- Bloque de actividad largo (no bloqueado) -->
+        <rect x="452" y="68" width="386" height="88" rx="4" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="645" y="100" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle" font-weight="700">continúa trabajando</text>
+        <text x="645" y="118" font-family="var(--font-body)" font-size="9" fill="var(--color-key-text)" text-anchor="middle">El usuario no se bloquea</text>
+        <!-- Micro peticiones dentro del bloque -->
+        <line x1="540" y1="68" x2="560" y2="172" stroke="var(--color-accent)" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-ajax1)"/>
+        <line x1="700" y1="68" x2="720" y2="172" stroke="var(--color-accent)" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-ajax1)"/>
+        <!-- Línea divisoria cliente/servidor -->
+        <line x1="440" y1="172" x2="850" y2="172" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- Franja servidor -->
+        <text x="452" y="192" font-family="var(--font-display)" font-size="10" fill="var(--color-text-3)" font-weight="600">SERVIDOR</text>
+        <!-- Flechas respuesta async -->
+        <line x1="575" y1="215" x2="555" y2="156" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-ajax2)"/>
+        <text x="558" y="192" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">resp.</text>
+        <line x1="735" y1="215" x2="715" y2="156" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-ajax2)"/>
+        <text x="718" y="192" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">resp.</text>
+      </svg>
+    </div>
+
+    <p>AJAX (Asynchronous Javascript And XML) no es una tecnología sino un patrón de diseño que combina tres piezas: el DOM para actualizar partes de la página sin recargarla, JSON (o XML) para intercambiar datos con el servidor, y <code>XMLHttpRequest</code> o <code>fetch</code> para hacer esas peticiones de forma asíncrona.</p>
+
+    <p>El problema de la web tradicional es la sincronía: cada petición bloquea la interfaz hasta recibir respuesta. Con AJAX, la petición se lanza en segundo plano y el usuario sigue interactuando. La página solo actualiza las partes que cambian, no se recarga entera.</p>
+
+    <div class="callout callout-key">
+      <p>AJAX no es una tecnología sino un patrón: el navegador mantiene un "motor AJAX" (un fichero JS) que hace peticiones al servidor en segundo plano y actualiza el DOM con los datos recibidos sin recargar la página.</p>
+    </div>
+
+    <!-- SVG 2: Motor AJAX -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:760px;display:block;">
+        <title>Motor AJAX: flujo usuario, navegador, motor y servidor</title>
+        <defs>
+          <marker id="arr-motor" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arr-motor2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-border-strong)"/>
+          </marker>
+        </defs>
+        <!-- Usuario -->
+        <rect x="10" y="20" width="140" height="50" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="80" y="50" font-family="var(--font-display)" font-size="13" fill="var(--color-text)" font-weight="600" text-anchor="middle">Usuario</text>
+        <!-- Navegador UI -->
+        <rect x="310" y="20" width="160" height="50" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="390" y="50" font-family="var(--font-display)" font-size="12" fill="var(--color-text)" font-weight="600" text-anchor="middle">Navegador (UI)</text>
+        <!-- Motor AJAX (centro) -->
+        <rect x="250" y="105" width="260" height="70" rx="8" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="2"/>
+        <text x="380" y="130" font-family="var(--font-display)" font-size="13" fill="var(--color-key-text)" font-weight="700" text-anchor="middle">Motor AJAX</text>
+        <text x="380" y="148" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">1. Hace peticiones async al servidor</text>
+        <text x="380" y="162" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">2. Actualiza el DOM con la respuesta</text>
+        <!-- Servidor -->
+        <rect x="590" y="105" width="150" height="50" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="665" y="135" font-family="var(--font-display)" font-size="12" fill="var(--color-text)" font-weight="600" text-anchor="middle">Servidor</text>
+        <!-- Usuario → Navegador -->
+        <line x1="150" y1="45" x2="308" y2="45" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-motor)"/>
+        <text x="228" y="38" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">eventos</text>
+        <!-- Navegador → Motor AJAX -->
+        <line x1="390" y1="70" x2="380" y2="104" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-motor)"/>
+        <text x="412" y="90" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">eventos de usuario</text>
+        <!-- Motor AJAX → Servidor -->
+        <line x1="510" y1="127" x2="588" y2="127" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-motor)"/>
+        <text x="548" y="120" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)" text-anchor="middle">petición HTTP async</text>
+        <!-- Servidor → Motor AJAX -->
+        <line x1="588" y1="147" x2="510" y2="147" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-motor2)"/>
+        <text x="548" y="165" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)" text-anchor="middle">respuesta (JSON/HTML)</text>
+        <!-- Motor AJAX → Navegador (actualiza DOM) -->
+        <line x1="370" y1="104" x2="355" y2="70" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-motor2)"/>
+        <text x="308" y="90" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">actualiza DOM</text>
+        <text x="380" y="210" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">El Motor AJAX es el fichero JS que orquesta todo el flujo asíncrono</text>
+      </svg>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Opción</th><th>Tipo</th><th>Dificultad</th><th>Cuándo usar</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>XMLHttpRequest</code></td><td>Nativo</td><td>Alta</td><td>Legacy; base histórica de todo</td></tr>
+        <tr><td><code>fetch</code> API</td><td>Nativo</td><td>Media</td><td><strong>Estándar actual</strong>; async/await</td></tr>
+        <tr><td>jQuery <code>$.ajax</code></td><td>Librería pesada</td><td>Baja</td><td>Proyectos con jQuery ya instalado</td></tr>
+        <tr><td>Axios</td><td>Librería ligera</td><td>Baja</td><td>Proyectos que priorizan ergonomía</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Cuándo usar AJAX</h3>
+    <p>Las aplicaciones web modernas son mayoritariamente tradicionales (SSR) y usan AJAX solo en partes concretas que se benefician de la interactividad:</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Caso de uso</th><th>Qué hace AJAX aquí</th><th>Ejemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Validación en tiempo real</td><td>Consulta al servidor mientras el usuario escribe</td><td>Comprobar si un email ya está registrado</td></tr>
+        <tr><td>Autocompletar campos</td><td>Carga sugerencias sin recargar el formulario</td><td>Búsqueda de productos en un e-commerce</td></tr>
+        <tr><td>Operaciones maestro/detalle</td><td>Carga el detalle sin navegar a otra página</td><td>Lista de tweets → clic → carga respuestas</td></tr>
+        <tr><td>Refrescar datos periódicamente</td><td>Polling o push de datos sin intervención del usuario</td><td>Panel de notificaciones, feed de redes sociales</td></tr>
+        <tr><td>Envío de formularios sin recarga</td><td>POST async, muestra el resultado en la misma página</td><td>Enviar un comentario o "me gusta"</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-relation">
+      <p>Este bloque continúa el Bloque 6 — JavaScript. Los conceptos de DOM, eventos, callbacks y Promesas de ese bloque son la base de todo lo que se ve aquí. Especialmente el apartado de eventos y la sección <code>#varios</code> sobre async/await.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 2: JSON ===== -->
+  <section id="json">
+    <h2>JSON</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. JSON es el formato de intercambio de datos de cualquier API REST, y la práctica P8 (MiniTwitter) lo usa extensamente. Saber qué es <code>JSON.parse</code> y <code>JSON.stringify</code> es obligatorio para entender el flujo fetch. Gson en Java aparece en el controlador <code>@RestController</code>.</p>
+    </div>
+
+    <p>AJAX nació con XML en el nombre pero en la práctica casi nadie usa XML. JSON (JavaScript Object Notation) ha ganado por ser ligero, legible y nativo en JavaScript.</p>
+
+    <!-- SVG 3: Intercambio de datos JSON -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:760px;display:block;">
+        <title>Intercambio de datos JSON entre navegador y servidor Java</title>
+        <defs>
+          <marker id="arr-json1" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arr-json2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-border-strong)"/>
+          </marker>
+        </defs>
+        <!-- Navegador -->
+        <rect x="10" y="20" width="300" height="200" rx="8" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="160" y="42" font-family="var(--font-display)" font-size="13" fill="var(--color-text)" font-weight="700" text-anchor="middle">Navegador</text>
+        <rect x="26" y="52" width="268" height="50" rx="5" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1"/>
+        <text x="160" y="74" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)" text-anchor="middle" font-weight="600">Objetos JavaScript</text>
+        <text x="160" y="91" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">&#123; titulo: "...", paginas: 704 &#125;</text>
+        <!-- JSON.stringify() -->
+        <line x1="160" y1="136" x2="160" y2="102" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-json1)"/>
+        <text x="168" y="122" font-family="var(--font-mono)" font-size="10" fill="var(--color-key-text)" font-weight="600">JSON.stringify()</text>
+        <text x="168" y="135" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">objeto → texto</text>
+        <!-- JSON.parse() -->
+        <line x1="160" y1="154" x2="160" y2="188" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-json2)"/>
+        <text x="168" y="170" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)" font-weight="600">JSON.parse()</text>
+        <text x="168" y="183" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">texto → objeto</text>
+
+        <!-- Servidor Java -->
+        <rect x="450" y="20" width="300" height="200" rx="8" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="600" y="42" font-family="var(--font-display)" font-size="13" fill="var(--color-text)" font-weight="700" text-anchor="middle">Servidor (Java)</text>
+        <rect x="466" y="52" width="268" height="50" rx="5" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="600" y="74" font-family="var(--font-mono)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle" font-weight="600">Objetos Java</text>
+        <text x="600" y="91" font-family="var(--font-body)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">new Cliente("C123", "Pepe")</text>
+        <!-- Gson.toJson() -->
+        <line x1="600" y1="102" x2="600" y2="136" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-json1)"/>
+        <text x="608" y="122" font-family="var(--font-mono)" font-size="10" fill="var(--color-tip-text)" font-weight="600">Gson.toJson()</text>
+        <text x="608" y="135" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">objeto → JSON</text>
+        <!-- Gson.fromJson() -->
+        <line x1="600" y1="188" x2="600" y2="154" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-json2)"/>
+        <text x="608" y="170" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)" font-weight="600">Gson.fromJson()</text>
+        <text x="608" y="183" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)">JSON → objeto</text>
+
+        <!-- Flechas HTTP centrales -->
+        <line x1="310" y1="90" x2="448" y2="90" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-json1)"/>
+        <text x="380" y="82" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">Petición HTTP</text>
+        <line x1="448" y1="160" x2="310" y2="160" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-json2)"/>
+        <text x="380" y="152" font-family="var(--font-body)" font-size="10" fill="var(--color-key-text)" text-anchor="middle">Respuesta HTTP — JSON (texto)</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Array de objetos
+let libros = [
+  &#123;
+    "titulo": "JavaScript: The Definitive Guide",
+    "numeroPaginas": 704,
+    "autores": [
+      &#123; "id": 50, "nombre": "David Flanagan" &#125;
+    ]
+  &#125;,
+  &#123;
+    "titulo": "The Mythical Man-Month",
+    "numeroPaginas": 336,
+    "autores": [
+      &#123; "id": 23, "nombre": "Fred Brooks" &#125;
+    ]
+  &#125;
+];
+
+// Tipos VÁLIDOS en JSON: string, number, boolean, null, array, object
+// Tipos NO serializables (se pierden o lanzan error):
+//   undefined  → se omite el campo al hacer stringify
+//   Date       → se convierte a string ISO (no se restaura como Date al parsear)
+//   NaN/Infinity → se convierten a null
+//   function   → se omite el campo</code></pre>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>JSON no soporta <code>undefined</code>, <code>Date</code>, <code>NaN</code>, <code>Infinity</code> ni funciones. <code>JSON.stringify(&#123; fecha: new Date() &#125;)</code> convierte la fecha a un string ISO que no se restaura automáticamente como objeto <code>Date</code> al hacer <code>JSON.parse()</code>. Hay que convertirlo manualmente: <code>new Date(obj.fecha)</code>.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Operación</th><th>Método</th><th>Dirección</th><th>Cuándo se usa</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Texto → Objeto JS</td><td><code>JSON.parse(texto)</code></td><td>Deserializar</td><td>Al <strong>recibir</strong> respuesta del servidor</td></tr>
+        <tr><td>Objeto JS → Texto</td><td><code>JSON.stringify(obj)</code></td><td>Serializar</td><td>Al <strong>enviar</strong> datos al servidor en el body</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      <p>En AJAX recibiremos siempre texto (HTTP es textual). Para trabajar con los datos hay que transformar ese texto JSON en un objeto JavaScript con <code>JSON.parse()</code>. Con <code>fetch</code> + <code>response.json()</code> esto se hace automáticamente.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">java</div>
+      <pre><code>// Serializar: Objeto Java → JSON string
+Gson gson = new Gson();
+String json = gson.toJson(cliente);
+// → &#123;"codigo":"C123","nombre":"Pepe Perez",...&#125;
+
+// Por defecto no serializa campos null
+// Para incluirlos y con formato pretty:
+Gson gsonBuilder = new GsonBuilder()
+    .serializeNulls()
+    .setPrettyPrinting()
+    .create();
+String jsonPretty = gsonBuilder.toJson(cliente);
+
+// Deserializar: JSON string → Objeto Java
+Cliente c = gson.fromJson(jsonString, Cliente.class);</code></pre>
+    </div>
+
+    <div class="callout callout-tip">
+      <p>Spring Boot incluye <strong>Jackson</strong> por defecto (via <code>spring-boot-starter-web</code>). Un <code>@RestController</code> serializa y deserializa JSON automáticamente con Jackson sin configuración extra. Gson es la librería usada en las prácticas de Tomcat puro (P8); en Spring Boot se puede usar Gson pero requiere añadir dependencia y un <code>@Configuration</code> extra.</p>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>En el Bloque 4 (Servlets/JSP) el servidor devolvía HTML completo. Con AJAX el servidor devuelve solo datos JSON, y es el JS del cliente quien construye la interfaz. Esto es la transición hacia las API REST del Bloque 3 y la Práctica 8.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 3: XHR ===== -->
+  <section id="xhr">
+    <h2>XMLHttpRequest</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso bajo. XHR es la base histórica; el examen se centra en <code>fetch</code>. Leer para entender por qué existe <code>fetch</code> y qué problema resolvía XHR. No memorizar la API de XHR.</p>
+    </div>
+
+    <p><code>XMLHttpRequest</code> (XHR) fue el objeto original que hizo posible AJAX. Permite hacer peticiones HTTP desde JavaScript sin recargar la página. Su nombre viene de los tiempos en que XML era el formato estándar, pero funciona con cualquier formato de respuesta.</p>
+
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Crear el objeto XHR
+let xhr = new XMLHttpRequest();
+
+// Configurar: método + URL + async=true
+xhr.open("GET", "/api/usuarios", true);
+
+// Registrar manejador para cuando llegue la respuesta
+xhr.onload = function() &#123;
+    if (xhr.status === 200) &#123;
+        let datos = JSON.parse(xhr.responseText);
+        // actualizar DOM con datos
+    &#125;
+&#125;;
+
+// Manejador de error de red
+xhr.onerror = function() &#123;
+    console.error("Error de red");
+&#125;;
+
+// Lanzar la petición
+xhr.send();</code></pre>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>XHR usa callbacks anidados para gestionar la asincronía. Con operaciones encadenadas esto produce el llamado "callback hell". <code>fetch</code> resuelve este problema con Promesas y <code>async/await</code>.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Aspecto</th><th>XMLHttpRequest</th><th>fetch API</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Manejo de asincronía</td><td>Callbacks (<code>onload</code>, <code>onerror</code>)</td><td>Promesas / async-await</td></tr>
+        <tr><td>Legibilidad</td><td>Verboso y difícil de encadenar</td><td>Limpio y encadenable</td></tr>
+        <tr><td>Manejo de errores</td><td>Disperso</td><td><code>.catch()</code> centralizado</td></tr>
+        <tr><td>Estándar moderno</td><td>No (legacy)</td><td>Sí</td></tr>
+        <tr><td>Soporte</td><td>Universal</td><td>Chrome 42+, Edge 31+, todos los modernos</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== SECCIÓN 4: FETCH ===== -->
+  <section id="fetch">
+    <h2>API fetch</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso muy alto. <code>fetch</code> es la API que el profesor menciona explícitamente como contenido del examen. La Práctica 8 (MiniTwitter, Part II) implementa <code>api.js</code> completo con fetch. Conocer el flujo fetch → Promise → Response → <code>.json()</code> es imprescindible.</p>
+    </div>
+
+    <p><code>fetch</code> es la API moderna del navegador para hacer peticiones HTTP. Sustituye a XHR con una interfaz más limpia basada en Promesas.</p>
+
+    <!-- SVG 4: Flujo completo fetch -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:860px;display:block;">
+        <title>Flujo completo de fetch: Promise, Response, .then, .catch</title>
+        <defs>
+          <marker id="arr-fetch" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arr-fetch-warn" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-warning-text)"/>
+          </marker>
+        </defs>
+        <!-- Nodo 1: fetch(URL) -->
+        <rect x="10" y="90" width="130" height="60" rx="6" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="2"/>
+        <text x="75" y="116" font-family="var(--font-mono)" font-size="12" fill="var(--color-key-text)" font-weight="700" text-anchor="middle">fetch(URL)</text>
+        <text x="75" y="134" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)" text-anchor="middle">inicia petición HTTP async</text>
+        <!-- Flecha 1→2 -->
+        <line x1="140" y1="120" x2="174" y2="120" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-fetch)"/>
+        <!-- Nodo 2: Promise<Response> -->
+        <rect x="175" y="90" width="160" height="60" rx="20" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="255" y="114" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" font-weight="600" text-anchor="middle">Promise&lt;Response&gt;</text>
+        <text x="255" y="132" font-family="var(--font-body)" font-size="8" fill="var(--color-text-3)" text-anchor="middle">cabeceras, status...</text>
+        <!-- Flecha 2→3 -->
+        <line x1="335" y1="120" x2="369" y2="120" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-fetch)"/>
+        <!-- Nodo 3: .then(resp => resp.json()) -->
+        <rect x="370" y="90" width="200" height="60" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="470" y="113" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)" font-weight="600" text-anchor="middle">.then(r =&gt; r.json())</text>
+        <text x="470" y="133" font-family="var(--font-body)" font-size="8" fill="var(--color-text-2)" text-anchor="middle">extrae body → nueva Promise</text>
+        <!-- Flecha 3→4 -->
+        <line x1="570" y1="120" x2="604" y2="120" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-fetch)"/>
+        <!-- Nodo 4: Promise<Data> -->
+        <rect x="605" y="90" width="130" height="60" rx="20" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="670" y="114" font-family="var(--font-mono)" font-size="11" fill="var(--color-tip-text)" font-weight="600" text-anchor="middle">Promise&lt;Data&gt;</text>
+        <text x="670" y="132" font-family="var(--font-body)" font-size="8" fill="var(--color-tip-text)" text-anchor="middle">datos JS listos</text>
+        <!-- Flecha 4→5 -->
+        <line x1="735" y1="120" x2="769" y2="120" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-fetch)"/>
+        <!-- Nodo 5: .then(data) -->
+        <rect x="770" y="90" width="82" height="60" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="811" y="112" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)" font-weight="700" text-anchor="middle">.then(</text>
+        <text x="811" y="126" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)" font-weight="700" text-anchor="middle">data =&gt; &#123;</text>
+        <text x="811" y="140" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)" font-weight="700" text-anchor="middle">...&#125;)</text>
+        <!-- Flecha punteada hacia catch -->
+        <line x1="470" y1="150" x2="470" y2="198" stroke="var(--color-warning-border)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-fetch-warn)"/>
+        <!-- Nodo catch -->
+        <rect x="360" y="200" width="220" height="55" rx="6" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="470" y="222" font-family="var(--font-mono)" font-size="11" fill="var(--color-warning-text)" font-weight="700" text-anchor="middle">.catch(err =&gt; &#123;...&#125;)</text>
+        <text x="470" y="242" font-family="var(--font-body)" font-size="8" fill="var(--color-warning-text)" text-anchor="middle">cualquier error de red</text>
+        <text x="470" y="255" font-family="var(--font-body)" font-size="8" fill="var(--color-warning-text)" text-anchor="middle">(captura desde cualquier paso)</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>const URL = "https://jsonplaceholder.typicode.com/posts";
+
+fetch(URL)
+    .then(response =&gt; &#123;
+        // fetch SOLO rechaza la promesa si hay error de RED
+        // Los status 400/500 NO son errores para fetch
+        if (!response.ok) &#123;
+            throw new Error(`Error $&#123;response.status&#125;: $&#123;response.statusText&#125;`);
+        &#125;
+        return response.json();  // → devuelve otra Promise
+    &#125;)
+    .then(datos =&gt; &#123;
+        console.log(datos);      // aquí ya tenemos los datos JS
+        // actualizar el DOM con los datos
+    &#125;)
+    .catch(err =&gt; &#123;
+        console.error("Error:", err);
+    &#125;);</code></pre>
+    </div>
+
+    <div class="callout callout-warning">
+      <p><code>fetch</code> solo rechaza la promesa ante errores de <strong>red</strong> (URL inexistente, sin conexión). Una respuesta HTTP 404 o 500 <strong>no</strong> rechaza la promesa: el manejador del primer <code>.then</code> se ejecuta igualmente. Por eso siempre hay que comprobar <code>response.ok</code> antes de continuar.</p>
+    </div>
+
+    <h3>El objeto Response</h3>
+    <p>Cuando la primera Promesa resuelve, recibimos un objeto <code>Response</code> con información sobre la respuesta HTTP:</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Propiedad / Método</th><th>Tipo</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>response.status</code></td><td>number</td><td>Código HTTP: 200, 404, 500...</td></tr>
+        <tr><td><code>response.statusText</code></td><td>string</td><td>Mensaje: "OK", "Not Found"...</td></tr>
+        <tr><td><code>response.ok</code></td><td>boolean</td><td><code>true</code> si status está en 200–299</td></tr>
+        <tr><td><code>response.headers</code></td><td>Headers</td><td>Cabeceras de la respuesta</td></tr>
+        <tr><td><code>response.json()</code></td><td>Promise</td><td>Parsea el body como JSON</td></tr>
+        <tr><td><code>response.text()</code></td><td>Promise</td><td>Devuelve el body como texto</td></tr>
+        <tr><td><code>response.formData()</code></td><td>Promise</td><td>Pares clave-valor</td></tr>
+        <tr><td><code>response.blob()</code></td><td>Promise</td><td>Contenido binario</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      <p><code>response.json()</code> no devuelve los datos directamente sino otra Promise. Por eso siempre se encadena un segundo <code>.then</code>: el primero recibe el <code>Response</code> y llama a <code>.json()</code>, el segundo recibe ya los datos JS.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 5: PROMESAS ===== -->
+  <section id="promesas">
+    <h2>Promesas</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. Las Promesas son el mecanismo central de fetch. El examen puede pedir explicar qué es una Promise y cómo se encadena <code>.then/.catch</code>. La Práctica 8 Part II usa Promesas explícitamente en <code>api.js</code>.</p>
+    </div>
+
+    <p>Una <code>Promise</code> es un objeto que representa la eventual finalización (o fallo) de una operación asíncrona. No contiene el valor directamente sino una promesa de que ese valor estará disponible en el futuro.</p>
+
+    <!-- SVG 5: Estados de una Promise -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:700px;display:block;">
+        <title>Estados de una Promise: Pending, Fulfilled, Rejected</title>
+        <defs>
+          <marker id="arr-prom-ok" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-tip-border)"/>
+          </marker>
+          <marker id="arr-prom-err" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-warning-border)"/>
+          </marker>
+        </defs>
+        <!-- PENDING -->
+        <rect x="250" y="20" width="200" height="70" rx="8" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="2"/>
+        <text x="350" y="50" font-family="var(--font-display)" font-size="14" fill="var(--color-text-2)" font-weight="700" text-anchor="middle">PENDING</text>
+        <text x="350" y="72" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">operación en curso</text>
+        <!-- Flechas resolve / reject -->
+        <line x1="290" y1="90" x2="202" y2="150" stroke="var(--color-tip-border)" stroke-width="2" marker-end="url(#arr-prom-ok)"/>
+        <text x="220" y="126" font-family="var(--font-mono)" font-size="10" fill="var(--color-tip-text)" font-weight="600">resolve</text>
+        <line x1="410" y1="90" x2="498" y2="150" stroke="var(--color-warning-border)" stroke-width="2" marker-end="url(#arr-prom-err)"/>
+        <text x="446" y="126" font-family="var(--font-mono)" font-size="10" fill="var(--color-warning-text)" font-weight="600">reject</text>
+        <!-- FULFILLED -->
+        <rect x="80" y="150" width="200" height="70" rx="8" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="2"/>
+        <text x="180" y="180" font-family="var(--font-display)" font-size="14" fill="var(--color-tip-text)" font-weight="700" text-anchor="middle">FULFILLED</text>
+        <text x="180" y="200" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">operación exitosa</text>
+        <!-- REJECTED -->
+        <rect x="420" y="150" width="200" height="70" rx="8" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="2"/>
+        <text x="520" y="180" font-family="var(--font-display)" font-size="14" fill="var(--color-warning-text)" font-weight="700" text-anchor="middle">REJECTED</text>
+        <text x="520" y="200" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">operación fallida</text>
+        <!-- .then() y .catch() -->
+        <line x1="180" y1="220" x2="180" y2="251" stroke="var(--color-tip-border)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-prom-ok)"/>
+        <rect x="120" y="252" width="120" height="22" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="180" y="267" font-family="var(--font-mono)" font-size="11" fill="var(--color-tip-text)" font-weight="700" text-anchor="middle">.then()</text>
+        <line x1="520" y1="220" x2="520" y2="251" stroke="var(--color-warning-border)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-prom-err)"/>
+        <rect x="460" y="252" width="120" height="22" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="520" y="267" font-family="var(--font-mono)" font-size="11" fill="var(--color-warning-text)" font-weight="700" text-anchor="middle">.catch()</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Sintaxis básica de una Promise
+const miPromesa = new Promise((resolve, reject) =&gt; &#123;
+    const exito = realizarOperacion();
+
+    if (exito) &#123;
+        resolve("Operación completada");  // → pasa a FULFILLED
+    &#125; else &#123;
+        reject("Algo salió mal");          // → pasa a REJECTED
+    &#125;
+&#125;);
+
+// En la práctica casi nunca se crea una Promise manualmente:
+// fetch la crea por nosotros.</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Métodos para reaccionar al resultado
+unaPromesa
+    .then(valor =&gt; &#123;
+        // se ejecuta si resolve(valor) → FULFILLED
+        console.log("Éxito:", valor);
+        return otroProcesamiento(valor);  // puede devolver otra Promise
+    &#125;)
+    .then(resultado =&gt; &#123;
+        // cada .then recibe lo que devolvió el anterior
+        console.log("Procesado:", resultado);
+    &#125;)
+    .catch(error =&gt; &#123;
+        // captura cualquier reject() o throw en la cadena
+        console.error("Error:", error);
+    &#125;)
+    .finally(() =&gt; &#123;
+        // siempre se ejecuta (éxito o error)
+        ocultarSpinner();
+    &#125;);</code></pre>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Método</th><th>Cuándo se ejecuta</th><th>Recibe</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>.then(fn)</code></td><td>La promesa resuelve con éxito</td><td>El valor resuelto</td></tr>
+        <tr><td><code>.catch(fn)</code></td><td>La promesa se rechaza o hay un <code>throw</code></td><td>El error / motivo</td></tr>
+        <tr><td><code>.finally(fn)</code></td><td>Siempre, con éxito o con error</td><td>Nada (sin parámetro)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      <p>El valor devuelto por un <code>.then()</code> se convierte en la entrada del siguiente <code>.then()</code>. Si devuelves una Promise, el siguiente <code>.then()</code> espera a que resuelva antes de ejecutarse. Esto es lo que hace posible encadenar <code>fetch → .then(r =&gt; r.json()) → .then(data =&gt; ...)</code>.</p>
+    </div>
+
+    <h3>Promise.all — peticiones paralelas</h3>
+    <p>Cuando se necesita el resultado de varias peticiones independientes, hacerlas en secuencia (una tras otra con <code>await</code>) es ineficiente. <code>Promise.all()</code> lanza todas a la vez y espera a que todas terminen:</p>
+
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Secuencial (ineficiente: B espera a que A termine)
+const usuarios  = await fetch('/api/usuarios').then(r =&gt; r.json());
+const productos = await fetch('/api/productos').then(r =&gt; r.json());
+
+// Paralelo con Promise.all (ambas peticiones vuelan a la vez)
+const [usuarios, productos] = await Promise.all([
+    fetch('/api/usuarios').then(r  =&gt; r.json()),
+    fetch('/api/productos').then(r =&gt; r.json()),
+]);
+
+// Si UNA falla, Promise.all rechaza inmediatamente con ese error.
+// Alternativa más tolerante a fallos: Promise.allSettled()
+const resultados = await Promise.allSettled([
+    fetch('/api/usuarios').then(r  =&gt; r.json()),
+    fetch('/api/productos').then(r =&gt; r.json()),
+]);
+// resultados[0].status === 'fulfilled' | 'rejected'
+// resultados[0].value  (si fulfilled)
+// resultados[0].reason (si rejected)</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p><code>Promise.all()</code> falla rápido: si cualquiera de las promesas se rechaza, toda la operación falla. <code>Promise.allSettled()</code> espera a todas y devuelve el estado de cada una individualmente, útil cuando los fallos parciales son aceptables.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 6: ASYNC/AWAIT ===== -->
+  <section id="async-await">
+    <h2>async / await</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. <code>async/await</code> es la notación moderna para Promesas y es la que el profesor espera ver en los ejercicios. Hace que el código asíncrono parezca síncrono. El examen puede pedir reescribir un fetch con async/await.</p>
+    </div>
+
+    <p><code>async/await</code> es azúcar sintáctico sobre Promesas. No introduce nueva funcionalidad, solo hace el código más legible al evitar el encadenamiento de <code>.then</code>.</p>
+
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// ──────── Con .then (Promise chaining) ────────
+function obtenerUsuario(id) &#123;
+    fetch(`/api/usuarios/$&#123;id&#125;`)
+        .then(resp =&gt; &#123;
+            if (!resp.ok) throw new Error(resp.status);
+            return resp.json();
+        &#125;)
+        .then(usuario =&gt; mostrarUsuario(usuario))
+        .catch(err =&gt; mostrarError(err));
+&#125;
+
+// ──────── Con async/await (equivalente) ────────
+async function obtenerUsuario(id) &#123;
+    try &#123;
+        const resp = await fetch(`/api/usuarios/$&#123;id&#125;`);
+        // await "pausa" la función hasta que la Promise resuelve
+        if (!resp.ok) throw new Error(resp.status);
+        const usuario = await resp.json();
+        mostrarUsuario(usuario);
+    &#125; catch (err) &#123;
+        // catch captura tanto errores de red como throws manuales
+        mostrarError(err);
+    &#125;
+&#125;
+
+// Las dos funciones hacen exactamente lo mismo.
+// await solo puede usarse dentro de funciones marcadas con async.</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p>Reglas de <code>async/await</code>: (1) <code>async</code> delante de la función → siempre devuelve una Promise. (2) <code>await</code> antes de una expresión Promise → "pausa" la función hasta que resuelva. (3) <code>await</code> solo funciona dentro de una función <code>async</code>. (4) Los errores se manejan con <code>try/catch</code> en lugar de <code>.catch()</code>.</p>
+    </div>
+
+    <h3>Tipos de error en fetch</h3>
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>async function obtenerDatos(url) &#123;
+    let resp;
+    try &#123;
+        // Tipo 1: Error de RED (DNS, sin conexión, timeout)
+        // → fetch rechaza la promesa → va al catch con TypeError
+        resp = await fetch(url);
+    &#125; catch (err) &#123;
+        console.error("Error de red:", err.message);
+        throw err;
+    &#125;
+
+    // Tipo 2: Error HTTP (4xx, 5xx)
+    // → fetch resuelve la promesa (no va al catch) pero resp.ok es false
+    if (!resp.ok) &#123;
+        const msg = `Error HTTP $&#123;resp.status&#125;: $&#123;resp.statusText&#125;`;
+        if (resp.status === 401) throw new Error("No autenticado");
+        if (resp.status === 403) throw new Error("Sin permisos");
+        if (resp.status === 404) throw new Error("Recurso no encontrado");
+        throw new Error(msg);
+    &#125;
+
+    // Tipo 3: Error de PARSE (el body no es JSON válido)
+    // → resp.json() rechaza la promesa → va al catch con SyntaxError
+    try &#123;
+        return await resp.json();
+    &#125; catch (err) &#123;
+        console.error("La respuesta no es JSON válido:", err.message);
+        throw err;
+    &#125;
+&#125;</code></pre>
+    </div>
+
+    <div class="callout callout-tip">
+      <p>Para el examen basta con el patrón simplificado (un solo <code>try/catch</code> + comprobar <code>resp.ok</code>). El patrón detallado es útil en producción para dar mensajes de error más precisos al usuario.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Patrón recomendado para consumir una API REST
+async function cargarArticulos(filtro) &#123;
+    try &#123;
+        const params = new URLSearchParams(&#123; nombre: filtro &#125;);
+        const resp = await fetch(`/api/articulos?$&#123;params&#125;`);
+
+        if (!resp.ok) &#123;
+            throw new Error(`Error $&#123;resp.status&#125;: $&#123;resp.statusText&#125;`);
+        &#125;
+
+        const articulos = await resp.json();
+        renderizarListado(articulos);   // actualiza el DOM
+
+    &#125; catch (err) &#123;
+        console.error("No se pudieron cargar los artículos:", err);
+        mostrarMensajeError(err.message);
+    &#125;
+&#125;
+
+// Llamada desde un evento
+document.getElementById("buscar").addEventListener("click", () =&gt; &#123;
+    const filtro = document.getElementById("input-filtro").value;
+    cargarArticulos(filtro);   // no se espera; es async por dentro
+&#125;);</code></pre>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>La Práctica 8 Part II implementa exactamente este patrón: un fichero <code>api.js</code> con funciones <code>async</code> que consumen los endpoints del <code>@RestController</code> definido en Part I. El DOM se actualiza en la Part III con las técnicas del Bloque 6 (JS — DOM).</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 7: FETCH AVANZADO ===== -->
+  <section id="fetch-avanzado">
+    <h2>fetch avanzado</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso medio-alto. Las opciones de fetch (method, headers, body) son necesarias para entender cómo se hace un POST desde JS. El examen puede preguntar cómo enviar datos JSON al servidor. FormData para multipart aparece en los apuntes de HTML del profesor (Ejercicio 3 del examen).</p>
+    </div>
+
+    <h3>Opciones de la petición</h3>
+    <p>El segundo parámetro de <code>fetch</code> permite configurar la petición:</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Opción</th><th>Tipo</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>method</code></td><td>string</td><td>Método HTTP: <code>'GET'</code> (defecto), <code>'POST'</code>, <code>'PUT'</code>, <code>'DELETE'</code>...</td></tr>
+        <tr><td><code>headers</code></td><td>object / Headers</td><td>Cabeceras a enviar (ej: <code>Content-Type</code>)</td></tr>
+        <tr><td><code>body</code></td><td>string / FormData / URLSearchParams</td><td>Cuerpo de la petición (no para GET/HEAD)</td></tr>
+        <tr><td><code>credentials</code></td><td>string</td><td><code>'same-origin'</code> (defecto), <code>'include'</code>, <code>'omit'</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>GET con parámetros</h3>
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Opción 1: URLSearchParams (recomendado — gestiona caracteres especiales)
+async function buscar(termino) &#123;
+    const params = new URLSearchParams();
+    params.append('q', termino);     // gestiona encoding automáticamente
+
+    const resp = await fetch(`/api/productos?$&#123;params.toString()&#125;`);
+    if (!resp.ok) throw new Error(resp.status);
+    return resp.json();
+&#125;
+
+// Opción 2: query string directa (solo si no hay caracteres especiales)
+const resp = await fetch(`/api/productos?q=$&#123;termino&#125;`);
+
+// GET no puede tener body (el protocolo HTTP no lo permite).
+// Los parámetros van siempre en la URL.</code></pre>
+    </div>
+
+    <h3>POST con datos JSON</h3>
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Enviar un objeto como JSON al servidor
+async function crearUsuario(datosUsuario) &#123;
+    const resp = await fetch('/api/usuarios', &#123;
+        method: 'POST',
+        headers: &#123;
+            'Content-Type': 'application/json'  // indica al servidor el formato del body
+        &#125;,
+        body: JSON.stringify(datosUsuario)       // serializar el objeto a texto JSON
+    &#125;);
+
+    if (!resp.ok) throw new Error(resp.status);
+    return resp.json();  // el servidor devuelve el objeto creado
+&#125;
+
+// El servidor Java con @RestController espera Content-Type: application/json
+// y deserializa automáticamente el body con Jackson/Gson.</code></pre>
+    </div>
+
+    <h3>POST con FormData (multipart)</h3>
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Subida de archivo con fetch
+async function subirImagen() &#123;
+    const formData = new FormData();
+    const archivo = document.querySelector('input[type="file"]').files[0];
+
+    formData.append('username', 'usuario123');
+    formData.append('avatar', archivo);  // el archivo va como blob
+
+    const resp = await fetch('/api/perfil/avatar', &#123;
+        method: 'PUT',
+        body: formData
+        // NO incluir Content-Type: el navegador lo pone automáticamente
+        // con el boundary correcto para multipart/form-data
+    &#125;);
+
+    return resp.json();
+&#125;
+
+// Alternativa: construir FormData desde un formulario existente en el DOM
+const formData = new FormData(document.querySelector('#mi-form'));</code></pre>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>Al usar <code>FormData</code>, <strong>no pongas</strong> <code>Content-Type: 'multipart/form-data'</code> manualmente en los headers. El navegador necesita añadir el <code>boundary</code> correcto y lo hace automáticamente si no lo especificas. Si lo pones a mano, rompes el formato.</p>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>El Ejercicio 3 del examen (HTML + JavaScript) menciona explícitamente el atributo <code>enctype="multipart/form-data"</code> en el <code>&lt;form&gt;</code> para subida de archivos. Con fetch, el equivalente es usar <code>FormData</code> en el <code>body</code> sin especificar <code>Content-Type</code>.</p>
+    </div>
+
+    <h3>PUT y DELETE</h3>
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// PUT: actualizar un recurso completo
+async function actualizarUsuario(id, datos) &#123;
+    const resp = await fetch(`/api/usuarios/$&#123;id&#125;`, &#123;
+        method: 'PUT',
+        headers: &#123; 'Content-Type': 'application/json' &#125;,
+        body: JSON.stringify(datos)
+    &#125;);
+    if (!resp.ok) throw new Error(`Error $&#123;resp.status&#125;`);
+    return resp.json();  // el servidor devuelve el recurso actualizado
+&#125;
+
+// PATCH: actualización parcial (solo los campos que cambian)
+async function cambiarNombre(id, nuevoNombre) &#123;
+    const resp = await fetch(`/api/usuarios/$&#123;id&#125;`, &#123;
+        method: 'PATCH',
+        headers: &#123; 'Content-Type': 'application/json' &#125;,
+        body: JSON.stringify(&#123; nombre: nuevoNombre &#125;)
+    &#125;);
+    if (!resp.ok) throw new Error(`Error $&#123;resp.status&#125;`);
+    return resp.json();
+&#125;
+
+// DELETE: eliminar un recurso (normalmente sin body)
+async function eliminarUsuario(id) &#123;
+    const resp = await fetch(`/api/usuarios/$&#123;id&#125;`, &#123;
+        method: 'DELETE'
+    &#125;);
+    // DELETE suele devolver 204 No Content (sin body)
+    if (!resp.ok) throw new Error(`Error $&#123;resp.status&#125;`);
+    // No llamar a resp.json() si el status es 204
+&#125;</code></pre>
+    </div>
+
+    <div class="callout callout-key">
+      <p>DELETE suele responder con <strong>204 No Content</strong> (sin body). Llamar a <code>resp.json()</code> sobre una respuesta 204 lanza un error de parse. Hay que comprobar el status antes de intentar leer el body: <code>if (resp.status !== 204) &#123; return resp.json(); &#125;</code></p>
+    </div>
+
+    <h3>El objeto Headers</h3>
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Para peticiones que necesitan cabeceras personalizadas
+const cabeceras = new Headers();
+cabeceras.append('Content-Type', 'application/json');
+cabeceras.append('Authorization', 'Bearer token123');
+
+fetch('/api/recurso', &#123; headers: cabeceras &#125;);
+
+// Equivalente con objeto literal (más conciso):
+fetch('/api/recurso', &#123;
+    headers: &#123;
+        'Content-Type': 'application/json'
+    &#125;
+&#125;);
+
+// Comprobar content-type antes de parsear JSON:
+const resp = await fetch('/api/recurso');
+const contentType = resp.headers.get('content-type');
+if (contentType && contentType.includes('application/json')) &#123;
+    const datos = await resp.json();
+&#125;</code></pre>
+    </div>
+
+    <h3>Peticiones autenticadas con sesión</h3>
+    <p>Cuando el servidor usa autenticación basada en sesión (cookies de sesión, como en P5 y P6), las peticiones <code>fetch</code> no incluyen las cookies por defecto. Hay que indicárselo explícitamente:</p>
+
+    <div class="code-block">
+      <div class="code-header">javascript</div>
+      <pre><code>// Sin credentials: la cookie de sesión NO se envía → el servidor ve al usuario como anónimo
+fetch('/api/pedidos');
+
+// Con credentials: 'same-origin' → envía cookies si el servidor está en el mismo origen
+fetch('/api/pedidos', &#123;
+    credentials: 'same-origin'   // comportamiento por defecto en la mayoría de casos
+&#125;);
+
+// Con credentials: 'include' → envía cookies incluso a otros orígenes (necesario con CORS)
+fetch('http://api.miapp.com/pedidos', &#123;
+    credentials: 'include'
+&#125;);
+// El servidor CORS debe tener: Access-Control-Allow-Credentials: true
+// y NO puede usar Access-Control-Allow-Origin: * (debe especificar el origen exacto)</code></pre>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>En la P8 (MiniTwitter), el frontend y el backend corren en el mismo origen (mismo Tomcat), así que <code>credentials: 'same-origin'</code> (que es el valor por defecto) basta para enviar la cookie de sesión. Si el frontend estuviera en un servidor separado (situación común en SPAs), habría que usar <code>'include'</code> y configurar CORS en el servidor con <code>allowCredentials(true)</code>.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 8: SOP Y CORS ===== -->
+  <section id="sop-cors">
+    <h2>SOP y CORS</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. CORS es explícitamente mencionado en el temario del examen: "qué es, por qué existe, cómo se configura (conceptual)". No hace falta memorizar cabeceras exactas, sí entender el problema que resuelve y cómo el servidor lo habilita.</p>
+    </div>
+
+    <p>Cuando una página en <code>dominioA.com</code> intenta hacer un <code>fetch</code> a <code>dominioB.com</code>, el navegador bloquea el acceso a la respuesta por defecto. Esto es la <strong>Same Origin Policy (SOP)</strong>.</p>
+
+    <div class="callout callout-key">
+      <p>CORS es una restricción del <strong>navegador</strong>, no del servidor. La petición HTTP llega al servidor igualmente y este la procesa. Lo que el navegador bloquea es que el código JavaScript pueda <em>leer</em> la respuesta. Por eso un curl, Postman o una petición servidor-a-servidor no tienen restricciones CORS.</p>
+    </div>
+
+    <!-- SVG 6: SOP mismo vs diferente origen -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:800px;display:block;">
+        <title>SOP: mismo origen permitido vs diferente origen bloqueado</title>
+        <defs>
+          <marker id="arr-sop-ok" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-tip-text)"/>
+          </marker>
+          <marker id="arr-sop-err" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-warning-text)"/>
+          </marker>
+        </defs>
+        <!-- Panel izquierdo: Mismo origen -->
+        <rect x="10" y="10" width="370" height="260" rx="8" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="195" y="34" font-family="var(--font-display)" font-size="13" fill="var(--color-tip-text)" font-weight="700" text-anchor="middle">Mismo origen (permitido)</text>
+        <rect x="26" y="50" width="170" height="55" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="111" y="72" font-family="var(--font-display)" font-size="10" fill="var(--color-text)" font-weight="600" text-anchor="middle">Navegador</text>
+        <text x="111" y="88" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">http://miapp.com/pagina</text>
+        <rect x="216" y="50" width="148" height="55" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="290" y="72" font-family="var(--font-display)" font-size="10" fill="var(--color-text)" font-weight="600" text-anchor="middle">Servidor</text>
+        <text x="290" y="88" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">miapp.com</text>
+        <line x1="196" y1="77" x2="214" y2="77" stroke="var(--color-tip-text)" stroke-width="2" marker-end="url(#arr-sop-ok)"/>
+        <text x="205" y="68" font-family="var(--font-body)" font-size="8" fill="var(--color-tip-text)" text-anchor="middle">fetch('/api/')</text>
+        <rect x="148" y="130" width="80" height="28" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="188" y="149" font-family="var(--font-display)" font-size="13" fill="var(--color-tip-text)" font-weight="700" text-anchor="middle">OK</text>
+        <text x="195" y="193" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">protocolo + host + puerto</text>
+        <text x="195" y="210" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">= iguales → permitido</text>
+
+        <!-- Panel derecho: Diferente origen -->
+        <rect x="420" y="10" width="370" height="260" rx="8" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="605" y="34" font-family="var(--font-display)" font-size="13" fill="var(--color-warning-text)" font-weight="700" text-anchor="middle">Diferente origen (bloqueado)</text>
+        <rect x="436" y="50" width="170" height="55" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="521" y="72" font-family="var(--font-display)" font-size="10" fill="var(--color-text)" font-weight="600" text-anchor="middle">Navegador</text>
+        <text x="521" y="88" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">http://dominioA.com</text>
+        <rect x="626" y="50" width="148" height="55" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="700" y="72" font-family="var(--font-display)" font-size="10" fill="var(--color-text)" font-weight="600" text-anchor="middle">Servidor</text>
+        <text x="700" y="88" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">dominioB.com</text>
+        <line x1="606" y1="77" x2="624" y2="77" stroke="var(--color-warning-text)" stroke-width="2" marker-end="url(#arr-sop-err)"/>
+        <text x="615" y="68" font-family="var(--font-body)" font-size="8" fill="var(--color-warning-text)" text-anchor="middle">fetch('http://B')</text>
+        <rect x="553" y="130" width="120" height="28" rx="6" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="2"/>
+        <text x="613" y="149" font-family="var(--font-display)" font-size="13" fill="var(--color-warning-text)" font-weight="700" text-anchor="middle">CORS error</text>
+        <text x="605" y="193" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">protocolo, host o puerto</text>
+        <text x="605" y="210" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">distintos → SOP bloquea</text>
+      </svg>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Componente</th><th>Ejemplo</th><th>Nota</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Protocolo</td><td><code>https://</code></td><td><code>http</code> ≠ <code>https</code> = diferente origen</td></tr>
+        <tr><td>Host</td><td><code>api.miapp.com</code></td><td>Subdominio diferente = diferente origen</td></tr>
+        <tr><td>Puerto</td><td><code>:3000</code></td><td>Puerto diferente = diferente origen</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-key">
+      <p>El origen es la tripleta (protocolo, host, puerto). Dos URLs son del mismo origen si y solo si los tres son idénticos. <code>http://localhost:8080</code> y <code>http://localhost:3000</code> son <strong>orígenes distintos</strong>.</p>
+    </div>
+
+    <h3>CORS: la solución</h3>
+    <p>CORS (Cross-Origin Resource Sharing) es el mecanismo que permite al servidor <strong>declarar qué orígenes tienen permiso</strong> para acceder a sus recursos.</p>
+
+    <!-- SVG 7: Flujo CORS -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:820px;display:block;">
+        <title>Flujo CORS: cabeceras Origin y Access-Control-Allow-Origin</title>
+        <defs>
+          <marker id="arr-cors" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-accent)"/>
+          </marker>
+          <marker id="arr-cors-ok" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-tip-text)"/>
+          </marker>
+          <marker id="arr-cors-err" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-warning-text)"/>
+          </marker>
+        </defs>
+        <!-- Actores -->
+        <rect x="10" y="20" width="140" height="40" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="80" y="44" font-family="var(--font-display)" font-size="12" fill="var(--color-text)" font-weight="700" text-anchor="middle">Navegador</text>
+        <rect x="660" y="20" width="150" height="40" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="735" y="44" font-family="var(--font-display)" font-size="12" fill="var(--color-text)" font-weight="700" text-anchor="middle">Servidor</text>
+        <!-- Paso 1 -->
+        <circle cx="22" cy="100" r="10" fill="var(--color-accent)"/>
+        <text x="22" y="104" font-family="var(--font-display)" font-size="9" fill="var(--color-surface)" font-weight="700" text-anchor="middle">1</text>
+        <line x1="150" y1="100" x2="658" y2="100" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arr-cors)"/>
+        <rect x="220" y="82" width="360" height="22" rx="4" fill="var(--color-code-bg)" stroke="var(--color-code-border)" stroke-width="1"/>
+        <text x="400" y="97" font-family="var(--font-mono)" font-size="9" fill="var(--color-key-text)" text-anchor="middle">Origin: http://dominioA.com</text>
+        <!-- Paso 2 -->
+        <circle cx="735" cy="145" r="10" fill="var(--color-accent)"/>
+        <text x="735" y="149" font-family="var(--font-display)" font-size="9" fill="var(--color-surface)" font-weight="700" text-anchor="middle">2</text>
+        <rect x="590" y="122" width="220" height="52" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="700" y="140" font-family="var(--font-display)" font-size="9" fill="var(--color-text-2)" font-weight="600" text-anchor="middle">Lista blanca interna</text>
+        <text x="700" y="155" font-family="var(--font-body)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">dominioA.com ✓</text>
+        <text x="700" y="168" font-family="var(--font-body)" font-size="9" fill="var(--color-warning-text)" text-anchor="middle">dominioB.com ✗</text>
+        <!-- Paso 3 -->
+        <circle cx="22" cy="210" r="10" fill="var(--color-tip-text)"/>
+        <text x="22" y="214" font-family="var(--font-display)" font-size="9" fill="var(--color-surface)" font-weight="700" text-anchor="middle">3</text>
+        <line x1="658" y1="210" x2="150" y2="210" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arr-cors-ok)"/>
+        <rect x="195" y="192" width="420" height="22" rx="4" fill="var(--color-code-bg)" stroke="var(--color-code-border)" stroke-width="1"/>
+        <text x="405" y="207" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">Access-Control-Allow-Origin: http://dominioA.com</text>
+        <!-- Paso 4: navegador da acceso -->
+        <circle cx="22" cy="255" r="10" fill="var(--color-tip-text)"/>
+        <text x="22" y="259" font-family="var(--font-display)" font-size="9" fill="var(--color-surface)" font-weight="700" text-anchor="middle">4</text>
+        <rect x="40" y="240" width="320" height="28" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="200" y="258" font-family="var(--font-body)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">Cabecera ACAO presente → navegador deja acceder a los datos</text>
+        <!-- Caso no permitido -->
+        <rect x="460" y="240" width="280" height="28" rx="6" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="600" y="258" font-family="var(--font-body)" font-size="9" fill="var(--color-warning-text)" text-anchor="middle">Sin cabecera ACAO → navegador bloquea acceso</text>
+      </svg>
+    </div>
+
+    <h3>Peticiones preflight</h3>
+    <p>Para ciertas peticiones "no simples" (métodos PUT, DELETE, o POST con <code>Content-Type: application/json</code>), el navegador primero envía automáticamente una petición <code>OPTIONS</code> llamada <strong>preflight</strong>, preguntando al servidor si permite la operación. Solo si el servidor responde afirmativamente se envía la petición real.</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Tipo de petición</th><th>¿Preflight?</th><th>Ejemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GET, HEAD, POST con form-data</td><td>No (petición simple)</td><td>Formulario HTML clásico</td></tr>
+        <tr><td>POST con <code>Content-Type: application/json</code></td><td>Sí</td><td>Enviar JSON desde fetch</td></tr>
+        <tr><td>PUT, DELETE, PATCH</td><td>Sí</td><td>Cualquier operación REST</td></tr>
+        <tr><td>Cualquier cabecera personalizada</td><td>Sí</td><td><code>Authorization: Bearer ...</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <p>Si tu API REST devuelve errores CORS en producción pero no en pruebas con <code>GET</code>, el problema casi siempre es que el servidor no maneja correctamente las peticiones <code>OPTIONS</code> de preflight. Spring MVC con <code>@CrossOrigin</code> o <code>CorsConfig</code> lo gestiona automáticamente.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">java</div>
+      <pre><code>// Opción 1: Anotación en el controlador (granular)
+@RestController
+@CrossOrigin(origins = "http://localhost:3000")
+public class UsuarioController &#123;
+    @GetMapping("/api/usuarios")
+    public List&lt;Usuario&gt; getAll() &#123; ... &#125;
+&#125;
+
+// Opción 2: Configuración global en Spring (recomendado)
+@Configuration
+public class CorsConfig implements WebMvcConfigurer &#123;
+    @Override
+    public void addCorsMappings(CorsRegistry registry) &#123;
+        registry.addMapping("/api/**")
+            .allowedOrigins("http://localhost:3000")
+            .allowedMethods("GET", "POST", "PUT", "DELETE");
+    &#125;
+&#125;
+
+// Opción 3: wildcard (solo en desarrollo — PELIGROSO en producción)
+@CrossOrigin(origins = "*")</code></pre>
+    </div>
+
+    <div class="callout callout-warning">
+      <p><code>Access-Control-Allow-Origin: *</code> permite acceso desde cualquier origen. Es cómodo en desarrollo pero <strong>nunca</strong> debe usarse en producción con rutas autenticadas, porque anula la protección que da el SOP.</p>
+    </div>
+
+    <h3>JSONP (contexto histórico)</h3>
+    <p>Antes de CORS existía JSONP (JSON with Padding): una técnica que abusaba de que las etiquetas <code>&lt;script&gt;</code> sí pueden cargar recursos de otros dominios. El servidor devolvía los datos envueltos en una llamada a una función de callback.</p>
+
+    <div class="callout callout-warning">
+      <p>JSONP es un agujero de seguridad. Solo sirve para GET. Está completamente superado por CORS. En el examen: saber qué es y por qué se abandonó. No saber implementarlo.</p>
+    </div>
+
+    <div class="callout callout-key">
+      <p>CSP (Content Security Policy) es una cabecera HTTP que el servidor envía para indicar al navegador desde qué orígenes puede cargar recursos. El profesor marcó CSP como "NO ENTRA" — solo saber que existe.</p>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Mecanismo</th><th>Dirección</th><th>Propósito</th><th>Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>SOP</td><td>Navegador</td><td>Restringe peticiones cross-origin por defecto</td><td>Siempre activo</td></tr>
+        <tr><td>CORS</td><td>Servidor → Navegador</td><td>Habilita excepciones controladas a SOP</td><td>Estándar actual</td></tr>
+        <tr><td>JSONP</td><td>Cliente (hack)</td><td>Eludía SOP via <code>&lt;script&gt;</code></td><td>Obsoleto, inseguro</td></tr>
+        <tr><td>CSP</td><td>Servidor → Navegador</td><td>Controla desde dónde se cargan recursos</td><td>No entra en examen</td></tr>
+      </tbody>
+    </table>
+  </section>
+
 </BlockLayout>
+
+<style>
+  .lead {
+    font-size: var(--text-md);
+    color: var(--color-text-2);
+    margin-bottom: var(--space-7);
+    font-family: var(--font-body);
+    line-height: var(--leading-normal);
+  }
+
+  section {
+    margin-bottom: var(--space-8);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-3);
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-5);
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: var(--leading-snug);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-4);
+  }
+
+  p {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--color-text);
+    max-width: var(--measure);
+    margin-bottom: var(--space-4);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-code-border);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+  }
+
+  .code-block {
+    border: 1px solid var(--color-code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: var(--space-5) 0;
+  }
+
+  .code-header {
+    background: var(--color-surface-2);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    color: var(--color-text-2);
+    border-bottom: 1px solid var(--color-code-border);
+  }
+
+  pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    overflow-x: auto;
+    background: var(--color-surface);
+  }
+
+  pre code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    background: none;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    color: var(--color-text);
+    line-height: var(--leading-loose);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .comparison-table tbody tr:hover td {
+      background: var(--color-surface-2);
+    }
+  }
+</style>
