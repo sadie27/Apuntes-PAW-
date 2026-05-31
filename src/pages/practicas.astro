@@ -1,0 +1,1470 @@
+---
+import BlockLayout from '../layouts/BlockLayout.astro';
+const sections = [
+  { id: "filtro-auth",  label: "Filtro de autenticación" },
+  { id: "mvc-stack",    label: "Stack MVC completo" },
+  { id: "api-rest",     label: "API REST con Spring" },
+  { id: "cliente-ajax", label: "Cliente AJAX" },
+  { id: "patron-prg",   label: "Login y patrón PRG" },
+];
+---
+<BlockLayout title="Prácticas" blockNumber={9} blockName="Prácticas" sections={sections}>
+
+  <h1>Prácticas</h1>
+  <p class="lead">Código real de las prácticas anotado con los patrones del temario</p>
+
+  <!-- ===== SECCIÓN 1: FILTRO DE AUTENTICACIÓN ===== -->
+  <section id="filtro-auth">
+    <h2>Filtro de autenticación</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso muy alto. El filtro de autenticación es el patrón que el profesor menciona explícitamente como ejercicio probable. Se puede preguntar como pseudocódigo de <code>doFilter</code> o como razonamiento sobre por qué va en un filtro y no en cada controlador. Referencia directa: P5 (backoffice) y P6 (frontoffice).</p>
+    </div>
+
+    <p>Un <code>Filter</code> de Jakarta EE intercepta todas las peticiones HTTP que coinciden con su patrón de URL antes de que lleguen al servlet o controlador de destino. Es el lugar ideal para la comprobación de autenticación porque centraliza la lógica en un único punto: sin el filtro habría que repetir la comprobación en cada controlador, violando DRY. La interfaz <code>Filter</code> obliga a implementar <code>doFilter(ServletRequest, ServletResponse, FilterChain)</code>.</p>
+
+    <!-- SVG 1: Flujo doFilter backoffice -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 680 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:680px;display:block;">
+        <defs>
+          <marker id="arr-f1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+          </marker>
+          <marker id="arr-yes" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--color-tip-text)"/>
+          </marker>
+          <marker id="arr-no" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+          </marker>
+        </defs>
+
+        <!-- Nodo: Petición HTTP entra al filtro -->
+        <rect x="190" y="10" width="300" height="44" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="340" y="37" font-family="var(--font-display)" font-size="13" fill="var(--color-text)" text-anchor="middle">Petición HTTP entra al filtro</text>
+
+        <line x1="340" y1="54" x2="340" y2="74" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-f1)"/>
+
+        <!-- Nodo: Calcular URI relativa -->
+        <rect x="190" y="74" width="300" height="44" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="340" y="95" font-family="var(--font-display)" font-size="12" fill="var(--color-text)" text-anchor="middle">Calcular URI relativa</text>
+        <text x="340" y="111" font-family="var(--font-body)" font-size="11" fill="var(--color-text-2)" text-anchor="middle">requestURI − contextPath</text>
+
+        <line x1="340" y1="118" x2="340" y2="138" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-f1)"/>
+
+        <!-- Rombo: ¿URI en whitelist? -->
+        <polygon points="340,138 460,178 340,218 220,178" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="340" y="173" font-family="var(--font-display)" font-size="12" fill="var(--color-key-text)" text-anchor="middle" font-weight="600">¿URI en whitelist?</text>
+        <text x="340" y="189" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">/auth/login | /auth/logout | /assets/*</text>
+
+        <!-- Flecha Sí (derecha) -->
+        <line x1="460" y1="178" x2="540" y2="178" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arr-yes)"/>
+        <text x="494" y="172" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle" font-weight="600">Sí</text>
+
+        <!-- Nodo chain.doFilter whitelist -->
+        <rect x="540" y="157" width="128" height="42" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="604" y="181" font-family="var(--font-mono)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">chain.doFilter()</text>
+
+        <!-- Flecha No (abajo) -->
+        <line x1="340" y1="218" x2="340" y2="238" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-no)"/>
+        <text x="350" y="232" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" font-weight="600">No</text>
+
+        <!-- Nodo: getSession(false) -->
+        <rect x="190" y="238" width="300" height="44" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="340" y="259" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" text-anchor="middle">httpRequest.getSession(false)</text>
+        <text x="340" y="275" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">No crear sesión si no existe</text>
+
+        <line x1="340" y1="282" x2="340" y2="302" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-f1)"/>
+
+        <!-- Rombo: ¿Autenticado? -->
+        <polygon points="340,302 460,342 340,382 220,342" fill="var(--color-accent-light)" stroke="var(--color-accent)" stroke-width="1.5"/>
+        <text x="340" y="335" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)" text-anchor="middle" font-weight="600">¿session != null &amp;&amp;</text>
+        <text x="340" y="351" font-family="var(--font-display)" font-size="11" fill="var(--color-key-text)" text-anchor="middle" font-weight="600">session.getAttribute("usuario") != null?</text>
+
+        <!-- Flecha Sí (derecha) desde rombo 2 -->
+        <line x1="460" y1="342" x2="540" y2="342" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arr-yes)"/>
+        <text x="494" y="336" font-family="var(--font-display)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle" font-weight="600">Sí</text>
+
+        <!-- Nodo chain.doFilter autenticado -->
+        <rect x="540" y="321" width="128" height="42" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="604" y="345" font-family="var(--font-mono)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">chain.doFilter()</text>
+
+        <!-- Flecha No (abajo) desde rombo 2 -->
+        <line x1="340" y1="382" x2="340" y2="402" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-no)"/>
+        <text x="350" y="396" font-family="var(--font-display)" font-size="11" fill="var(--color-text-2)" font-weight="600">No</text>
+
+        <!-- Nodo: sendRedirect -->
+        <rect x="180" y="402" width="320" height="44" rx="6" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="340" y="423" font-family="var(--font-mono)" font-size="11" fill="var(--color-warning-text)" text-anchor="middle">httpResponse.sendRedirect(loginUrl)</text>
+        <text x="340" y="439" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">contextPath + "/auth/login?next=" + relativeURI → return STOP</text>
+
+        <!-- Etiqueta "Servlet destino" junto a chain.doFilter -->
+        <text x="604" y="212" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">→ Servlet destino</text>
+        <text x="604" y="378" font-family="var(--font-body)" font-size="10" fill="var(--color-text-3)" text-anchor="middle">→ Servlet destino</text>
+      </svg>
+    </div>
+
+    <!-- Bloque de código 1: AuthFilter.java doFilter -->
+    <div class="code-block">
+      <div class="code-header">java — AuthFilter.java (backoffice)</div>
+      <pre><code>@Override
+public void doFilter(ServletRequest req, ServletResponse resp,    // ①
+                     FilterChain chain)
+        throws IOException, ServletException &#123;
+
+    HttpServletRequest  httpReq  = (HttpServletRequest)  req;     // ①
+    HttpServletResponse httpResp = (HttpServletResponse) resp;
+
+    String requestURI  = httpReq.getRequestURI();
+    String contextPath = httpReq.getContextPath();
+    String relativeURI = requestURI.substring(contextPath.length()); // ②
+
+    // Rutas públicas: pasar directamente                            // ③
+    if (relativeURI.startsWith("/auth/login")
+            || relativeURI.startsWith("/auth/logout")
+            || relativeURI.startsWith("/assets/")) &#123;
+        chain.doFilter(req, resp);                                   // ④
+        return;
+    &#125;
+
+    HttpSession session = httpReq.getSession(false);               // ⑤
+
+    if (session == null                                            // ⑥
+            || session.getAttribute("usuario") == null) &#123;
+
+        String loginUrl = contextPath + "/auth/login?next="
+                          + relativeURI;                           // ⑦
+        httpResp.sendRedirect(loginUrl);
+        return;                                                    // ⑧
+    &#125;
+
+    chain.doFilter(req, resp);                                     // ⑨
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① Cast a HTTP: <code>Filter.doFilter</code> recibe las interfaces genéricas <code>ServletRequest/Response</code>; el cast a <code>Http*</code> desbloquea los métodos específicos de HTTP (<code>getRequestURI</code>, <code>sendRedirect</code>, <code>getSession</code>...).</p>
+      <p>② URI relativa: <code>requestURI</code> incluye el <code>contextPath</code> ("<code>/backoffice/catalogue</code>"); restamos el <code>contextPath</code> para obtener "<code>/catalogue</code>" y poder comparar con rutas de la app.</p>
+      <p>③ Whitelist: las rutas públicas que no requieren autenticación pasan directamente al siguiente filtro/servlet.</p>
+      <p>④ <code>chain.doFilter</code> en whitelist: continuar la cadena sin comprobación de sesión; <code>return</code> previene que el código de autenticación se ejecute también.</p>
+      <p>⑤ <code>getSession(false)</code>: devuelve la sesión existente o <code>null</code>; nunca crea una nueva; evitar crear sesiones vacías para usuarios no autenticados (consumiría memoria del servidor).</p>
+      <p>⑥ <code>session == null || session.getAttribute("usuario") == null</code>: doble comprobación; <code>null</code> de sesión = no ha habido ningún login; <code>null</code> de atributo = sesión existe pero sin usuario autenticado.</p>
+      <p>⑦ <code>loginUrl</code> con <code>?next=</code>: guardar la URL de retorno como query param para que <code>LoginController</code> pueda redirigir al usuario a su destino original tras un login exitoso.</p>
+      <p>⑧ <code>return</code> tras <code>sendRedirect</code>: imprescindible; sin él la ejecución continuaría hasta <code>chain.doFilter</code>, enviando dos respuestas al cliente (<code>IllegalStateException</code>).</p>
+      <p>⑨ <code>chain.doFilter</code> al final: usuario autenticado; la petición llega al servlet o controlador de destino.</p>
+    </div>
+
+    <!-- Bloque de código 2: ClienteAuthnFilter.java doFilter -->
+    <div class="code-block">
+      <div class="code-header">java — ClienteAuthnFilter.java (frontoffice)</div>
+      <pre><code>@WebFilter(&#123;"/cliente/*", "/clientes/*"&#125;)                        // ①
+public class ClienteAuthnFilter implements Filter &#123;
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse resp,
+                         FilterChain chain)
+            throws IOException, ServletException &#123;
+
+        HttpServletRequest  httpReq  = (HttpServletRequest)  req;
+        HttpServletResponse httpResp = (HttpServletResponse) resp;
+
+        HttpSession session = httpReq.getSession(false);           // ②
+
+        if (session != null
+                &amp;&amp; session.getAttribute("cliente") != null) &#123;     // ③
+            chain.doFilter(req, resp);                             // ④
+            return;
+        &#125;
+
+        // No autenticado: guardar URL de retorno y redirigir
+        String contextPath = httpReq.getContextPath();
+        String uri    = httpReq.getRequestURI().substring(contextPath.length());
+        String qs     = httpReq.getQueryString();
+        String destino = uri + (qs != null ? "?" + qs : "");           // ⑤
+
+        session = httpReq.getSession(true);                        // ⑥
+        session.setAttribute("retorno", destino);                  // ⑦
+
+        httpResp.sendRedirect(httpReq.getContextPath() + "/auth/login");
+        return;
+    &#125;
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>@WebFilter("/cliente/*")</code>: la anotación configura el mapeo de URL directamente en la clase, reemplazando la configuración en <code>web.xml</code>; más conciso para patrones simples.</p>
+      <p>② <code>getSession(false)</code>: mismo patrón que el backoffice; no crear sesión si no existe.</p>
+      <p>③ <code>session.getAttribute("cliente")</code>: atributo diferente al backoffice (<code>"usuario"</code> vs <code>"cliente"</code>); cada área de la aplicación tiene su propio atributo de sesión con el objeto del usuario autenticado.</p>
+      <p>④ <code>chain.doFilter</code> si autenticado: pasar la petición al controlador Spring sin más comprobaciones.</p>
+      <p>⑤ Construir destino: se resta el <code>contextPath</code> para guardar solo la ruta relativa (<code>/cliente/pedidos</code>, no <code>/backoffice/cliente/pedidos</code>); se incluye la query string para no perder parámetros de paginación al volver tras el login.</p>
+      <p>⑥ <code>getSession(true)</code>: ahora sí se crea la sesión aunque no exista; necesario para poder guardar el atributo <code>"retorno"</code> en ella.</p>
+      <p>⑦ <code>session.setAttribute("retorno", destino)</code>: URL de retorno en la sesión (no en query param); <code>LoginController</code> del frontoffice la leerá de la sesión tras autenticar; diferencia clave con el backoffice.</p>
+    </div>
+
+    <!-- ADD-1: ¿Por qué un filtro? -->
+    <h3>¿Por qué centralizar la autenticación en un filtro?</h3>
+    <p>Sin el filtro, cada servlet necesitaría estas cinco líneas al inicio de cada <code>doGet</code> y <code>doPost</code>:</p>
+    <div class="code-block">
+      <div class="code-header">java — sin filtro (repetido en cada servlet)</div>
+      <pre><code>HttpSession s = request.getSession(false);
+if (s == null || s.getAttribute("usuario") == null) &#123;
+    response.sendRedirect(contextPath + "/auth/login");
+    return;
+&#125;</code></pre>
+    </div>
+    <p>Con 15 servlets, son 75 líneas idénticas que hay que mantener sincronizadas. Si cambia el nombre del atributo de sesión, hay que cambiarlo en 15 sitios.</p>
+    <p>El servlet tiene una única responsabilidad (mostrar el catálogo, procesar el formulario...). Añadirle la lógica de autenticación viola el <strong>principio de responsabilidad única</strong>. El filtro tiene exactamente una responsabilidad: decidir si la petición puede continuar.</p>
+    <p>Si la comprobación está en cada controlador, basta con añadir un controlador nuevo sin la verificación para tener un agujero de seguridad. El filtro se aplica automáticamente a todas las URLs que coincidan con su patrón; un controlador nuevo nunca "escapa" al filtro.</p>
+
+    <div class="callout callout-key">
+      <p>El filtro de autenticación implementa un <strong>aspecto transversal</strong> (<em>cross-cutting concern</em>): una funcionalidad que afecta a todas las peticiones por igual, independientemente de su destino. Los aspectos transversales son candidatos naturales para filtros (Jakarta EE) o interceptores (Spring).</p>
+    </div>
+
+    <!-- Tabla comparativa: Backoffice vs Frontoffice -->
+    <h3>Backoffice vs Frontoffice</h3>
+    <div style="overflow-x:auto;margin:var(--space-5) 0;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Aspecto</th>
+            <th>AuthFilter — Backoffice</th>
+            <th>ClienteAuthnFilter — Frontoffice</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Configuración</td>
+            <td><code>&lt;filter-mapping&gt;</code> en <code>web.xml</code></td>
+            <td><code>@WebFilter("/cliente/*", "/clientes/*")</code></td>
+          </tr>
+          <tr>
+            <td>Atributo de sesión verificado</td>
+            <td><code>"usuario"</code> (objeto Usuario)</td>
+            <td><code>"cliente"</code> (objeto ClienteEntity)</td>
+          </tr>
+          <tr>
+            <td>URL de retorno guardada como</td>
+            <td>Query param <code>?next=URI</code></td>
+            <td>Atributo de sesión <code>"retorno"</code></td>
+          </tr>
+          <tr>
+            <td>Crear sesión nueva para guardar retorno</td>
+            <td>No (solo comprueba)</td>
+            <td>Sí (<code>getSession(true)</code>)</td>
+          </tr>
+          <tr>
+            <td>Rutas excluidas de auth</td>
+            <td>Whitelist manual (<code>/auth/login</code>, <code>/assets/</code>)</td>
+            <td>Excluidas por patrón URL (<code>/cliente/*</code> no aplica a <code>/auth/*</code>)</td>
+          </tr>
+          <tr>
+            <td>Framework subyacente</td>
+            <td>Jakarta EE puro</td>
+            <td>Spring MVC (pero el filtro es Jakarta EE)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-key">
+      <p><code>getSession(false)</code> devuelve la sesión existente o <code>null</code>; jamás crea una nueva. <code>getSession()</code> y <code>getSession(true)</code> siempre devuelven una sesión, creándola si no existía. En el filtro de autenticación siempre se usa <code>getSession(false)</code> en la comprobación inicial: si se usara <code>getSession(true)</code>, cada petición no autenticada crearía una sesión vacía en el servidor.</p>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>Si se llama a <code>response.sendRedirect(...)</code> sin <code>return</code> inmediatamente después, la ejecución continúa hasta <code>chain.doFilter()</code>. El servidor intenta enviar dos respuestas al cliente: la redirección y la del servlet. Resultado: <code>IllegalStateException: response already committed</code>. Cada rama del filtro debe terminar con <code>chain.doFilter()</code> OR con una respuesta y <code>return</code>.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 2: STACK MVC COMPLETO ===== -->
+  <section id="mvc-stack">
+    <h2>Stack MVC completo</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso muy alto. El profesor repite la arquitectura controller → service → repository como el concepto central que hay que entender. No la sintaxis exacta de las anotaciones, sino por qué existe cada capa y qué hace que no deberían hacer las otras. Referencia: P6 (Frontoffice Electrosa, ClienteController + PedidoServiceImpl).</p>
+    </div>
+
+    <p>En Spring MVC la petición HTTP pasa por tres capas con responsabilidades estrictas. El controlador (<code>@Controller</code>) recibe la petición, extrae parámetros, llama al servicio y devuelve el nombre de la vista. El servicio (<code>@Service</code>) contiene la lógica de negocio; es independiente de HTTP y por eso es testeable de forma unitaria. El repositorio (<code>@Repository</code>) accede a los datos mediante JPA. Las dependencias fluyen hacia abajo; Spring crea e inyecta cada bean automáticamente mediante <code>@Autowired</code>.</p>
+
+    <!-- SVG 2: Stack de capas Spring -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:720px;display:block;">
+        <defs>
+          <marker id="arr-mvc" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+          </marker>
+        </defs>
+
+        <!-- Capa 1: Controller -->
+        <rect x="20" y="10" width="580" height="76" rx="6" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="310" y="35" font-family="var(--font-display)" font-size="13" fill="var(--color-key-text)" text-anchor="middle" font-weight="700">ClienteController</text>
+        <text x="310" y="54" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)" text-anchor="middle">@Controller  @RequestMapping(&#123;"/cliente", "/clientes"&#125;)</text>
+        <text x="310" y="72" font-family="var(--font-body)" font-size="11" fill="var(--color-key-text)" text-anchor="middle">Extrae sesión, llama service, añade al Model, retorna vista</text>
+
+        <!-- Flecha @Autowired -->
+        <line x1="310" y1="86" x2="310" y2="108" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-mvc)"/>
+        <text x="320" y="101" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">@Autowired</text>
+
+        <!-- Capa 2: Service -->
+        <rect x="20" y="108" width="580" height="82" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="310" y="133" font-family="var(--font-display)" font-size="13" fill="var(--color-tip-text)" text-anchor="middle" font-weight="700">PedidoServiceImpl</text>
+        <text x="310" y="152" font-family="var(--font-mono)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">@Service  implements PedidoService</text>
+        <text x="310" y="170" font-family="var(--font-body)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle">findByCliente(), findOne(), findCestaCliente()</text>
+        <text x="310" y="185" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">Lógica de negocio: buildImporte(), Optional, logging</text>
+
+        <!-- Flecha @Autowired 2 -->
+        <line x1="310" y1="190" x2="310" y2="212" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-mvc)"/>
+        <text x="320" y="205" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)">@Autowired</text>
+
+        <!-- Capa 3: Repository -->
+        <rect x="20" y="212" width="580" height="74" rx="6" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="310" y="237" font-family="var(--font-display)" font-size="13" fill="var(--color-warning-text)" text-anchor="middle" font-weight="700">PedidoRepository / CestaCompraRepository</text>
+        <text x="310" y="256" font-family="var(--font-mono)" font-size="11" fill="var(--color-warning-text)" text-anchor="middle">@Repository  (Spring Data JPA — interfaz, sin implementar)</text>
+        <text x="310" y="274" font-family="var(--font-body)" font-size="11" fill="var(--color-warning-text)" text-anchor="middle">findAll(Example), findById(), save(), deleteById()</text>
+
+        <!-- Flecha SQL -->
+        <line x1="310" y1="286" x2="310" y2="308" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-mvc)"/>
+        <text x="320" y="301" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)">SQL / JPQL</text>
+
+        <!-- Capa 4: BD -->
+        <rect x="20" y="308" width="580" height="48" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="310" y="337" font-family="var(--font-display)" font-size="13" fill="var(--color-text)" text-anchor="middle" font-weight="700">Base de datos (MySQL / PostgreSQL)</text>
+
+        <!-- Leyenda derecha -->
+        <rect x="616" y="10" width="14" height="14" rx="2" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1"/>
+        <text x="635" y="22" font-family="var(--font-body)" font-size="11" fill="var(--color-text-2)">HTTP / Vista</text>
+        <rect x="616" y="32" width="14" height="14" rx="2" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1"/>
+        <text x="635" y="44" font-family="var(--font-body)" font-size="11" fill="var(--color-text-2)">Lógica de negocio</text>
+        <rect x="616" y="54" width="14" height="14" rx="2" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1"/>
+        <text x="635" y="66" font-family="var(--font-body)" font-size="11" fill="var(--color-text-2)">Persistencia</text>
+      </svg>
+    </div>
+
+    <!-- Bloque de código 3: ClienteController.java -->
+    <div class="code-block">
+      <div class="code-header">java — ClienteController.java (fragmentos clave)</div>
+      <pre><code>@Controller                                                        // ①
+@RequestMapping(&#123;"/cliente", "/clientes"&#125;)                        // ②
+public class ClienteController &#123;
+
+    @Autowired private PedidoService    pedidoService;             // ③ ④
+    @Autowired private ArticuloService  articuloService;
+    @Autowired private CestaService     cestaService;
+    @Autowired private ClienteService   clienteService;
+
+    // ...
+
+    @GetMapping("/pedidos")                                        // ⑤
+    public String listarPedidos(HttpSession session, Model model) &#123; // ⑥ ⑦
+        ClienteEntity cliente = (ClienteEntity)
+                session.getAttribute(SessionConstants.CLIENTE_KEY); // ⑧
+
+        if (cliente == null) return "redirect:/auth/login";        // ⑨
+
+        List&lt;PedidoEntity&gt; pedidos =
+                pedidoService.findByCliente(cliente.getCodigo());      // ⑩
+        model.addAttribute("pedidos", pedidos);                    // ⑪
+        return "lista_pedidos";                                    // ⑫
+    &#125;
+
+    // ...
+
+    @GetMapping("/pedidos/&#123;codigo&#125;")
+    public String detallePedido(@PathVariable String codigo,        // ⑬
+                                HttpSession session, Model model) &#123;
+        ClienteEntity cliente = (ClienteEntity)
+                session.getAttribute(SessionConstants.CLIENTE_KEY);
+        if (cliente == null) return "redirect:/auth/login";
+
+        PedidoEntity pedido = pedidoService.findOne(codigo);
+        if (pedido == null) &#123;                                       // null-guard
+            return "redirect:/cliente/pedidos";
+        &#125;
+        if (!pedido.getCodigoCliente().equals(cliente.getCodigo())) &#123;
+            throw new AccessNotAuthorizedException();               // ⑭
+        &#125;
+        model.addAttribute("pedido", pedido);
+        return "detalle_pedido";
+    &#125;
+
+    // ...
+
+    @PostMapping("/pedidos/anular")
+    public String anularPedido(@RequestParam("codigoPedido") String codigoPedido,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) &#123;
+        ClienteEntity cliente = (ClienteEntity)
+                session.getAttribute(SessionConstants.CLIENTE_KEY);
+        if (cliente == null) return "redirect:/auth/login";
+
+        pedidoService.anular(codigoPedido);
+        redirectAttributes.addFlashAttribute(                      // ⑮
+                "mensaje", "Pedido " + codigoPedido + " anulado");
+        return "redirect:/cliente/pedidos/anulados";
+    &#125;
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>@Controller</code>: registra este bean en el contexto de Spring; Spring inyectará sus dependencias automáticamente y lo incluirá en el <code>DispatcherServlet</code>.</p>
+      <p>② <code>@RequestMapping(&#123;"/cliente", "/clientes"&#125;)</code>: prefijo de URL compartido por todos los métodos de la clase; admite múltiples valores para compatibilidad con ambas formas de la URL.</p>
+      <p>③ <code>@Autowired PedidoService</code>: Spring busca un bean que implemente la interfaz <code>PedidoService</code> e inyecta la instancia; el controlador no sabe qué implementación concreta usa.</p>
+      <p>④ <code>PedidoService</code> es una interfaz (no <code>PedidoServiceImpl</code>): principio de inversión de dependencias; el controlador depende de la abstracción, no de la implementación.</p>
+      <p>⑤ <code>@GetMapping("/pedidos")</code>: responde a <code>GET /cliente/pedidos</code>; el prefijo de clase se combina con el de método → <code>/cliente/pedidos</code>.</p>
+      <p>⑥ <code>HttpSession session</code>: Spring pasa la sesión HTTP actual como parámetro del método; no hay que llamar a <code>request.getSession()</code> manualmente.</p>
+      <p>⑦ <code>Model model</code>: el "M" de MVC; un mapa de clave-valor que Thymeleaf puede leer en la plantilla.</p>
+      <p>⑧ <code>session.getAttribute(SessionConstants.CLIENTE_KEY)</code>: recupera el cliente autenticado de la sesión; <code>SessionConstants.CLIENTE_KEY</code> es una constante String para evitar typos en la clave.</p>
+      <p>⑨ <code>if (cliente == null) return "redirect:..."</code>: guardia defensiva; redundante con el filtro pero protege si alguien accede sin pasar por él (por ejemplo, en tests).</p>
+      <p>⑩ <code>pedidoService.findByCliente(cliente.getCodigo())</code>: el service recibe el <code>codigoCliente</code> como String, no la entidad entera; esto desacopla el service del objeto <code>ClienteEntity</code> y facilita reusar el servicio desde otros contextos.</p>
+      <p>⑪ <code>model.addAttribute("pedidos", pedidos)</code>: pasa la lista a la plantilla Thymeleaf con el nombre <code>"pedidos"</code>; en la plantilla se accede como <code>$&#123;pedidos&#125;</code>.</p>
+      <p>⑫ <code>return "lista_pedidos"</code>: nombre del template Thymeleaf (<code>lista_pedidos.html</code> en <code>/templates/</code>); Spring lo resuelve con el <code>ViewResolver</code> configurado.</p>
+      <p>⑬ <code>@PathVariable String codigo</code>: extrae el segmento variable <code>&#123;codigo&#125;</code> de la URL <code>/cliente/pedidos/&#123;codigo&#125;</code>; el nombre debe coincidir con el del path.</p>
+      <p>⑭ El filtro verifica autenticación (¿tienes sesión?) pero el controlador verifica autorización a nivel de recurso (¿ese pedido es tuyo?). Se comparan códigos String, no entidades JPA, para evitar dependencia de lazy-loading.</p>
+      <p>⑮ <code>RedirectAttributes.addFlashAttribute</code>: los atributos flash sobreviven un único redirect; están disponibles en la petición GET siguiente y desaparecen automáticamente. <code>@RequestParam</code> recoge el código del body del formulario POST, no de la URL.</p>
+    </div>
+
+    <!-- Bloque de código 4a: PedidoService interfaz -->
+    <div class="code-block">
+      <div class="code-header">java — PedidoService.java (interfaz — contrato)</div>
+      <pre><code>public interface PedidoService &#123;                                   // ①
+
+    /** @param codigoCliente Código del cliente (String, no la entidad) */
+    List&lt;PedidoEntity&gt; findByCliente(String codigoCliente);
+
+    /** Devuelve un pedido por su código o lanza excepción */
+    PedidoEntity findOne(String codigo);
+
+    /** Devuelve la cesta activa del cliente, o empty */
+    Optional&lt;CestaCompraEntity&gt; findCestaCliente(ClienteEntity c);
+
+    void anular(String codigo);
+&#125;                                                                   // ②</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① La interfaz define el contrato: qué métodos existen y qué devuelven.</p>
+      <p>② El controlador depende de esta interfaz; si se cambia la implementación (MySQL → PostgreSQL, JPA → JDBC), el controlador no cambia.</p>
+    </div>
+
+    <!-- Bloque de código 4b: PedidoServiceImpl -->
+    <div class="code-block">
+      <div class="code-header">java — PedidoServiceImpl.java (fragmentos)</div>
+      <pre><code>@Service                                                           // ③
+public class PedidoServiceImpl implements PedidoService &#123;          // ④
+
+    private final PedidoRepository       pedidoRepo;
+    private final CestaCompraRepository  cestaRepo;
+
+    @Autowired                                                     // ⑤
+    public PedidoServiceImpl(PedidoRepository pedidoRepo,
+                             CestaCompraRepository cestaRepo) &#123;
+        this.pedidoRepo = pedidoRepo;
+        this.cestaRepo  = cestaRepo;
+    &#125;
+
+    @Override
+    public List&lt;PedidoEntity&gt; findByCliente(ClienteEntity cliente) &#123;
+        PedidoEntity example = new PedidoEntity();
+        example.setCliente(cliente);
+        List&lt;PedidoEntity&gt; list =
+                pedidoRepo.findAll(Example.of(example));           // ⑥ ⑦
+        list.forEach(e -> e.buildImporte());                       // ⑧
+        return list;
+    &#125;
+
+    @Override
+    public PedidoEntity findOne(String codigo) &#123;
+        Optional&lt;PedidoEntity&gt; opt = pedidoRepo.findById(codigo);  // ⑨
+        if (!opt.isPresent())
+            throw new ExcepcionDeAplicacion("Pedido no encontrado");
+        return opt.get();
+    &#125;
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>③ <code>@Service</code>: Spring registra este bean; cuando alguien pide <code>PedidoService</code>, Spring inyecta esta clase.</p>
+      <p>④ <code>implements PedidoService</code>: la implementación cumple el contrato de la interfaz.</p>
+      <p>⑤ <code>@Autowired</code> en constructor (inyección por constructor): mejor práctica que <code>@Autowired</code> en campo; hace las dependencias explícitas y facilita crear el objeto en tests sin Spring.</p>
+      <p>⑥ <code>PedidoRepository</code>: Spring Data JPA; basta declarar la interfaz extendiendo <code>JpaRepository</code>; Spring genera toda la implementación (queries SQL, gestión de conexión, transacciones).</p>
+      <p>⑦ <code>Example.of(example)</code>: query dinámica de JPA sin escribir SQL; busca registros cuyos campos no-null coincidan con los del objeto <code>example</code>.</p>
+      <p>⑧ <code>e.buildImporte()</code>: lógica de negocio que el repositorio no tiene; el service añade este cálculo sobre los datos crudos que devuelve el repositorio.</p>
+      <p>⑨ <code>Optional&lt;PedidoEntity&gt;</code>: evita <code>NullPointerException</code> al buscar por ID; es explícito sobre que el recurso puede no existir; <code>.isPresent()</code> / <code>.get()</code> para consumirlo.</p>
+    </div>
+
+    <!-- ADD-2: @Transactional -->
+    <h3>@Transactional: atomicidad en el servicio</h3>
+    <div class="code-block">
+      <div class="code-header">java — PedidoServiceImpl.anular() con @Transactional</div>
+      <pre><code>@Service
+public class PedidoServiceImpl implements PedidoService &#123;
+
+    @Transactional                                         // ①
+    public void anular(String codigo) &#123;
+        PedidoEntity pedido = pedidoRepo.findById(codigo) // ②
+                .orElseThrow(() -> new PedidoNotFoundException(codigo));
+
+        pedido.setEstado("ANULADO");
+        pedidoRepo.save(pedido);                          // ③
+
+        PedidoanuladoEntity anulado = new PedidoanuladoEntity(pedido);
+        anulados.save(anulado);                           // ④
+        // Si esta línea falla → rollback automático: pedido NO queda "ANULADO"
+    &#125;
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>@Transactional</code>: todo el método se ejecuta en una única transacción de BD; si cualquier operación falla, todas se deshacen (rollback automático).</p>
+      <p>② Si el pedido no existe, se lanza la excepción antes de abrir la transacción.</p>
+      <p>③ Primera operación: actualizar el estado del pedido existente.</p>
+      <p>④ Segunda operación: crear el registro en la tabla de pedidos anulados; si esta falla con excepción, el pedido vuelve a su estado anterior (no queda "ANULADO" huérfano).</p>
+    </div>
+
+    <div class="callout callout-key">
+      <p><code>@Transactional</code> garantiza que las operaciones de base de datos son todo-o-nada. Sin esta anotación, si la operación <code>anulados.save(anulado)</code> falla después de <code>pedidoRepo.save(pedido)</code>, el pedido quedaría marcado como ANULADO pero sin registro en la tabla de anulados: inconsistencia de datos. Con <code>@Transactional</code>, Spring hace rollback de todas las operaciones de esa transacción.</p>
+    </div>
+
+    <!-- Tabla responsabilidades de capa -->
+    <h3>Responsabilidades por capa</h3>
+    <div style="overflow-x:auto;margin:var(--space-5) 0;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Capa</th>
+            <th>Anotación</th>
+            <th>Responsabilidad</th>
+            <th>Lo que NO debe hacer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Controller</td>
+            <td><code>@Controller</code></td>
+            <td>Recibir petición HTTP, extraer params/sesión, llamar al service, preparar Model, elegir vista</td>
+            <td>Lógica de negocio, queries a BD</td>
+          </tr>
+          <tr>
+            <td>Service</td>
+            <td><code>@Service</code></td>
+            <td>Lógica de negocio, orquestación de repos, cálculos, transacciones</td>
+            <td>Gestión de HTTP, acceso directo a BD sin repositorio</td>
+          </tr>
+          <tr>
+            <td>Repository</td>
+            <td><code>@Repository</code> / JPA</td>
+            <td>CRUD en BD, queries JPQL/SQL, gestión de conexión</td>
+            <td>Lógica de negocio, devolver objetos con cálculos ya hechos</td>
+          </tr>
+          <tr>
+            <td>Entity</td>
+            <td>— (JPA)</td>
+            <td>Mapeo objeto-relacional; representar una fila de la BD</td>
+            <td>Lógica de negocio compleja, HTTP</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-key">
+      <p>El controlador declara <code>private PedidoService pedidoService</code> pero nunca escribe <code>new PedidoServiceImpl()</code>. Spring crea el bean una sola vez (singleton por defecto) y lo inyecta en todos los controladores que lo pidan. Si hay que sustituir la implementación (por ejemplo, para un test con datos falsos), basta con cambiar la clase que Spring resuelve, sin tocar el controlador.</p>
+    </div>
+
+    <div class="callout callout-relation">
+      <p>El stack <code>@Controller → @Service → @Repository</code> es la materialización directa de la arquitectura en capas del Bloque 3 (Arquitectura). Los conceptos teóricos (presentación, lógica, persistencia) tienen aquí sus anotaciones concretas.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 3: API REST CON SPRING ===== -->
+  <section id="api-rest">
+    <h2>API REST con Spring</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso muy alto. El profesor menciona el diseño de una API REST como ejercicio probable, incluyendo razonar qué método HTTP usar para cada endpoint y por qué. No hace falta sintaxis exacta: <code>@Get</code> en lugar de <code>@GetMapping</code> es suficiente. Referencia: P8 Part I (PostController).</p>
+    </div>
+
+    <p><code>@Controller</code> y <code>@RestController</code> difieren en una cosa crucial: el segundo añade <code>@ResponseBody</code> a todos los métodos, de modo que Spring serializa el objeto Java de retorno directamente a JSON (usando Jackson, el serializador por defecto en Spring Boot). No hay que llamar a vistas Thymeleaf ni escribir manualmente en el <code>response</code>. El controlador REST es una API pura: recibe JSON, devuelve JSON.</p>
+
+    <!-- SVG 3: Árbol de endpoints -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:720px;display:block;">
+        <defs>
+          <marker id="arr-rest" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-border-strong)"/>
+          </marker>
+        </defs>
+
+        <!-- Raíz -->
+        <rect x="270" y="10" width="180" height="38" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="360" y="34" font-family="var(--font-mono)" font-size="13" fill="var(--color-text)" text-anchor="middle" font-weight="700">/api/posts</text>
+
+        <!-- Rama izquierda: GET lista -->
+        <line x1="310" y1="48" x2="100" y2="100" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-rest)"/>
+        <rect x="20" y="100" width="160" height="50" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="100" y="122" font-family="var(--font-mono)" font-size="11" fill="var(--color-tip-text)" text-anchor="middle" font-weight="700">GET /api/posts</text>
+        <text x="100" y="140" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">Lista todos</text>
+
+        <!-- Rama centro: POST crear -->
+        <line x1="360" y1="48" x2="360" y2="100" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-rest)"/>
+        <rect x="270" y="100" width="180" height="50" rx="6" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="360" y="122" font-family="var(--font-mono)" font-size="11" fill="var(--color-key-text)" text-anchor="middle" font-weight="700">POST /api/posts</text>
+        <text x="360" y="140" font-family="var(--font-body)" font-size="10" fill="var(--color-key-text)" text-anchor="middle">Crea post nuevo</text>
+
+        <!-- Rama derecha: /api/posts/{id} -->
+        <line x1="410" y1="48" x2="580" y2="100" stroke="var(--color-border-strong)" stroke-width="1.5" marker-end="url(#arr-rest)"/>
+        <rect x="500" y="100" width="210" height="38" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" stroke-width="1.5"/>
+        <text x="605" y="124" font-family="var(--font-mono)" font-size="11" fill="var(--color-text)" text-anchor="middle">/api/posts/&#123;id&#125;</text>
+
+        <!-- Sub-ramas de /{id} -->
+        <!-- GET /{id} -->
+        <line x1="540" y1="138" x2="480" y2="190" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-rest)"/>
+        <rect x="400" y="190" width="160" height="50" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="480" y="212" font-family="var(--font-mono)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle" font-weight="700">GET /&#123;id&#125;</text>
+        <text x="480" y="228" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">Obtiene uno</text>
+
+        <!-- PUT /{id} -->
+        <line x1="575" y1="138" x2="545" y2="190" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-rest)"/>
+        <rect x="470" y="260" width="160" height="50" rx="6" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="550" y="282" font-family="var(--font-mono)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle" font-weight="700">PUT /&#123;id&#125;</text>
+        <text x="550" y="298" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">Reemplaza completo</text>
+
+        <line x1="605" y1="138" x2="620" y2="190" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-rest)"/>
+        <rect x="555" y="190" width="155" height="50" rx="6" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="632" y="212" font-family="var(--font-mono)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle" font-weight="700">PATCH /&#123;id&#125;</text>
+        <text x="632" y="228" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">Actualiza parcial</text>
+
+        <!-- DELETE /{id} -->
+        <line x1="660" y1="138" x2="680" y2="190" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-rest)"/>
+        <rect x="610" y="260" width="100" height="50" rx="6" fill="oklch(97% 0.03 15)" stroke="oklch(82% 0.08 15)" stroke-width="1.5"/>
+        <text x="660" y="282" font-family="var(--font-mono)" font-size="10" fill="oklch(38% 0.12 15)" text-anchor="middle" font-weight="700">DELETE /&#123;id&#125;</text>
+        <text x="660" y="298" font-family="var(--font-body)" font-size="10" fill="oklch(38% 0.12 15)" text-anchor="middle">Elimina</text>
+
+        <!-- GET /{id}/comments -->
+        <line x1="660" y1="310" x2="660" y2="340" stroke="var(--color-border-strong)" stroke-width="1" marker-end="url(#arr-rest)"/>
+        <rect x="590" y="340" width="125" height="50" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="652" y="362" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle" font-weight="700">GET /&#123;id&#125;/comments</text>
+        <text x="652" y="378" font-family="var(--font-body)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">Lista comentarios</text>
+      </svg>
+    </div>
+
+    <!-- Bloque de código 5: PostController.java -->
+    <div class="code-block">
+      <div class="code-header">java — PostController.java (completo)</div>
+      <pre><code>@RestController                                                    // ①
+@RequestMapping("/api/posts")                                      // ②
+public class PostController &#123;
+
+    @Autowired private PostRepository postRepository;              // ③
+    @Autowired private UserRepository userRepository;
+
+    @GetMapping                                                    // ④
+    public List&lt;PostEntity&gt; listarPosts() &#123;
+        return postRepository.findAll();
+    &#125;
+
+    @GetMapping("/&#123;id&#125;")                                          // ⑤
+    public PostEntity obtenerPost(@PathVariable Long id) &#123;
+        return postRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(     // ⑥
+                        "Post no encontrado: " + id));
+    &#125;
+
+    @PostMapping                                                    // ⑦
+    public PostEntity crearPost(@RequestBody PostEntity post) &#123;
+        if (!userRepository.existsById(post.getUserId())) &#123;        // ⑧
+            throw new NoSuchElementException("User no existe: "
+                    + post.getUserId());
+        &#125;
+        return postRepository.save(post);                          // ⑨
+    &#125;
+
+    @PutMapping("/&#123;id&#125;")                                          // ⑩
+    public PostEntity actualizarPost(@PathVariable Long id,
+                                     @RequestBody PostEntity updated) &#123;
+        if (!id.equals(updated.getId())) &#123;                         // ⑪
+            throw new IllegalArgumentException(
+                    "ID del path y del body no coinciden");
+        &#125;
+        return postRepository.save(updated);                       // ⑫
+    &#125;
+
+    @PatchMapping("/&#123;id&#125;")                                         // ⑬
+    public PostEntity patchPost(@PathVariable Long id,
+                                @RequestBody PostEntity partial) &#123;
+        PostEntity post = postRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post: " + id));
+        if (partial.getTitle() != null) post.setTitle(partial.getTitle()); // ⑭
+        if (partial.getBody()  != null) post.setBody(partial.getBody());
+        return postRepository.save(post);
+    &#125;
+
+    @DeleteMapping("/&#123;id&#125;")                                        // ⑮
+    public boolean eliminarPost(@PathVariable Long id) &#123;
+        postRepository.deleteById(id);
+        return true;                                               // ⑯
+    &#125;
+
+    @GetMapping("/&#123;id&#125;/comments")                                  // ⑰
+    public List&lt;Object&gt; listarComentarios(@PathVariable Long id) &#123;
+        return List.of(); // stub — en producción usaría CommentRepository
+    &#125;
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>@RestController = @Controller + @ResponseBody</code>: serializa automáticamente el valor de retorno de cada método a JSON; no hace falta <code>ObjectMapper</code> ni <code>Gson</code> manualmente.</p>
+      <p>② <code>@RequestMapping("/api/posts")</code>: prefijo base para todos los endpoints del controlador.</p>
+      <p>③ <code>@Autowired PostRepository, UserRepository</code>: Spring inyecta las implementaciones JPA; el controlador no sabe ni le importa si es MySQL, PostgreSQL u otra BD.</p>
+      <p>④ <code>@GetMapping</code> (sin path): <code>GET /api/posts</code>; <code>postRepository.findAll()</code> devuelve la lista completa; Jackson la serializa a un array JSON.</p>
+      <p>⑤ <code>@GetMapping("/&#123;id&#125;")</code>: <code>GET /api/posts/&#123;id&#125;</code>; <code>@PathVariable Long id</code> extrae el segmento de la URL.</p>
+      <p>⑥ <code>.orElseThrow(() -&gt; new NoSuchElementException(...))</code>: si el post no existe, lanza la excepción; un <code>@ControllerAdvice</code> puede mapearla a una respuesta 404 con mensaje.</p>
+      <p>⑦ <code>@PostMapping</code>: <code>POST /api/posts</code>; <code>@RequestBody PostEntity post</code> deserializa el JSON del cuerpo de la petición al objeto Java automáticamente.</p>
+      <p>⑧ Validar <code>userId</code> antes de persistir: si el <code>userId</code> del post no existe en la BD, mejor rechazarlo aquí con una excepción que dejar que la BD lance una <code>ForeignKeyConstraintException</code>.</p>
+      <p>⑨ <code>postRepository.save(post)</code>: para una entidad sin ID, JPA hace INSERT; devuelve la entidad guardada con el ID asignado por la BD; este objeto se serializa a JSON como respuesta.</p>
+      <p>⑩ <code>@PutMapping("/&#123;id&#125;")</code>: PUT reemplaza el recurso COMPLETO; todos los campos del body sobrescriben los existentes; si el body omite un campo, se pierde.</p>
+      <p>⑪ Verificar que el ID del path coincide con el del body: evita inconsistencias cuando el body dice <code>&#123;id: 5, ...&#125;</code> pero la URL dice <code>/api/posts/3</code>.</p>
+      <p>⑫ <code>postRepository.save(updated)</code>: para una entidad CON ID ya asignado, JPA hace UPDATE (upsert: INSERT si no existe, UPDATE si existe).</p>
+      <p>⑬ <code>@PatchMapping("/&#123;id&#125;")</code>: PATCH actualiza solo los campos no nulos del body; campos ausentes en el JSON son <code>null</code> en Java → se ignoran.</p>
+      <p>⑭ <code>if (partial.getTitle() != null) post.setTitle(...)</code>: patrón PATCH; <code>null</code> significa "no actualizar este campo"; el cliente solo envía los campos que quiere cambiar.</p>
+      <p>⑮ <code>@DeleteMapping("/&#123;id&#125;")</code>: DELETE elimina el recurso por su ID.</p>
+      <p>⑯ <code>return true</code>: el cliente (<code>api.js</code>) verifica este boolean; algunos APIs devuelven 204 No Content sin body, pero aquí se optó por un boolean para simplificar la verificación en JS.</p>
+      <p>⑰ <code>@GetMapping("/&#123;id&#125;/comments")</code>: subrecurso anidado; sigue la convención REST <code>/recurso/&#123;id&#125;/subrecurso</code>.</p>
+    </div>
+
+    <!-- Tabla métodos HTTP -->
+    <h3>Los seis métodos HTTP de la API</h3>
+    <div style="overflow-x:auto;margin:var(--space-5) 0;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Método</th>
+            <th>Endpoint</th>
+            <th>Semántica</th>
+            <th>Idempotente</th>
+            <th>Cuerpo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/posts</code></td>
+            <td>Listar todos los recursos</td>
+            <td>Sí</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/posts/&#123;id&#125;</code></td>
+            <td>Obtener un recurso por ID</td>
+            <td>Sí</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/api/posts</code></td>
+            <td>Crear un recurso nuevo</td>
+            <td>No</td>
+            <td>JSON completo (sin ID)</td>
+          </tr>
+          <tr>
+            <td><code>PUT</code></td>
+            <td><code>/api/posts/&#123;id&#125;</code></td>
+            <td>Reemplazar el recurso completo</td>
+            <td>Sí</td>
+            <td>JSON completo (con ID)</td>
+          </tr>
+          <tr>
+            <td><code>PATCH</code></td>
+            <td><code>/api/posts/&#123;id&#125;</code></td>
+            <td>Actualizar campos parcialmente</td>
+            <td>No*</td>
+            <td>JSON con solo los campos a cambiar</td>
+          </tr>
+          <tr>
+            <td><code>DELETE</code></td>
+            <td><code>/api/posts/&#123;id&#125;</code></td>
+            <td>Eliminar el recurso</td>
+            <td>Sí</td>
+            <td>No</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:var(--text-sm);color:var(--color-text-2);">*PATCH puede o no ser idempotente según la implementación.</p>
+
+    <div class="callout callout-key">
+      <p><code>@RestController</code> hace que Spring (usando Jackson por defecto en Spring Boot) serialice el objeto Java de retorno directamente a JSON y establezca el <code>Content-Type</code> a <code>application/json</code>. En un <code>@Controller</code> normal habría que anotar cada método con <code>@ResponseBody</code> o llamar a <code>response.getWriter().write(...)</code> manualmente.</p>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>PUT es idempotente y reemplaza el recurso COMPLETO: cualquier campo no incluido en el body se pierde (queda a <code>null</code> o su valor por defecto). PATCH solo actualiza los campos presentes. En <code>PostController</code>, PATCH lee cada campo del objeto <code>partial</code>: si es <code>null</code> (no vino en el JSON), no se actualiza; si tiene valor, se sobreescribe. Nunca usar PUT para actualizaciones parciales.</p>
+    </div>
+
+    <!-- ADD-5: callout 201 Created -->
+    <div class="callout callout-tip">
+      <p>Por convención REST, <code>POST</code> que crea un recurso debería devolver <code>201 Created</code> con la cabecera <code>Location</code> apuntando al nuevo recurso, no <code>200 OK</code>. <code>PostController.createPost</code> devuelve 200 porque Spring usa ese código por defecto con <code>@RestController</code>. Para devolver 201 correctamente:</p>
+      <div class="code-block" style="margin-top:var(--space-3);">
+        <div class="code-header">java — POST con 201 Created</div>
+        <pre><code>@PostMapping
+public ResponseEntity&lt;PostEntity&gt; createPost(@RequestBody PostEntity post) &#123;
+    PostEntity saved = postRepository.save(post);
+    URI location = URI.create("/api/posts/" + saved.getId());
+    return ResponseEntity.created(location).body(saved);
+&#125;</code></pre>
+      </div>
+      <p>Para el examen basta saber la distinción: 200 en respuestas a GET/PUT/PATCH/DELETE, 201 en respuestas a POST que crean recursos.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 4: CLIENTE AJAX ===== -->
+  <section id="cliente-ajax">
+    <h2>Cliente AJAX</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. El DOM manual y fetch con Promesas son los temas de JavaScript más probables en el examen. El ejercicio más probable es: dado un HTML con elementos, escribe el JS para añadir, modificar o eliminar elementos del DOM manualmente. Referencia: P8 Parts II y III (api.js y vanilla.js).</p>
+    </div>
+
+    <p>La arquitectura del cliente MiniTwitter tiene dos capas con responsabilidades separadas. <code>api.js</code> encapsula toda la comunicación HTTP: construye las URLs, serializa los datos a JSON, llama a <code>fetch</code> y maneja los errores de red. <code>vanilla.js</code> gestiona el estado de la aplicación (los arrays <code>posts[]</code> y el mapa <code>users&#123;&#125;</code>) y la manipulación del DOM: cuando el estado cambia, hay que actualizar el DOM manualmente.</p>
+    <p>La diferencia clave con un framework reactivo como Vue o React: <strong>no hay reactividad</strong>. Cuando se crea un post nuevo, hay que insertar la tarjeta manualmente con <code>appendChild</code>. Cuando se elimina, hay que quitarla con <code>card.remove()</code>. No existe un mecanismo que sincronice estado y UI automáticamente.</p>
+
+    <!-- SVG 4: Arquitectura cliente -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:680px;display:block;">
+        <defs>
+          <marker id="arr-cli" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)"/>
+          </marker>
+          <marker id="arr-cli-up" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--color-text-2)" transform="rotate(180 4 3)"/>
+          </marker>
+        </defs>
+
+        <!-- Capa 1: Servidor -->
+        <rect x="20" y="10" width="560" height="52" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="300" y="34" font-family="var(--font-display)" font-size="12" fill="var(--color-text)" text-anchor="middle" font-weight="700">Servidor Spring REST  /api/posts  (JSON)</text>
+        <text x="300" y="52" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">Devuelve arrays y objetos JSON</text>
+
+        <!-- Flecha bidireccional 1-2 -->
+        <line x1="300" y1="62" x2="300" y2="88" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-cli)"/>
+        <text x="310" y="80" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">fetch() / JSON string</text>
+
+        <!-- Capa 2: api.js -->
+        <rect x="20" y="88" width="560" height="68" rx="6" fill="var(--color-key-bg)" stroke="var(--color-key-border)" stroke-width="1.5"/>
+        <text x="300" y="112" font-family="var(--font-display)" font-size="12" fill="var(--color-key-text)" text-anchor="middle" font-weight="700">api.js — Capa de red</text>
+        <text x="300" y="130" font-family="var(--font-mono)" font-size="10" fill="var(--color-key-text)" text-anchor="middle">apiFetch()  getPosts()  createPost()</text>
+        <text x="300" y="148" font-family="var(--font-mono)" font-size="10" fill="var(--color-key-text)" text-anchor="middle">updatePost()  deletePost()  getComments()</text>
+
+        <!-- Flecha bidireccional 2-3 -->
+        <line x1="300" y1="156" x2="300" y2="182" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-cli)"/>
+        <text x="310" y="174" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">Promise / objetos JS (post, user)</text>
+
+        <!-- Capa 3: vanilla.js -->
+        <rect x="20" y="182" width="560" height="80" rx="6" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="300" y="206" font-family="var(--font-display)" font-size="12" fill="var(--color-tip-text)" text-anchor="middle" font-weight="700">vanilla.js — Capa de UI</text>
+        <text x="300" y="224" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">estado: posts[], users&#123;&#125;</text>
+        <text x="300" y="242" font-family="var(--font-mono)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">renderPost()  renderAllPosts()</text>
+        <text x="300" y="258" font-family="var(--font-mono)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">handleSave()  handleDelete()  handleEdit()  init()</text>
+
+        <!-- Flecha bidireccional 3-4 -->
+        <line x1="300" y1="262" x2="300" y2="288" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-cli)"/>
+        <text x="310" y="280" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)">createElement / appendChild / remove — click events</text>
+
+        <!-- Capa 4: DOM -->
+        <rect x="20" y="288" width="560" height="52" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="300" y="311" font-family="var(--font-display)" font-size="12" fill="var(--color-text)" text-anchor="middle" font-weight="700">DOM (HTML)</text>
+        <text x="300" y="330" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">#posts-container    .post-card    inputs</text>
+
+        <!-- Nota lateral -->
+        <text x="596" y="200" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)" text-anchor="start" transform="rotate(-90, 596, 200)">Sin reactividad: cada cambio de estado requiere actualización manual del DOM</text>
+      </svg>
+    </div>
+
+    <!-- Bloque de código 6: api.js -->
+    <div class="code-block">
+      <div class="code-header">javascript — api.js: apiFetch, getPosts, createPost, deletePost</div>
+      <pre><code>const BASE_URL = '/api';
+
+async function apiFetch(url, options = &#123;&#125;) &#123;                     // ①
+    const response = await fetch(url, options);
+    if (!response.ok) &#123;                                           // ②
+        throw new Error(`HTTP $&#123;response.status&#125; — $&#123;url&#125;`);      // ③
+    &#125;
+    return response.json();                                        // ④
+&#125;
+
+async function getPosts(limit = 20) &#123;                              // ⑤
+    return apiFetch(`$&#123;BASE_URL&#125;/posts?limit=$&#123;limit&#125;`);
+&#125;
+
+async function createPost(data) &#123;
+    return apiFetch(`$&#123;BASE_URL&#125;/posts`, &#123;
+        method:  'POST',                                           // ⑥
+        headers: &#123; 'Content-Type': 'application/json' &#125;,
+        body:    JSON.stringify(data),                             // ⑦
+    &#125;);
+&#125;
+
+async function deletePost(id) &#123;                                    // ⑧
+    const resp = await fetch(`$&#123;BASE_URL&#125;/posts/$&#123;id&#125;`, &#123;
+        method: 'DELETE',
+    &#125;);
+    if (!resp.ok)                                                  // ⑧b
+        throw new Error(`HTTP $&#123;resp.status&#125; al eliminar $&#123;id&#125;`);
+    const result = await resp.json();
+    if (result !== true) throw new Error('Delete failed');         // ⑨
+    return true;
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>apiFetch(url, options)</code>: función auxiliar que centraliza el manejo de errores HTTP; todas las demás funciones la usan en lugar de llamar a <code>fetch()</code> directamente.</p>
+      <p>② <code>response.ok</code>: <code>false</code> cuando el status HTTP es 4xx o 5xx; <code>fetch()</code> no rechaza la promesa en estos casos (solo rechaza con <code>TypeError</code> si hay error de red total).</p>
+      <p>③ <code>throw new Error(...)</code>: convierte una promesa resuelta con error HTTP en promesa rechazada; el caller puede capturarla con <code>.catch()</code> o con <code>try/catch</code> en un <code>async/await</code>.</p>
+      <p>④ <code>return response.json()</code>: parsea el body como JSON y devuelve una promesa del dato; <code>apiFetch</code> devuelve el dato ya parseado, no el objeto <code>Response</code>.</p>
+      <p>⑤ <code>limit = 20</code>: parámetro con valor por defecto (ES6); <code>?limit=</code> pasa el límite al servidor como query param de la URL.</p>
+      <p>⑥ <code>method: 'POST' + headers Content-Type: application/json</code>: obligatorio para que Spring (<code>@RequestBody</code>) deserialice correctamente el body como JSON.</p>
+      <p>⑦ <code>JSON.stringify(data)</code>: serializa el objeto JS a string JSON antes de enviarlo; <code>fetch</code> no hace esto automáticamente.</p>
+      <p>⑧ <code>deletePost</code> no usa <code>apiFetch</code> porque el servidor devuelve un boolean (<code>true</code>), no un objeto JSON complejo; se hace <code>fetch()</code> directamente para manejar esa respuesta específica.</p>
+      <p>⑧b <code>if (!resp.ok)</code>: diferencia con <code>apiFetch</code>; <code>deletePost</code> gestiona la respuesta manualmente porque el servidor devuelve un boolean, no JSON. La comprobación de status debe hacerse antes de parsear el body para evitar <code>SyntaxError</code> en respuestas de error sin body JSON válido.</p>
+      <p>⑨ <code>if (result !== true) throw new Error('Delete failed')</code>: validación extra; confirma que el servidor procesó el delete correctamente antes de actualizar el DOM.</p>
+    </div>
+
+    <!-- ADD-3: updatePost -->
+    <h3>updatePost — PUT requiere el objeto completo</h3>
+    <div class="code-block">
+      <div class="code-header">javascript — api.js: updatePost()</div>
+      <pre><code>async function updatePost(id, data) &#123;                               // ①
+    return apiFetch(`$&#123;BASE_URL&#125;/posts/$&#123;id&#125;`, &#123;
+        method:  'PUT',                                             // ②
+        headers: &#123; 'Content-Type': 'application/json' &#125;,
+        body:    JSON.stringify(data),                              // ③
+    &#125;);
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>updatePost(id, data)</code>: recibe el ID por separado y el objeto completo como <code>data</code>; <code>id</code> va en la URL, <code>data</code> va en el body — separación que el servidor usa para verificar que el ID del path coincide con el ID del body (ver <code>PostController</code> anotación ⑪).</p>
+      <p>② <code>method: 'PUT'</code>: no PATCH; PUT reemplaza el recurso completo; el objeto <code>data</code> debe incluir TODOS los campos (<code>id</code>, <code>title</code>, <code>body</code>, <code>userId</code>), no solo los modificados.</p>
+      <p>③ <code>JSON.stringify(data)</code>: en <code>handleSave</code>, <code>data</code> es <code>&#123; id: post.id, title, body: newBody, userId: post.userId &#125;</code>; se envían todos los campos para que PUT pueda reemplazar el recurso completo.</p>
+    </div>
+
+    <div class="callout callout-key">
+      <p>La diferencia entre PUT y PATCH se ve claramente en cómo <code>handleSave</code> construye el objeto: <code>&#123; id: post.id, title, body: newBody, userId: post.userId &#125;</code>. Incluye el <code>userId</code> aunque no cambie, porque PUT necesita el objeto completo. Si se usara PATCH, bastaría con <code>&#123; title, body: newBody &#125;</code> y el servidor solo actualizaría esos dos campos.</p>
+    </div>
+
+    <!-- Bloque de código 7: vanilla.js init() -->
+    <div class="code-block">
+      <div class="code-header">javascript — vanilla.js: función init()</div>
+      <pre><code>async function init() &#123;
+    try &#123;
+        const [postsData, usersData] =
+                await Promise.all([getPosts(20), getUsers()]);     // ① ②
+
+        posts = postsData;
+        usersData.forEach(u => &#123; users[u.id] = u.username; &#125;);   // ③
+
+        renderAllPosts();
+    &#125; catch (err) &#123;                                              // ④
+        showError(err.message);
+    &#125;
+&#125;
+
+document.addEventListener('DOMContentLoaded', init);</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>Promise.all([getPosts(20), getUsers()])</code>: lanza ambas peticiones en paralelo; espera a que las dos terminen antes de continuar; tiempo total = max(t1, t2).</p>
+      <p>② Si se hicieran en serie (<code>await getPosts; await getUsers</code>) el tiempo sería t1 + t2; <code>Promise.all</code> es más eficiente cuando las peticiones son independientes entre sí.</p>
+      <p>③ <code>usersData.forEach(u =&gt; &#123; users[u.id] = u.username &#125;)</code>: construir un mapa id→nombre para lookup O(1) al renderizar cada post (en lugar de buscar en el array cada vez).</p>
+      <p>④ Si cualquier promesa en <code>Promise.all</code> rechaza (error de red, 4xx, 5xx), toda la cadena va al <code>catch</code>; <code>showError()</code> muestra el mensaje y no se renderiza nada.</p>
+    </div>
+
+    <!-- Bloque de código 8: renderPost + renderAllPosts -->
+    <div class="code-block">
+      <div class="code-header">javascript — vanilla.js: renderPost() y renderAllPosts()</div>
+      <pre><code>function renderPost(post) &#123;
+    const card = document.createElement('div');                    // ①
+    card.className = 'post-card';
+    card.dataset.id = post.id;                                     // ②
+
+    card.innerHTML = `
+        &lt;h3&gt;$&#123;post.title&#125;&lt;/h3&gt;
+        &lt;p&gt;$&#123;post.body&#125;&lt;/p&gt;
+        &lt;span class="author"&gt;$&#123;users[post.userId] || \`Usuario $&#123;post.userId&#125;\`&#125;&lt;/span&gt;
+        &lt;div class="actions"&gt;
+          &lt;button data-action="edit"&gt;Editar&lt;/button&gt;
+          &lt;button data-action="delete"&gt;Eliminar&lt;/button&gt;
+        &lt;/div&gt;
+    `;                                                             // ③ ④ ⑤
+
+    card.addEventListener('click', e => &#123;                         // ⑥
+        const action = e.target.dataset.action;                    // ⑦
+        if (action === 'edit')   handleEdit(card, post);
+        if (action === 'delete') handleDelete(card, post);
+        if (action === 'save')   handleSave(card, post);           // ⑦b
+        if (action === 'cancel') handleCancelEdit(card, post);     // ⑦c
+    &#125;);
+
+    return card;
+&#125;
+
+function renderAllPosts() &#123;
+    const container = document.querySelector('#posts-container');
+    container.innerHTML = '';                                      // ⑧
+    posts.forEach(post => &#123;
+        container.appendChild(renderPost(post));                   // ⑨
+    &#125;);
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>document.createElement('div')</code>: crear el elemento del DOM programáticamente; no hay template engine ni JSX; todo es imperativo.</p>
+      <p>② <code>card.dataset.id = post.id</code>: guardar el ID en un atributo <code>data-id</code> para poder recuperarlo después sin mantener una referencia al objeto post en el DOM.</p>
+      <p>③ <code>card.innerHTML = `...`</code>: template literal con HTML; más conciso que crear cada elemento hijo con <code>createElement</code> y <code>appendChild</code> por separado.</p>
+      <p>④ <code>users[post.userId] || `Usuario $&#123;post.userId&#125;`</code>: si el userId no está en el mapa (usuario desconocido), mostrar un fallback en lugar de <code>undefined</code>.</p>
+      <p>⑤ <code>data-action="edit"</code> en los botones: el atributo identifica qué acción ejecutar; es el patrón de delegación de eventos.</p>
+      <p>⑥ Un único <code>addEventListener</code> en la card para todos los botones internos: delegación de eventos; más eficiente que un listener por botón.</p>
+      <p>⑦ <code>e.target.dataset.action</code>: leer el <code>data-action</code> del elemento clickado; si no tiene (click en el título, por ejemplo), <code>action</code> es <code>undefined</code> y no pasa nada.</p>
+      <p>⑦b <code>save</code> y <code>cancel</code> se manejan en el mismo listener que <code>edit</code>; cuando <code>handleEdit</code> transforma los <code>&lt;div&gt;</code> en <code>&lt;input&gt;</code> (con <code>outerHTML</code>), los nuevos botones Guardar y Cancelar también llevan <code>data-action</code>, por lo que el mismo listener los captura sin necesidad de registrar nuevos eventos.</p>
+      <p>⑦c <code>handleCancelEdit</code> restaura el objeto <code>post</code> a sus valores originales (guardados en <code>card.dataset.origTitle</code> y <code>card.dataset.origBody</code> por <code>handleEdit</code>) y llama a <code>card.replaceWith(renderPost(post))</code> para revertir visualmente la tarjeta.</p>
+      <p>⑧ <code>container.innerHTML = ''</code>: vaciar el contenedor antes de re-renderizar; destruye todos los listeners existentes, por eso se recrea todo con <code>renderPost</code>.</p>
+      <p>⑨ <code>container.appendChild(renderPost(post))</code>: insertar manualmente cada tarjeta; sin reactividad no hay forma automática de sincronizar el DOM con el array <code>posts[]</code>.</p>
+    </div>
+
+    <!-- Bloque de código 9: handleSave + handleDelete -->
+    <div class="code-block">
+      <div class="code-header">javascript — vanilla.js: handleSave() y handleDelete()</div>
+      <pre><code>async function handleSave(post, card) &#123;
+    const title  = card.querySelector('[data-field="title"]').value;  // ①
+    const body   = card.querySelector('[data-field="body"]').value;
+    try &#123;
+        const updated = await updatePost(post.id,                  // ②
+                &#123; id: post.id, title, body, userId: post.userId &#125;);
+        post.title = updated.title;                                // ③
+        post.body  = updated.body;
+        card.replaceWith(renderPost(post));                        // ④
+    &#125; catch (err) &#123;
+        showError(err.message);
+    &#125;
+&#125;
+
+async function handleDelete(post, card) &#123;
+    if (!confirm(`¿Eliminar "$&#123;post.title&#125;"?`)) return;           // ⑤
+    try &#123;
+        await deletePost(post.id);                                 // ⑥
+        posts = posts.filter(p => p.id !== post.id);              // ⑦
+        card.remove();                                             // ⑧
+        if (posts.length === 0) showEmpty();                       // ⑨
+    &#125; catch (err) &#123;
+        showError(err.message);
+    &#125;
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>card.querySelector('[data-field="title"]').value</code>: seleccionar el input por atributo <code>data-field</code>; más robusto que <code>querySelector('.edit-input')</code> si hay varios.</p>
+      <p>② <code>updatePost(post.id, &#123; id, title, body, userId &#125;)</code>: llamada API con el objeto completo (PUT reemplaza todo); devuelve el post actualizado confirmado por el servidor.</p>
+      <p>③ <code>post.title = updated.title; post.body = updated.body</code>: actualizar el objeto en el array <code>posts[]</code> en memoria; si no se hace, el estado queda desincronizado con el DOM.</p>
+      <p>④ <code>card.replaceWith(renderPost(post))</code>: reemplazar la tarjeta entera con una nueva renderizada desde el objeto actualizado; no hay diffing ni actualización parcial del DOM.</p>
+      <p>⑤ <code>confirm(`¿Eliminar ...?`)</code>: diálogo nativo del navegador; si el usuario cancela, la función termina sin hacer nada (<code>if (!confirm) return</code>).</p>
+      <p>⑥ <code>await deletePost(post.id)</code>: esperar a que la API confirme el delete antes de actualizar el estado y el DOM; si la API falla, el <code>catch</code> muestra el error y no se toca nada.</p>
+      <p>⑦ <code>posts = posts.filter(p =&gt; p.id !== post.id)</code>: crear un nuevo array sin el post eliminado; inmutable: no se usa <code>posts.splice()</code> que muta el array original.</p>
+      <p>⑧ <code>card.remove()</code>: eliminar la tarjeta del DOM manualmente; sin esto quedaría visible aunque el estado en memoria ya no la tenga.</p>
+      <p>⑨ <code>if (posts.length === 0) showEmpty()</code>: actualizar la UI para el caso borde; sin este check, el container quedaría vacío sin mensaje al usuario.</p>
+    </div>
+
+    <!-- Tabla DOM manual vs reactivo -->
+    <h3>DOM manual vs framework reactivo</h3>
+    <div style="overflow-x:auto;margin:var(--space-5) 0;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Operación</th>
+            <th>Vanilla JS — P8</th>
+            <th>Vue / React (referencia)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Crear post</td>
+            <td><code>posts.unshift(newPost)</code> + <code>container.insertBefore(renderPost(newPost), ...)</code></td>
+            <td>Solo <code>posts.unshift(newPost)</code> → UI se actualiza sola</td>
+          </tr>
+          <tr>
+            <td>Eliminar post</td>
+            <td><code>posts = posts.filter(...)</code> + <code>card.remove()</code></td>
+            <td>Solo <code>posts = posts.filter(...)</code></td>
+          </tr>
+          <tr>
+            <td>Actualizar post</td>
+            <td><code>post.title = updated.title</code> + <code>card.replaceWith(renderPost(post))</code></td>
+            <td>Solo <code>post.title = updated.title</code></td>
+          </tr>
+          <tr>
+            <td>Carga inicial</td>
+            <td><code>await Promise.all([...])</code> + <code>renderAllPosts()</code> (manual)</td>
+            <td><code>await Promise.all([...])</code> + re-render automático</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-key">
+      <p>En vanilla.js no hay framework reactivo: cambiar el array <code>posts[]</code> no actualiza la UI automáticamente. Cada operación tiene dos pasos: (1) actualizar el estado en memoria (<code>posts = posts.filter(...)</code>) y (2) actualizar el DOM manualmente (<code>card.remove()</code>). Si se omite cualquiera de los dos, estado y UI quedan desincronizados.</p>
+    </div>
+
+    <div class="callout callout-relation">
+      <p><code>apiFetch</code> con <code>Promise.all</code> y el manejo de errores son la aplicación directa del Bloque JS+AJAX (fetch, Promesas, tipos de error). El DOM manual de <code>renderPost</code>, <code>handleDelete</code> y <code>handleSave</code> aplica los conceptos de DOM y eventos del Bloque JavaScript.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN 5: PATRÓN PRG ===== -->
+  <section id="patron-prg">
+    <h2>Login y patrón PRG</h2>
+
+    <div class="callout callout-examen">
+      <p>Peso alto. El patrón PRG aparece en la tutoría como ejercicio probable y el flujo completo de autenticación (filtro → login → PRG) une tres patrones en uno solo. El profesor valora entender el flujo y el porqué, no la sintaxis exacta. Referencia: P5 (LoginController + AuthFilter del backoffice).</p>
+    </div>
+
+    <p>El problema: cuando un formulario hace POST y el servidor responde con HTML directamente (sin redirect), pulsar F5 en el navegador ofrece reenviar el POST. Si el usuario acepta, la acción se repite: se crea un artículo duplicado, se registra un pedido duplicado, o se inicia sesión dos veces. El patrón PRG (Post → Redirect → Get) soluciona esto: tras procesar el POST con éxito, el servidor responde con un redirect 302 a una URL GET. El navegador hace el GET automáticamente y esa es la última entrada del historial. F5 repite el GET (seguro), no el POST.</p>
+    <p>En el contexto del login: <code>doPost</code> procesa las credenciales → si válido, <code>response.sendRedirect(nextUrl)</code> → el navegador hace GET a <code>nextUrl</code>. Importante: el redirect solo ocurre en el caso de ÉXITO. Los errores de validación usan <code>forward()</code> al formulario para preservar los mensajes de error en el request.</p>
+
+    <!-- SVG 5: Diagrama de secuencia filtro → login → PRG -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 780 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:780px;display:block;">
+        <defs>
+          <marker id="arr-seq" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-text-2)"/>
+          </marker>
+          <marker id="arr-seq-ok" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-tip-text)"/>
+          </marker>
+          <marker id="arr-seq-err" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-warning-text)"/>
+          </marker>
+        </defs>
+
+        <!-- Actores -->
+        <rect x="10" y="10" width="110" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="65" y="31" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" text-anchor="middle" font-weight="700">Cliente</text>
+        <line x1="65" y1="42" x2="65" y2="490" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <rect x="190" y="10" width="130" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="255" y="31" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" text-anchor="middle" font-weight="700">AuthFilter</text>
+        <line x1="255" y1="42" x2="255" y2="490" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <rect x="400" y="10" width="150" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="475" y="31" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" text-anchor="middle" font-weight="700">LoginController</text>
+        <line x1="475" y1="42" x2="475" y2="490" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <rect x="630" y="10" width="100" height="32" rx="4" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+        <text x="680" y="31" font-family="var(--font-display)" font-size="11" fill="var(--color-text)" text-anchor="middle" font-weight="700">Sesión</text>
+        <line x1="680" y1="42" x2="680" y2="490" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- Mensaje 1: GET /catalogue -->
+        <line x1="65" y1="65" x2="245" y2="65" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-seq)"/>
+        <text x="155" y="61" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">GET /catalogue</text>
+
+        <!-- Decisión filtro: no auth -->
+        <text x="255" y="85" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">¿autenticado? No · ¿whitelist? No</text>
+
+        <!-- Respuesta 302 -->
+        <line x1="245" y1="100" x2="75" y2="100" stroke="var(--color-text-2)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-seq)"/>
+        <text x="155" y="96" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">302 /auth/login?next=/catalogue</text>
+
+        <!-- Mensaje 2: GET /auth/login?next= -->
+        <line x1="65" y1="120" x2="455" y2="120" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-seq)"/>
+        <text x="260" y="116" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">GET /auth/login?next=/catalogue</text>
+        <text x="255" y="138" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">¿whitelist? SÍ → pasa</text>
+
+        <!-- LoginController doGet → 200 OK -->
+        <text x="475" y="158" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">doGet() → forward(login.jsp)</text>
+        <line x1="455" y1="168" x2="75" y2="168" stroke="var(--color-text-2)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-seq)"/>
+        <text x="260" y="164" font-family="var(--font-body)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">200 OK — formulario HTML</text>
+
+        <!-- POST /auth/login -->
+        <line x1="65" y1="190" x2="455" y2="190" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-seq)"/>
+        <text x="260" y="186" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-2)" text-anchor="middle">POST /auth/login (credenciales)</text>
+        <text x="255" y="208" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">¿whitelist? SÍ → pasa</text>
+
+        <!-- doPost -->
+        <text x="475" y="228" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">doPost(): validar → hash(pwd) → findByUsername</text>
+
+        <!-- Separador CASO ERROR -->
+        <line x1="10" y1="248" x2="740" y2="248" stroke="var(--color-warning-border)" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="20" y="245" font-family="var(--font-display)" font-size="9" fill="var(--color-warning-text)" font-weight="700">CASO ERROR</text>
+
+        <!-- Error: forward -->
+        <line x1="455" y1="262" x2="75" y2="262" stroke="var(--color-warning-text)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-seq-err)"/>
+        <text x="260" y="258" font-family="var(--font-body)" font-size="9" fill="var(--color-warning-text)" text-anchor="middle">200 forward(login.jsp) con mensajes de error</text>
+
+        <!-- Separador CASO ÉXITO -->
+        <line x1="10" y1="286" x2="740" y2="286" stroke="var(--color-tip-border)" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="20" y="283" font-family="var(--font-display)" font-size="9" fill="var(--color-tip-text)" font-weight="700">CASO ÉXITO — PRG</text>
+
+        <!-- session.setAttribute -->
+        <line x1="475" y1="300" x2="670" y2="300" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arr-seq-ok)"/>
+        <text x="575" y="296" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">setAttribute("usuario", ...)</text>
+
+        <!-- 302 redirect -->
+        <line x1="455" y1="318" x2="75" y2="318" stroke="var(--color-tip-text)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-seq-ok)"/>
+        <text x="260" y="314" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">302 redirect → /catalogue</text>
+
+        <!-- GET /catalogue (autenticado) -->
+        <line x1="65" y1="338" x2="245" y2="338" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arr-seq-ok)"/>
+        <text x="155" y="334" font-family="var(--font-mono)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">GET /catalogue</text>
+        <text x="255" y="356" font-family="var(--font-body)" font-size="9" fill="var(--color-text-3)" text-anchor="middle">¿autenticado? SÍ → chain.doFilter</text>
+
+        <!-- 200 OK catálogo -->
+        <line x1="455" y1="372" x2="75" y2="372" stroke="var(--color-tip-text)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-seq-ok)"/>
+        <text x="260" y="368" font-family="var(--font-body)" font-size="9" fill="var(--color-tip-text)" text-anchor="middle">200 OK — catálogo</text>
+      </svg>
+    </div>
+
+    <!-- SVG 6: PRG vs Sin PRG -->
+    <div class="diagram-container" style="overflow-x:auto;margin:var(--space-5) 0;">
+      <svg viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style="width:100%;max-width:680px;display:block;">
+        <defs>
+          <marker id="arr-prg" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-text-2)"/>
+          </marker>
+          <marker id="arr-prg-ok" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-tip-text)"/>
+          </marker>
+          <marker id="arr-prg-err" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="var(--color-warning-text)"/>
+          </marker>
+        </defs>
+
+        <!-- Panel izquierdo: Sin PRG -->
+        <rect x="10" y="10" width="310" height="260" rx="8" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="165" y="34" font-family="var(--font-display)" font-size="12" fill="var(--color-warning-text)" text-anchor="middle" font-weight="700">Sin PRG — F5 duplica el POST</text>
+
+        <rect x="30" y="50" width="110" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="85" y="70" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)" text-anchor="middle">POST /login</text>
+
+        <line x1="140" y1="65" x2="185" y2="65" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-prg)"/>
+
+        <rect x="185" y="50" width="100" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="235" y="70" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">Procesar</text>
+
+        <line x1="235" y1="80" x2="235" y2="110" stroke="var(--color-text-2)" stroke-width="1.5" marker-end="url(#arr-prg)"/>
+
+        <rect x="160" y="110" width="150" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="235" y="130" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)" text-anchor="middle">200 OK (HTML)</text>
+
+        <line x1="235" y1="140" x2="235" y2="168" stroke="var(--color-warning-text)" stroke-width="1.5" marker-end="url(#arr-prg-err)"/>
+
+        <rect x="140" y="168" width="190" height="30" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="235" y="188" font-family="var(--font-display)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle" font-weight="600">F5 → ¿Reenviar formulario?</text>
+
+        <line x1="235" y1="198" x2="235" y2="226" stroke="var(--color-warning-text)" stroke-width="1.5" marker-end="url(#arr-prg-err)"/>
+        <text x="245" y="218" font-family="var(--font-body)" font-size="9" fill="var(--color-warning-text)">acepta</text>
+
+        <rect x="140" y="226" width="190" height="30" rx="4" fill="var(--color-warning-bg)" stroke="var(--color-warning-border)" stroke-width="1.5"/>
+        <text x="235" y="246" font-family="var(--font-body)" font-size="10" fill="var(--color-warning-text)" text-anchor="middle">POST /login de nuevo → sesión duplicada</text>
+
+        <!-- Panel derecho: Con PRG -->
+        <rect x="360" y="10" width="310" height="260" rx="8" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="515" y="34" font-family="var(--font-display)" font-size="12" fill="var(--color-tip-text)" text-anchor="middle" font-weight="700">Con PRG — F5 es seguro</text>
+
+        <rect x="380" y="50" width="110" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="435" y="70" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)" text-anchor="middle">POST /login</text>
+
+        <line x1="490" y1="65" x2="530" y2="65" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arr-prg-ok)"/>
+
+        <rect x="530" y="50" width="100" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="580" y="70" font-family="var(--font-body)" font-size="10" fill="var(--color-text-2)" text-anchor="middle">Procesar</text>
+
+        <line x1="580" y1="80" x2="580" y2="110" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arr-prg-ok)"/>
+
+        <rect x="505" y="110" width="150" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="580" y="130" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)" text-anchor="middle">302 redirect</text>
+
+        <line x1="580" y1="140" x2="580" y2="168" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arr-prg-ok)"/>
+
+        <rect x="490" y="168" width="180" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1"/>
+        <text x="580" y="188" font-family="var(--font-mono)" font-size="10" fill="var(--color-text)" text-anchor="middle">GET /dashboard → 200 OK</text>
+
+        <line x1="580" y1="198" x2="580" y2="226" stroke="var(--color-tip-text)" stroke-width="1.5" marker-end="url(#arr-prg-ok)"/>
+        <text x="590" y="218" font-family="var(--font-body)" font-size="9" fill="var(--color-tip-text)">F5</text>
+
+        <rect x="490" y="226" width="180" height="30" rx="4" fill="var(--color-tip-bg)" stroke="var(--color-tip-border)" stroke-width="1.5"/>
+        <text x="580" y="246" font-family="var(--font-body)" font-size="10" fill="var(--color-tip-text)" text-anchor="middle">GET /dashboard (seguro)</text>
+      </svg>
+    </div>
+
+    <!-- Bloque de código 10: LoginController.java doGet -->
+    <div class="code-block">
+      <div class="code-header">java — LoginController.java: doGet</div>
+      <pre><code>@Override
+protected void doGet(HttpServletRequest request,                   // ①
+                     HttpServletResponse response)
+        throws ServletException, IOException &#123;
+    request.getRequestDispatcher("/WEB-INF/login.jsp")
+           .forward(request, response);                            // ②
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>doGet</code>: cuando <code>AuthFilter</code> redirige al login, el navegador hace un <code>GET /auth/login</code>; este método simplemente pasa la petición a <code>login.jsp</code> para mostrar el formulario vacío.</p>
+      <p>② <code>forward</code>: no redirect; el usuario debe ver <code>/auth/login</code> en la barra de URL, no la URL de la JSP.</p>
+    </div>
+
+    <!-- Bloque de código 11: LoginController.java doPost -->
+    <div class="code-block">
+      <div class="code-header">java — LoginController.java: doPost</div>
+      <pre><code>@Override
+protected void doPost(HttpServletRequest request,
+                      HttpServletResponse response)
+        throws ServletException, IOException &#123;
+
+    request.setCharacterEncoding("UTF-8");                         // ①
+
+    String username = request.getParameter("login_username");      // ②
+    String password = request.getParameter("login_password");
+
+    if (username == null || username.isBlank()                     // ③
+            || password == null || password.isBlank()) &#123;
+        request.setAttribute("errorMessage", "Campos obligatorios");
+        request.getRequestDispatcher("/WEB-INF/login.jsp")
+               .forward(request, response);                        // ④
+        return;                                                    // ⑤
+    &#125;
+
+    String providedHash = encodeValue(password, "SHA-1");          // ⑥
+
+    Usuario usuario = usuariodao.findOneByUsername(username,
+                                                   providedHash);  // ⑦
+
+    if (usuario == null || !usuariodao.esAdmin(username)) &#123;        // ⑧
+        request.setAttribute("errorMessage",
+                "Credenciales incorrectas o sin permisos");
+        request.setAttribute("errorUsername", username);
+        request.getRequestDispatcher("/WEB-INF/login.jsp")
+               .forward(request, response);
+        return;
+    &#125;
+
+    HttpSession session = request.getSession(true);
+    session.setAttribute("usuario", new Usuario(username));        // ⑨
+
+    String next = request.getParameter("next");
+    String redirectUrl = (next != null && !next.isBlank())
+            ? request.getContextPath() + next
+            : request.getContextPath() + "/";
+    response.sendRedirect(redirectUrl);                            // ⑩
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>request.setCharacterEncoding("UTF-8")</code>: debe llamarse ANTES de cualquier <code>getParameter()</code>; previene caracteres corruptos en nombres de usuario con tildes o caracteres especiales.</p>
+      <p>② <code>request.getParameter("login_username")</code>: devuelve <code>null</code> si el campo no existe en la petición, <code>""</code> si el campo existe pero está vacío.</p>
+      <p>③ Validación de formato: comprobar <code>null</code> y <code>blank</code> antes de cualquier operación en BD; evita queries innecesarias y posibles NPE si los parámetros no vienen en la petición.</p>
+      <p>④ <code>forward</code> con mensajes de error: <code>forward</code> (no redirect) para que los atributos de error del request lleguen a la JSP; si se hiciera redirect, los atributos se perderían.</p>
+      <p>⑤ <code>return</code> tras <code>forward</code>: imprescindible; evita ejecutar el resto del método y la excepción "response already committed".</p>
+      <p>⑥ <code>encodeValue(password, "SHA-1")</code>: hash de la contraseña antes de la consulta; la BD almacena el hash, no la contraseña en plano; nunca comparar contraseñas directamente (aunque bcrypt sería la opción más segura).</p>
+      <p>⑦ <code>usuariodao.findOneByUsername(username, providedHash)</code>: busca usuario con ese username Y ese hash de contraseña; si las credenciales son incorrectas, devuelve <code>null</code>.</p>
+      <p>⑧ <code>usuariodao.esAdmin(username)</code>: comprobación de rol; el backoffice es solo para admins; diferencia entre autenticación (¿eres quien dices ser?) y autorización (¿tienes permiso?).</p>
+      <p>⑨ <code>session.setAttribute("usuario", new Usuario(username))</code>: guardar en sesión el mínimo necesario para identificar al usuario; nunca guardar la contraseña ni su hash en sesión.</p>
+      <p>⑩ <code>request.getParameter("next") + sendRedirect</code>: PRG completo; redirigir a la URL que el usuario intentaba acceder; si no había <code>next</code>, ir a la raíz de la app.</p>
+    </div>
+
+    <!-- ADD-4: callout open redirect -->
+    <div class="callout callout-warning">
+      <p>El parámetro <code>next</code> que recibe <code>LoginController.doPost</code> viene del query string y no se valida. Un atacante puede construir el enlace <code>https://miapp.com/auth/login?next=http://sitio-malicioso.com</code> y compartirlo. Si el usuario hace login, el servidor redirige a la URL maliciosa (<em>open redirect</em>). La validación correcta es verificar que <code>nextUrl</code> empieza por <code>/</code> (ruta relativa) o usar una lista blanca de dominios permitidos:</p>
+      <div class="code-block" style="margin-top:var(--space-3);">
+        <div class="code-header">java — validación anti open-redirect</div>
+        <pre><code>if (nextUrl != null &amp;&amp; nextUrl.startsWith("/") &amp;&amp; !nextUrl.startsWith("//")) &#123;
+    response.sendRedirect(request.getContextPath() + nextUrl);
+&#125; else &#123;
+    response.sendRedirect(request.getContextPath() + "/");
+&#125;</code></pre>
+      </div>
+      <p>La doble barra <code>//</code> permite <code>//malicious.com</code> que los navegadores tratan como URL absoluta.</p>
+    </div>
+
+    <!-- Bloque de código 12: ArticleController.java doGet -->
+    <p>El <code>ArticleController</code> es el "G" del PRG cuando el usuario navega desde el catálogo: el catálogo hace un redirect a <code>/article?artId=X</code> y este <code>doGet</code> recoge ese parámetro y muestra el artículo.</p>
+    <div class="code-block">
+      <div class="code-header">java — ArticleController.java: doGet</div>
+      <pre><code>@Override
+protected void doGet(HttpServletRequest request,
+                     HttpServletResponse response)
+        throws ServletException, IOException &#123;
+
+    String artId = request.getParameter("artId");                  // ①
+
+    if (artId == null || artId.isBlank()) &#123;                        // ②
+        response.sendRedirect(
+                request.getContextPath() + "/catalogue?p=1");
+        return;
+    &#125;
+
+    Articulo a;
+    try &#123;
+        a = articuloDAO.findOneByCodigo(artId);                    // ③
+    &#125; catch (ExcepcionDeAplicacion e) &#123;
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        return;
+    &#125;
+
+    if (a == null) &#123;                                               // ④
+        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        return;
+    &#125;
+
+    request.setAttribute("articulo", a);
+    RequestDispatcher rd = request.getRequestDispatcher(
+            "/WEB-INF/article.jsp");
+    rd.forward(request, response);                                 // ⑤
+&#125;</code></pre>
+    </div>
+    <div class="code-annotations">
+      <p>① <code>request.getParameter("artId")</code>: recoger el ID del artículo desde el query param; este parámetro viene de un enlace HTML o de un redirect previo del catálogo.</p>
+      <p>② <code>if (artId == null || artId.isBlank()) sendRedirect("catalogue?p=1")</code>: guardia; si no hay <code>artId</code> (acceso directo a <code>/article</code> sin parámetro), volver al catálogo.</p>
+      <p>③ <code>articuloDAO.findOneByCodigo(artId)</code>: consulta a la capa de persistencia; puede lanzar <code>ExcepcionDeAplicacion</code> si hay error de BD.</p>
+      <p>④ <code>if (a == null) sendError(SC_NOT_FOUND)</code>: artículo no encontrado → 404 explícito; mejor que forward a una vista vacía o lanzar una excepción genérica.</p>
+      <p>⑤ <code>rd.forward(request, response)</code>: el <code>doGet</code> pasa los datos a la vista; este forward es el "G" del PRG: muestra el resultado de la navegación anterior.</p>
+    </div>
+
+    <!-- Tabla forward vs redirect -->
+    <h3>forward() vs redirect()</h3>
+    <div style="overflow-x:auto;margin:var(--space-5) 0;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Aspecto</th>
+            <th><code>forward()</code></th>
+            <th><code>redirect()</code> (sendRedirect)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>URL en el navegador</td>
+            <td>No cambia (la URL sigue siendo la del POST)</td>
+            <td>Cambia a la nueva URL (la del GET)</td>
+          </tr>
+          <tr>
+            <td>Atributos del request</td>
+            <td>Se preservan (misma petición HTTP)</td>
+            <td>Se pierden (nueva petición HTTP)</td>
+          </tr>
+          <tr>
+            <td>Número de peticiones HTTP</td>
+            <td>Una sola</td>
+            <td>Dos (POST + GET)</td>
+          </tr>
+          <tr>
+            <td>F5 del navegador</td>
+            <td>Reenvía el POST — peligroso para acciones que modifican datos</td>
+            <td>Reenvía el GET — seguro</td>
+          </tr>
+          <tr>
+            <td>Código HTTP de respuesta</td>
+            <td>200 OK (por defecto)</td>
+            <td>302 Found</td>
+          </tr>
+          <tr>
+            <td>Cuándo usarlo</td>
+            <td>Errores de validación (hay que mostrar mensajes del request)</td>
+            <td>Éxito de un POST que modifica datos (PRG)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>Sin PRG, si el usuario pulsa F5 tras un POST exitoso (login, crear artículo, enviar pedido), el navegador pregunta si reenviar el formulario. Si acepta: sesión duplicada, artículo duplicado, pedido duplicado. PRG soluciona esto haciendo que la última entrada del historial del navegador sea un GET inofensivo.</p>
+    </div>
+
+    <div class="callout callout-key">
+      <p>El redirect solo ocurre en el camino feliz (credenciales válidas, formulario correcto, operación exitosa). Si hay errores de validación, se usa <code>forward()</code> para que los mensajes de error del request lleguen a la vista. Si se usara redirect en el error, los atributos <code>errorMessage</code>, <code>errorUsername</code>, etc. se perderían porque pertenecen a la petición actual, no a la siguiente.</p>
+    </div>
+  </section>
+
+</BlockLayout>

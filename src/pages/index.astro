@@ -70,6 +70,14 @@ const blocks = [
     status: 'complete' as const,
     priority: null,
   },
+  {
+    number: '09',
+    slug: 'practicas',
+    name: 'Prácticas',
+    description: 'Filtro de auth, stack MVC, API REST, cliente AJAX y patrón PRG',
+    status: 'complete' as const,
+    priority: null,
+  },
 ];
 
 const completedCount = blocks.filter(b => b.status === 'complete').length;
@@ -102,7 +110,7 @@ const statusClass: Record<string, string> = {
         <p class="landing-subtitle">
           Apuntes personales de PAW de Santiago Die , basados en el contenido de la asignatura - 2025/2026 - Universidad de la Rioja
         </p>
-        <p class="landing-progress">{completedCount} / 8 bloques completados</p>
+        <p class="landing-progress">{completedCount} / 9 bloques completados</p>
       </header>
 
       <section class="blocks-section" aria-label="Bloques del temario">
