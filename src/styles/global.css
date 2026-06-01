@@ -376,3 +376,31 @@ blockquote.cita-profesor {
 /* Breakpoint de referencia para hamburguesa y sidebar: 900px        */
 /* No se puede usar como CSS custom property en @media queries.      */
 /* Documentado aquí como referencia. Valor: 900px                   */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Syntax highlighting — Highlight.js
+   Sobreescribe fondo, fuente y padding del tema github con los tokens del proyecto.
+   Las reglas usan !important para ganar a los estilos inline del CDN.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Bloque de código (display: block dentro de <pre>) */
+pre code.hljs {
+  display: block;
+  background:   var(--color-code-bg)  !important;
+  font-family:  var(--font-mono)      !important;
+  font-size:    var(--text-sm)        !important;
+  line-height:  var(--leading-loose)  !important;
+  padding:      var(--space-4) var(--space-5) !important;
+  overflow-x:   auto;
+}
+
+/* Código inline — sin fondo propio (lo gestiona .code-block) */
+code.hljs {
+  background: transparent !important;
+  padding:    0 !important;
+}
+
+/* Asegurar que el color de texto del tema hljs no choca con --color-text */
+.code-block .hljs {
+  color: inherit;
+}

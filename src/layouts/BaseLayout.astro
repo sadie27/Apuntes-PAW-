@@ -14,8 +14,41 @@ const { title } = Astro.props;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&family=Fira+Code:wght@400;500&display=swap" />
+    <!-- Syntax highlighting — Highlight.js github-light (coherente con tema Shiki del proyecto) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    >
   </head>
   <body>
     <slot />
+    <!-- Highlight.js: carga la librería y aplica lenguaje desde .code-header -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
+      is:inline
+    ></script>
+    <script is:inline>
+      (function () {
+        var aliases = {
+          'js':           'javascript',
+          'ts':           'typescript',
+          'pseudocódigo': 'plaintext',
+          'pseudocode':   'plaintext',
+          'text':         'plaintext',
+          'xml':          'xml',
+        };
+
+        document.querySelectorAll('.code-block').forEach(function (block) {
+          var header = block.querySelector('.code-header');
+          var code   = block.querySelector('pre code');
+          if (!header || !code) return;
+
+          var lang = header.textContent.trim().toLowerCase();
+          code.className = 'language-' + (aliases[lang] || lang);
+        });
+
+        hljs.highlightAll();
+      })();
+    </script>
   </body>
 </html>
