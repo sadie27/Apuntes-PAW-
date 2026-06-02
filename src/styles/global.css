@@ -404,3 +404,13 @@ code.hljs {
 .code-block .hljs {
   color: inherit;
 }
+
+/* Contenedor para diagramas SVG con tema oscuro propio */
+.diagram-dark {
+  background: oklch(15% 0.008 264);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+  padding: var(--space-4);
+  margin: var(--space-5) 0;
+}
