@@ -373,6 +373,46 @@ blockquote.cita-profesor {
   }
 }
 
+/* --- Filter bar (repaso.astro) --- */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.ejercicio-counter {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  color: var(--color-text-3);
+  margin-bottom: var(--space-6);
+}
+.filter-btn {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: var(--space-2) var(--space-4);
+  border-radius: 20px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-2);
+  cursor: pointer;
+  transition: color 150ms ease,
+              background-color 150ms ease,
+              border-color 150ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .filter-btn:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+}
+.filter-btn.active {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  font-weight: 600;
+}
+
 /* ─── Responsive mobile parcial ─────────────────────────────────── */
 /* Breakpoint de referencia para hamburguesa y sidebar: 900px        */
 /* No se puede usar como CSS custom property en @media queries.      */

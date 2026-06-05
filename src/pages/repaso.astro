@@ -222,7 +222,21 @@ const sections = [
     Tres horas. Empieza por lo que dominas.
   </p>
 
+  <!-- ── Barra de filtros ── -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-tipo="todos">Todos</button>
+    <button class="filter-btn" data-tipo="filtros">Filtros</button>
+    <button class="filter-btn" data-tipo="servlets">Servlets</button>
+    <button class="filter-btn" data-tipo="jsp">JSP</button>
+    <button class="filter-btn" data-tipo="javascript">JavaScript</button>
+    <button class="filter-btn" data-tipo="ajax">AJAX</button>
+    <button class="filter-btn" data-tipo="arquitectura">Arquitectura</button>
+    <button class="filter-btn" data-tipo="teoria">Teoría</button>
+  </div>
+  <p class="ejercicio-counter">Mostrando 18 de 18 ejercicios</p>
+
   <!-- ── Ejercicio 1 ── -->
+  <div class="ejercicio-card" data-tipo="filtros">
   <h3>Ejercicio 1 — Filtro de autenticación</h3>
   <p class="exercise-meta">
     <span class="badge badge-prob-alta">Muy probable</span>
@@ -259,8 +273,10 @@ const sections = [
     Filtros en <a href="/servlets-jsp#filtros">/servlets-jsp#filtros</a>
     · Implementación real comentada en <a href="/practicas#filtro-auth">/practicas#filtro-auth</a>
   </div>
+  </div><!-- /ejercicio-card 1 -->
 
   <!-- ── Ejercicio 2 ── -->
+  <div class="ejercicio-card" data-tipo="servlets">
   <h3>Ejercicio 2 — Controlador con doGet, doPost y PRG</h3>
   <p class="exercise-meta">
     <span class="badge badge-prob-alta">Alta</span>
@@ -302,8 +318,10 @@ const sections = [
     PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
     · Ejemplo real en <a href="/practicas#patron-prg">/practicas#patron-prg</a>
   </div>
+  </div><!-- /ejercicio-card 2 -->
 
   <!-- ── Ejercicio 3 ── -->
+  <div class="ejercicio-card" data-tipo="jsp">
   <h3>Ejercicio 3 — Vista JSP con JSTL</h3>
   <p class="exercise-meta">
     <span class="badge badge-prob-alta">Alta</span>
@@ -367,8 +385,10 @@ const sections = [
   <div class="callout callout-relation">
     JSP y JSTL en <a href="/servlets-jsp#el-jstl">/servlets-jsp#el-jstl</a>
   </div>
+  </div><!-- /ejercicio-card 3 -->
 
   <!-- ── Ejercicio 4 ── -->
+  <div class="ejercicio-card" data-tipo="arquitectura">
   <h3>Ejercicio 4 — Flujo completo de una petición</h3>
   <p class="exercise-meta">
     <span class="badge badge-prob-alta">Muy probable</span>
@@ -411,8 +431,10 @@ const sections = [
     Filtros en <a href="/servlets-jsp#filtros">/servlets-jsp#filtros</a>
     · Arquitectura MVC en <a href="/arquitectura#patron-mvc">/arquitectura#patron-mvc</a>
   </div>
+  </div><!-- /ejercicio-card 4 -->
 
   <!-- ── Ejercicio 5 ── -->
+  <div class="ejercicio-card" data-tipo="javascript">
   <h3>Ejercicio 5 — JavaScript y manipulación del DOM</h3>
   <p class="exercise-meta">
     <span class="badge badge-prob-alta">100% seguro</span>
@@ -463,8 +485,10 @@ const sections = [
     DOM en <a href="/javascript#dom">/javascript#dom</a>
     · Eventos y delegación en <a href="/javascript#propagacion">/javascript#propagacion</a>
   </div>
+  </div><!-- /ejercicio-card 5 -->
 
   <!-- ── Ejercicio 6 ── -->
+  <div class="ejercicio-card" data-tipo="servlets">
   <h3>Ejercicio 6 — Gestión de error: recurso no encontrado</h3>
   <p class="exercise-meta">
     <span class="badge badge-prob-media">Media-alta</span>
@@ -495,7 +519,594 @@ const sections = [
   <div class="callout callout-relation">
     Manejo de errores en <a href="/servlets-jsp#request-response">/servlets-jsp#request-response</a>
   </div>
+  </div><!-- /ejercicio-card 6 -->
+
+  <!-- ── Ejercicio 7 ── -->
+  <div class="ejercicio-card" data-tipo="servlets">
+  <h3>Ejercicio 7 — Controlador de login</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">Alta</span>
+    <span class="badge">Servlets</span>
+    <span class="badge">~25 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>Se te proporciona la siguiente interfaz:</p>
+    <div class="code-block">
+      <div class="code-header">java</div>
+      <pre><code>public interface UsuarioDAO &#123;
+    Usuario findByCredentials(String usuario, String password)
+        throws ExcepcionDeAplicacion;
+&#125;</code></pre>
+    </div>
+    <p>
+      La clase <code>Usuario</code> tiene los campos <code>login</code>, <code>nombre</code>
+      y <code>rol</code> con sus getters. El usuario autenticado se guarda en sesión con
+      la clave <code>"usuario"</code>.
+    </p>
+    <p>Implementa un servlet mapeado en <code>/auth/login</code>:</p>
+    <p>
+      <strong>a)</strong> <code>doGet</code>: obtiene el parámetro <code>next</code> de la URL
+      (puede ser null) y hace forward a <code>login.jsp</code> pasándolo como atributo del
+      request para usarlo en el formulario.
+    </p>
+    <p>
+      <strong>b)</strong> <code>doPost</code>: lee los parámetros <code>usuario</code> y
+      <code>password</code>. Llama a <code>findByCredentials</code>. Si devuelve
+      <code>null</code>: añade un mensaje de error al request y vuelve a mostrar el formulario
+      con <code>forward</code>. Si devuelve un usuario: crea sesión, guarda el objeto y redirige
+      a la URL indicada en <code>next</code> (o a <code>/catalogue</code> si <code>next</code>
+      es null).
+    </p>
+    <p>
+      <strong>c)</strong> ¿Por qué en el caso de error usas <code>forward</code> y no
+      <code>sendRedirect</code>? ¿Qué se perdería con el redirect?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    Sesión en <a href="/servlets-jsp#sesion">/servlets-jsp#sesion</a>
+    · Filtro real en <a href="/practicas#filtro-auth">/practicas#filtro-auth</a>
+  </div>
+  </div><!-- /ejercicio-card 7 -->
+
+  <!-- ── Ejercicio 8 ── -->
+  <div class="ejercicio-card" data-tipo="ajax">
+  <h3>Ejercicio 8 — Fetch GET y renderizado de resultados</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">Alta</span>
+    <span class="badge">AJAX</span>
+    <span class="badge">~20 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>Se te proporciona el siguiente HTML:</p>
+    <div class="code-block">
+      <div class="code-header">html</div>
+      <pre><code>&lt;input type="text" id="buscar" placeholder="Buscar..." /&gt;
+&lt;div id="resultados"&gt;&lt;/div&gt;</code></pre>
+    </div>
+    <p>
+      El servidor expone el endpoint <code>GET /api/articulos?q=texto</code> que devuelve
+      un array JSON de objetos con los campos <code>codigo</code>, <code>nombre</code>
+      y <code>pvp</code>.
+    </p>
+    <p>
+      <strong>a)</strong> Escribe el JavaScript para que cada vez que el usuario escriba en
+      <code>#buscar</code> se llame al endpoint con el texto introducido y se muestren los
+      resultados en <code>#resultados</code> como una lista de párrafos con el formato
+      <code>"[codigo] nombre — pvp €"</code>.
+    </p>
+    <p>
+      <strong>b)</strong> Gestiona el caso en que la respuesta HTTP no sea 2xx:
+      muestra un mensaje de error en <code>#resultados</code>.
+    </p>
+    <p>
+      <strong>c)</strong> Gestiona el caso en que el fetch lance una excepción de red
+      (sin conexión): muestra también un mensaje de error.
+    </p>
+    <p>
+      <strong>d)</strong> ¿Cuál es la diferencia entre un error de red y una respuesta
+      HTTP 404 en fetch? ¿Cómo se detecta cada uno?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    fetch y Promesas en <a href="/js-ajax#fetch">/js-ajax#fetch</a>
+    · async/await en <a href="/js-ajax#async-await">/js-ajax#async-await</a>
+  </div>
+  </div><!-- /ejercicio-card 8 -->
+
+  <!-- ── Ejercicio 9 ── -->
+  <div class="ejercicio-card" data-tipo="teoria">
+  <h3>Ejercicio 9 — Forward vs Redirect</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-media">Media-alta</span>
+    <span class="badge">Teoría</span>
+    <span class="badge">~15 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>
+      <strong>a)</strong> Explica la diferencia fundamental entre
+      <code>RequestDispatcher.forward()</code> y
+      <code>HttpServletResponse.sendRedirect()</code>.
+      ¿Qué ocurre con la URL del navegador en cada caso?
+    </p>
+    <p>
+      <strong>b)</strong> ¿Qué ocurre con los atributos del request
+      (<code>setAttribute</code>) cuando se usa <code>forward</code>?
+      ¿Y cuando se usa <code>sendRedirect</code>?
+      ¿Por qué es relevante esta diferencia?
+    </p>
+    <p>
+      <strong>c)</strong> Da un ejemplo concreto de cuándo debes usar <code>forward</code>
+      y cuándo <code>sendRedirect</code>. Justifica cada elección.
+    </p>
+    <p>
+      <strong>d)</strong> ¿Qué relación directa tiene <code>sendRedirect</code> con el
+      patrón POST-Redirect-GET?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
+    · Diferencia visual en <a href="/arquitectura#patron-mvc">/arquitectura#patron-mvc</a>
+  </div>
+  </div><!-- /ejercicio-card 9 -->
+
+  <!-- ── Ejercicio 10 ── -->
+  <div class="ejercicio-card" data-tipo="servlets">
+  <h3>Ejercicio 10 — Logout y ciclo de vida de la sesión</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-media">Media</span>
+    <span class="badge">Servlets</span>
+    <span class="badge">~15 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>
+      <strong>a)</strong> Implementa un servlet mapeado en <code>/auth/logout</code> con
+      <code>doPost</code>. Debe: obtener la sesión actual sin crear una nueva, invalidarla
+      si existe, y redirigir a <code>/auth/login</code>.
+    </p>
+    <p>
+      <strong>b)</strong> ¿Por qué se usa <code>session.invalidate()</code> en lugar de
+      simplemente hacer <code>session.removeAttribute("usuario")</code>?
+      ¿Qué diferencia hay en el estado de la sesión tras cada opción?
+    </p>
+    <p>
+      <strong>c)</strong> En producción, el logout debería manejarse con POST, no con GET.
+      ¿Qué ataque concreto se previene con esto?
+    </p>
+    <p>
+      <strong>d)</strong> ¿Qué devuelve <code>httpRequest.getSession(false)</code> si el
+      usuario nunca ha tenido sesión o esta ya expiró?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    Sesión en <a href="/servlets-jsp#sesion">/servlets-jsp#sesion</a>
+    · CSRF en <a href="/seguridad#csrf-xss">/seguridad#csrf-xss</a>
+  </div>
+  </div><!-- /ejercicio-card 10 -->
+
+  <!-- ── Ejercicio 11 ── -->
+  <div class="ejercicio-card" data-tipo="filtros">
+  <h3>Ejercicio 11 — Filtro de autorización por rol</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-media">Media</span>
+    <span class="badge">Filtros</span>
+    <span class="badge">~20 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>
+      La clase <code>Usuario</code> tiene el método <code>getRol()</code> que devuelve
+      <code>"admin"</code> o <code>"user"</code>. El objeto <code>Usuario</code> está
+      guardado en sesión con la clave <code>"usuario"</code>. Se necesita proteger las
+      rutas <code>/admin/*</code> de forma que solo usuarios con rol <code>"admin"</code>
+      puedan acceder.
+    </p>
+    <p>
+      <strong>a)</strong> Implementa <code>doFilter()</code> de un <code>RolFilter</code> que:
+      primero compruebe que el usuario está autenticado (sesión activa con
+      <code>"usuario"</code>), y después compruebe que su rol es <code>"admin"</code>.
+      Si no está autenticado: redirige a <code>/auth/login</code>. Si está autenticado
+      pero no es admin: responde con error 403.
+    </p>
+    <p>
+      <strong>b)</strong> ¿Cuál es la diferencia conceptual entre autenticación y
+      autorización? ¿Por qué se gestionan por separado?
+    </p>
+    <p>
+      <strong>c)</strong> ¿Sería correcto combinar <code>AuthFilter</code> y
+      <code>RolFilter</code> en un único filtro? ¿Qué ventajas e inconvenientes tendría?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    Filtros en <a href="/servlets-jsp#filtros">/servlets-jsp#filtros</a>
+    · RBAC en <a href="/seguridad#rbac">/seguridad#rbac</a>
+  </div>
+  </div><!-- /ejercicio-card 11 -->
+
+  <!-- ── Ejercicio 12 ── -->
+  <div class="ejercicio-card" data-tipo="servlets">
+  <h3>Ejercicio 12 — Controlador: crear nuevo artículo</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-media">Media</span>
+    <span class="badge">Servlets</span>
+    <span class="badge">~25 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>Se te proporciona la interfaz <code>CatalogoDAO</code> con el método adicional:</p>
+    <div class="code-block">
+      <div class="code-header">java</div>
+      <pre><code>void guardarArticulo(Articulo articulo) throws ExcepcionDeAplicacion;</code></pre>
+    </div>
+    <p>
+      La clase <code>Articulo</code> tiene los campos <code>codigo</code>,
+      <code>nombre</code>, <code>pvp</code>, <code>tipo</code>, <code>fabricante</code>
+      y <code>descripcion</code>.
+    </p>
+    <p>Implementa un servlet mapeado en <code>/articulo/nuevo</code>:</p>
+    <p>
+      <strong>a)</strong> <code>doGet</code>: hace forward al formulario vacío
+      <code>nuevo-articulo.jsp</code>. No necesita pasar atributos.
+    </p>
+    <p>
+      <strong>b)</strong> <code>doPost</code>: lee los parámetros del formulario, construye
+      un objeto <code>Articulo</code> y llama a <code>guardarArticulo()</code>. Si la operación
+      tiene éxito, aplica PRG redirigiendo a <code>/catalogue</code>. Si
+      <code>guardarArticulo</code> lanza <code>ExcepcionDeAplicacion</code>, añade el mensaje
+      de error al request y vuelve a mostrar el formulario con <code>forward</code>.
+    </p>
+    <p>
+      <strong>c)</strong> ¿Por qué en el caso de error de guardado usas <code>forward</code>
+      y no <code>sendRedirect</code>? ¿Qué perderías con el redirect?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
+    · DTO en <a href="/servlets-jsp#patrones-dto">/servlets-jsp#patrones-dto</a>
+  </div>
+  </div><!-- /ejercicio-card 12 -->
+
+  <!-- ── Ejercicio 13 ── -->
+  <div class="ejercicio-card" data-tipo="jsp">
+  <h3>Ejercicio 13 — Vista JSP: detalle de un artículo</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-media">Media</span>
+    <span class="badge">JSP</span>
+    <span class="badge">~12 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>El controlador ejecuta:</p>
+    <div class="code-block">
+      <div class="code-header">java</div>
+      <pre><code>request.setAttribute("articulo", catalogoDAO.findOneByCodigo(codigo));
+request.getRequestDispatcher("detalle-articulo.jsp").forward(request, response);</code></pre>
+    </div>
+    <p>Se te proporciona este HTML estático:</p>
+    <div class="code-block">
+      <div class="code-header">html</div>
+      <pre><code>&lt;h2&gt;Detalle del artículo&lt;/h2&gt;
+&lt;table&gt;
+  &lt;tr&gt;&lt;th&gt;Código&lt;/th&gt;    &lt;td&gt;ART001&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Nombre&lt;/th&gt;    &lt;td&gt;Teclado mecánico&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;PVP&lt;/th&gt;       &lt;td&gt;89.99 €&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Tipo&lt;/th&gt;      &lt;td&gt;Periférico&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Fabricante&lt;/th&gt;&lt;td&gt;Logitech&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Descripción&lt;/th&gt;&lt;td&gt;Descripción del producto aquí&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;a href="/catalogue"&gt;Volver al catálogo&lt;/a&gt;</code></pre>
+    </div>
+    <p>
+      <strong>a)</strong> Sustituye cada valor hardcodeado por la expresión EL correspondiente
+      que lea del atributo <code>"articulo"</code>.
+    </p>
+    <p>
+      <strong>b)</strong> Añade lógica con <code>&lt;c:choose&gt;</code> para que la descripción
+      muestre el texto <code>"Sin descripción"</code> si el campo está vacío o es null, y la
+      descripción real en caso contrario.
+    </p>
+    <p>
+      <strong>c)</strong> Usa <code>&lt;c:url&gt;</code> para construir el enlace "Volver al
+      catálogo" de forma que funcione independientemente del context path de la aplicación.
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    EL y JSTL en <a href="/servlets-jsp#el-jstl">/servlets-jsp#el-jstl</a>
+  </div>
+  </div><!-- /ejercicio-card 13 -->
+
+  <!-- ── Ejercicio 14 ── -->
+  <div class="ejercicio-card" data-tipo="jsp">
+  <h3>Ejercicio 14 — Vista JSP: formulario con validación</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-media">Media</span>
+    <span class="badge">JSP</span>
+    <span class="badge">~15 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>Cuando la validación del <code>doPost</code> falla, el controlador hace:</p>
+    <div class="code-block">
+      <div class="code-header">java</div>
+      <pre><code>request.setAttribute("errores", listaDeErrores); // List&lt;String&gt;
+request.setAttribute("articulo", articuloConDatos);
+request.getRequestDispatcher("nuevo-articulo.jsp").forward(request, response);</code></pre>
+    </div>
+    <p>Se te proporciona este HTML de formulario:</p>
+    <div class="code-block">
+      <div class="code-header">html</div>
+      <pre><code>&lt;form method="post" action="/articulo/nuevo"&gt;
+  &lt;div&gt;
+    &lt;label&gt;Nombre&lt;/label&gt;
+    &lt;input type="text" name="nombre" /&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;label&gt;PVP&lt;/label&gt;
+    &lt;input type="number" name="pvp" /&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;label&gt;Tipo&lt;/label&gt;
+    &lt;input type="text" name="tipo" /&gt;
+  &lt;/div&gt;
+  &lt;button type="submit"&gt;Guardar&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    </div>
+    <p>
+      <strong>a)</strong> Añade un bloque que muestre la lista de errores (atributo
+      <code>"errores"</code>) como un <code>&lt;ul&gt;</code> solo si la lista existe y no
+      está vacía. Itera con <code>&lt;c:forEach&gt;</code>.
+    </p>
+    <p>
+      <strong>b)</strong> Repobla cada campo del formulario con el valor del artículo recibido
+      (atributo <code>"articulo"</code>) para que el usuario no pierda lo que escribió.
+    </p>
+    <p>
+      <strong>c)</strong> ¿Por qué en este caso de error de validación se usa
+      <code>forward</code> y NO <code>sendRedirect</code>? ¿Qué se perdería con el redirect?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    Scopes en <a href="/servlets-jsp#scopes">/servlets-jsp#scopes</a>
+    · PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
+  </div>
+  </div><!-- /ejercicio-card 14 -->
+
+  <!-- ── Ejercicio 15 ── -->
+  <div class="ejercicio-card" data-tipo="javascript">
+  <h3>Ejercicio 15 — JavaScript: crear elementos con createElement</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">Alta</span>
+    <span class="badge">JavaScript</span>
+    <span class="badge">~20 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>Se te proporciona el siguiente HTML:</p>
+    <div class="code-block">
+      <div class="code-header">html</div>
+      <pre><code>&lt;div id="catalogo"&gt;&lt;/div&gt;
+&lt;form id="form-articulo"&gt;
+  &lt;input type="text" id="input-nombre" placeholder="Nombre" /&gt;
+  &lt;input type="number" id="input-pvp" placeholder="PVP" /&gt;
+  &lt;input type="text" id="input-tipo" placeholder="Tipo" /&gt;
+  &lt;button type="button" id="btn-aniadir"&gt;Añadir artículo&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    </div>
+    <p>
+      <strong>a)</strong> Escribe el JavaScript para que al pulsar <code>#btn-aniadir</code>
+      se cree dinámicamente un <code>div</code> con clase <code>articulo-card</code>
+      que contenga tres <code>span</code>: uno para el nombre, uno para el PVP y uno para
+      el tipo. Añádelo al final de <code>#catalogo</code>.
+    </p>
+    <p>
+      <strong>b)</strong> Valida antes de añadir que los tres campos tengan valor. Si alguno
+      está vacío, añade la clase <code>campo-error</code> al input correspondiente y no
+      añadas la tarjeta.
+    </p>
+    <p>
+      <strong>c)</strong> Tras añadir la tarjeta correctamente, limpia los tres inputs y
+      devuelve el foco a <code>#input-nombre</code>.
+    </p>
+    <p>
+      <strong>d)</strong> ¿Cuál es la diferencia entre <code>createElement</code> +
+      <code>appendChild</code> y asignar directamente <code>innerHTML</code>?
+      ¿Cuándo es preferible cada enfoque?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    DOM en <a href="/javascript#dom-manipulacion">/javascript#dom-manipulacion</a>
+    · Eventos en <a href="/javascript#eventos">/javascript#eventos</a>
+  </div>
+  </div><!-- /ejercicio-card 15 -->
+
+  <!-- ── Ejercicio 16 ── -->
+  <div class="ejercicio-card" data-tipo="javascript">
+  <h3>Ejercicio 16 — JavaScript: validación de formulario</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">Alta</span>
+    <span class="badge">JavaScript</span>
+    <span class="badge">~20 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>Se te proporciona el siguiente HTML:</p>
+    <div class="code-block">
+      <div class="code-header">html</div>
+      <pre><code>&lt;form id="form-nuevo"&gt;
+  &lt;div&gt;
+    &lt;label&gt;Nombre&lt;/label&gt;
+    &lt;input type="text" id="nombre" name="nombre" /&gt;
+    &lt;span id="error-nombre" class="campo-error"&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;label&gt;PVP&lt;/label&gt;
+    &lt;input type="number" id="pvp" name="pvp" /&gt;
+    &lt;span id="error-pvp" class="campo-error"&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;button type="submit"&gt;Guardar&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    </div>
+    <p>
+      Reglas de validación: <code>nombre</code> es obligatorio y debe tener al menos 3
+      caracteres. <code>pvp</code> es obligatorio y debe ser mayor que 0.
+    </p>
+    <p>
+      <strong>a)</strong> Intercepta el evento <code>submit</code> del formulario. Si alguna
+      validación falla, cancela el envío y muestra el mensaje de error correspondiente en el
+      <code>span</code> asociado. Si todo es correcto, deja que el formulario se envíe.
+    </p>
+    <p>
+      <strong>b)</strong> Añade un listener a cada input para que cuando el usuario empiece
+      a escribir en él, se borre el mensaje de error de ese campo.
+    </p>
+    <p>
+      <strong>c)</strong> ¿Por qué la validación en cliente no reemplaza a la validación en
+      servidor? ¿Qué pasaría si solo validaras en JavaScript?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    Eventos en <a href="/javascript#eventos">/javascript#eventos</a>
+    · Seguridad en <a href="/seguridad#intro-seguridad">/seguridad#intro-seguridad</a>
+  </div>
+  </div><!-- /ejercicio-card 16 -->
+
+  <!-- ── Ejercicio 17 ── -->
+  <div class="ejercicio-card" data-tipo="ajax">
+  <h3>Ejercicio 17 — Fetch POST: enviar datos al servidor</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">Alta</span>
+    <span class="badge">AJAX</span>
+    <span class="badge">~20 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>Se te proporciona el siguiente HTML:</p>
+    <div class="code-block">
+      <div class="code-header">html</div>
+      <pre><code>&lt;form id="form-api"&gt;
+  &lt;input type="text" id="nombre" placeholder="Nombre" /&gt;
+  &lt;input type="number" id="pvp" placeholder="PVP" /&gt;
+  &lt;input type="text" id="tipo" placeholder="Tipo" /&gt;
+  &lt;button type="submit"&gt;Guardar&lt;/button&gt;
+&lt;/form&gt;
+&lt;p id="mensaje"&gt;&lt;/p&gt;</code></pre>
+    </div>
+    <p>
+      El servidor expone <code>POST /api/articulos</code> que espera un cuerpo JSON con
+      <code>nombre</code>, <code>pvp</code> y <code>tipo</code>, y devuelve el artículo
+      creado con código 201, o un objeto <code>&#123;"error": "mensaje"&#125;</code> con
+      código 400 si los datos son inválidos.
+    </p>
+    <p>
+      <strong>a)</strong> Intercepta el submit del formulario. Construye un objeto JS con los
+      tres campos y llama a <code>fetch</code> con método POST, el header
+      <code>Content-Type: application/json</code> y el cuerpo serializado con
+      <code>JSON.stringify</code>.
+    </p>
+    <p>
+      <strong>b)</strong> Si la respuesta es 201: muestra "Artículo guardado" en
+      <code>#mensaje</code> y limpia el formulario.
+      Si la respuesta es 400: lee el campo <code>error</code> del JSON de respuesta y
+      muéstralo en <code>#mensaje</code>.
+    </p>
+    <p>
+      <strong>c)</strong> ¿Por qué hay que especificar el header
+      <code>Content-Type: application/json</code> en el fetch? ¿Qué pasaría si lo omitieras?
+    </p>
+    <p>
+      <strong>d)</strong> ¿Qué diferencia hay entre enviar datos como JSON en el body y
+      enviarlos como <code>application/x-www-form-urlencoded</code>?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    fetch en <a href="/js-ajax#fetch">/js-ajax#fetch</a>
+    · API REST en <a href="/practicas#api-rest">/practicas#api-rest</a>
+  </div>
+  </div><!-- /ejercicio-card 17 -->
+
+  <!-- ── Ejercicio 18 ── -->
+  <div class="ejercicio-card" data-tipo="arquitectura">
+  <h3>Ejercicio 18 — Flujo de un POST: validación y PRG</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-media">Media-alta</span>
+    <span class="badge">Arquitectura</span>
+    <span class="badge">~20 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>
+      Un servlet recibe <code>POST /articulo/nuevo</code> con los datos de un formulario.
+      El servlet los valida antes de guardarlos.
+    </p>
+    <p>
+      Describe el flujo completo de la petición en estos dos escenarios, indicando qué métodos
+      se llaman, qué objetos intervienen y qué respuesta HTTP recibe el navegador:
+    </p>
+    <p>
+      <strong>a)</strong> La validación <strong>pasa</strong>: los datos son correctos, el
+      artículo se guarda y el usuario ve el catálogo actualizado.
+      ¿Se usa <code>forward</code> o <code>sendRedirect</code>? ¿Por qué? ¿Qué problema
+      resuelve el redirect en este caso?
+    </p>
+    <p>
+      <strong>b)</strong> La validación <strong>falla</strong>: los datos tienen errores. El
+      usuario debe ver el formulario de nuevo con los errores marcados y los campos que
+      escribió conservados.
+      ¿Se usa <code>forward</code> o <code>sendRedirect</code>? ¿Por qué?
+      ¿Por qué el patrón PRG no aplica en este caso?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
+    · Forward vs redirect en <a href="/arquitectura#patron-mvc">/arquitectura#patron-mvc</a>
+  </div>
+  </div><!-- /ejercicio-card 18 -->
+
 </section>
+
+<script>
+(function () {
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var cards      = document.querySelectorAll('.ejercicio-card');
+  var counter    = document.querySelector('.ejercicio-counter');
+
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var tipo = btn.dataset.tipo;
+
+      filterBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      var visible = 0;
+      cards.forEach(function (card) {
+        var show = tipo === 'todos' || card.dataset.tipo === tipo;
+        card.hidden = !show;
+        if (show) visible++;
+      });
+
+      if (counter) {
+        counter.textContent =
+          'Mostrando ' + visible + ' de ' + cards.length + ' ejercicios';
+      }
+    });
+  });
+}());
+</script>
 
 </BlockLayout>
 
