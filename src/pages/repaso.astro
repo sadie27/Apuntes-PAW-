@@ -1,6 +1,8 @@
 ---
 import BlockLayout from '../layouts/BlockLayout.astro';
 
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
 const sections = [
   { id: "radar",      label: "Radar del examen"      },
   { id: "formato",    label: "Formato y reglas"       },
@@ -270,8 +272,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    Filtros en <a href="/servlets-jsp#filtros">/servlets-jsp#filtros</a>
-    · Implementación real comentada en <a href="/practicas#filtro-auth">/practicas#filtro-auth</a>
+    Filtros en <a href={`${base}servlets-jsp#filtros`}>servlets-jsp#filtros</a>
+    · Implementación real comentada en <a href={`${base}practicas#filtro-auth`}>practicas#filtro-auth</a>
   </div>
   </div><!-- /ejercicio-card 1 -->
 
@@ -315,8 +317,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
-    · Ejemplo real en <a href="/practicas#patron-prg">/practicas#patron-prg</a>
+    PRG en <a href={`${base}servlets-jsp#patrones-prg`}>servlets-jsp#patrones-prg</a>
+    · Ejemplo real en <a href={`${base}practicas#patron-prg`}>practicas#patron-prg</a>
   </div>
   </div><!-- /ejercicio-card 2 -->
 
@@ -383,7 +385,7 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    JSP y JSTL en <a href="/servlets-jsp#el-jstl">/servlets-jsp#el-jstl</a>
+    JSP y JSTL en <a href={`${base}servlets-jsp#el-jstl`}>servlets-jsp#el-jstl</a>
   </div>
   </div><!-- /ejercicio-card 3 -->
 
@@ -428,8 +430,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    Filtros en <a href="/servlets-jsp#filtros">/servlets-jsp#filtros</a>
-    · Arquitectura MVC en <a href="/arquitectura#patron-mvc">/arquitectura#patron-mvc</a>
+    Filtros en <a href={`${base}servlets-jsp#filtros`}>servlets-jsp#filtros</a>
+    · Arquitectura MVC en <a href={`${base}arquitectura#patron-mvc`}>arquitectura#patron-mvc</a>
   </div>
   </div><!-- /ejercicio-card 4 -->
 
@@ -482,8 +484,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    DOM en <a href="/javascript#dom">/javascript#dom</a>
-    · Eventos y delegación en <a href="/javascript#propagacion">/javascript#propagacion</a>
+    DOM en <a href={`${base}javascript#dom`}>javascript#dom</a>
+    · Eventos y delegación en <a href={`${base}javascript#propagacion`}>javascript#propagacion</a>
   </div>
   </div><!-- /ejercicio-card 5 -->
 
@@ -517,7 +519,7 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    Manejo de errores en <a href="/servlets-jsp#request-response">/servlets-jsp#request-response</a>
+    Manejo de errores en <a href={`${base}servlets-jsp#request-response`}>servlets-jsp#request-response</a>
   </div>
   </div><!-- /ejercicio-card 6 -->
 
@@ -565,8 +567,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    Sesión en <a href="/servlets-jsp#sesion">/servlets-jsp#sesion</a>
-    · Filtro real en <a href="/practicas#filtro-auth">/practicas#filtro-auth</a>
+    Sesión en <a href={`${base}servlets-jsp#sesion`}>servlets-jsp#sesion</a>
+    · Filtro real en <a href={`${base}practicas#filtro-auth`}>practicas#filtro-auth</a>
   </div>
   </div><!-- /ejercicio-card 7 -->
 
@@ -612,8 +614,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    fetch y Promesas en <a href="/js-ajax#fetch">/js-ajax#fetch</a>
-    · async/await en <a href="/js-ajax#async-await">/js-ajax#async-await</a>
+    fetch y Promesas en <a href={`${base}js-ajax#fetch`}>js-ajax#fetch</a>
+    · async/await en <a href={`${base}js-ajax#async-await`}>js-ajax#async-await</a>
   </div>
   </div><!-- /ejercicio-card 8 -->
 
@@ -650,8 +652,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
-    · Diferencia visual en <a href="/arquitectura#patron-mvc">/arquitectura#patron-mvc</a>
+    PRG en <a href={`${base}servlets-jsp#patrones-prg`}>servlets-jsp#patrones-prg</a>
+    · Diferencia visual en <a href={`${base}arquitectura#patron-mvc`}>arquitectura#patron-mvc</a>
   </div>
   </div><!-- /ejercicio-card 9 -->
 
@@ -686,8 +688,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    Sesión en <a href="/servlets-jsp#sesion">/servlets-jsp#sesion</a>
-    · CSRF en <a href="/seguridad#csrf-xss">/seguridad#csrf-xss</a>
+    Sesión en <a href={`${base}servlets-jsp#sesion`}>servlets-jsp#sesion</a>
+    · CSRF en <a href={`${base}seguridad#csrf-xss`}>seguridad#csrf-xss</a>
   </div>
   </div><!-- /ejercicio-card 10 -->
 
@@ -726,8 +728,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    Filtros en <a href="/servlets-jsp#filtros">/servlets-jsp#filtros</a>
-    · RBAC en <a href="/seguridad#rbac">/seguridad#rbac</a>
+    Filtros en <a href={`${base}servlets-jsp#filtros`}>servlets-jsp#filtros</a>
+    · RBAC en <a href={`${base}seguridad#rbac`}>seguridad#rbac</a>
   </div>
   </div><!-- /ejercicio-card 11 -->
 
@@ -770,8 +772,8 @@ const sections = [
   </div>
 
   <div class="callout callout-relation">
-    PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
-    · DTO en <a href="/servlets-jsp#patrones-dto">/servlets-jsp#patrones-dto</a>
+    PRG en <a href={`${base}servlets-jsp#patrones-prg`}>servlets-jsp#patrones-prg</a>
+    · DTO en <a href={`${base}servlets-jsp#patrones-dto`}>servlets-jsp#patrones-dto</a>
   </div>
   </div><!-- /ejercicio-card 12 -->
 
@@ -821,7 +823,7 @@ request.getRequestDispatcher("detalle-articulo.jsp").forward(request, response);
   </div>
 
   <div class="callout callout-relation">
-    EL y JSTL en <a href="/servlets-jsp#el-jstl">/servlets-jsp#el-jstl</a>
+    EL y JSTL en <a href={`${base}servlets-jsp#el-jstl`}>servlets-jsp#el-jstl</a>
   </div>
   </div><!-- /ejercicio-card 13 -->
 
@@ -877,8 +879,8 @@ request.getRequestDispatcher("nuevo-articulo.jsp").forward(request, response);</
   </div>
 
   <div class="callout callout-relation">
-    Scopes en <a href="/servlets-jsp#scopes">/servlets-jsp#scopes</a>
-    · PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
+    Scopes en <a href={`${base}servlets-jsp#scopes`}>servlets-jsp#scopes</a>
+    · PRG en <a href={`${base}servlets-jsp#patrones-prg`}>servlets-jsp#patrones-prg</a>
   </div>
   </div><!-- /ejercicio-card 14 -->
 
@@ -926,8 +928,8 @@ request.getRequestDispatcher("nuevo-articulo.jsp").forward(request, response);</
   </div>
 
   <div class="callout callout-relation">
-    DOM en <a href="/javascript#dom-manipulacion">/javascript#dom-manipulacion</a>
-    · Eventos en <a href="/javascript#eventos">/javascript#eventos</a>
+    DOM en <a href={`${base}javascript#dom-manipulacion`}>javascript#dom-manipulacion</a>
+    · Eventos en <a href={`${base}javascript#eventos`}>javascript#eventos</a>
   </div>
   </div><!-- /ejercicio-card 15 -->
 
@@ -978,8 +980,8 @@ request.getRequestDispatcher("nuevo-articulo.jsp").forward(request, response);</
   </div>
 
   <div class="callout callout-relation">
-    Eventos en <a href="/javascript#eventos">/javascript#eventos</a>
-    · Seguridad en <a href="/seguridad#intro-seguridad">/seguridad#intro-seguridad</a>
+    Eventos en <a href={`${base}javascript#eventos`}>javascript#eventos</a>
+    · Seguridad en <a href={`${base}seguridad#intro-seguridad`}>seguridad#intro-seguridad</a>
   </div>
   </div><!-- /ejercicio-card 16 -->
 
@@ -1033,8 +1035,8 @@ request.getRequestDispatcher("nuevo-articulo.jsp").forward(request, response);</
   </div>
 
   <div class="callout callout-relation">
-    fetch en <a href="/js-ajax#fetch">/js-ajax#fetch</a>
-    · API REST en <a href="/practicas#api-rest">/practicas#api-rest</a>
+    fetch en <a href={`${base}js-ajax#fetch`}>js-ajax#fetch</a>
+    · API REST en <a href={`${base}practicas#api-rest`}>practicas#api-rest</a>
   </div>
   </div><!-- /ejercicio-card 17 -->
 
@@ -1072,8 +1074,8 @@ request.getRequestDispatcher("nuevo-articulo.jsp").forward(request, response);</
   </div>
 
   <div class="callout callout-relation">
-    PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
-    · Forward vs redirect en <a href="/arquitectura#patron-mvc">/arquitectura#patron-mvc</a>
+    PRG en <a href={`${base}servlets-jsp#patrones-prg`}>servlets-jsp#patrones-prg</a>
+    · Forward vs redirect en <a href={`${base}arquitectura#patron-mvc`}>arquitectura#patron-mvc</a>
   </div>
   </div><!-- /ejercicio-card 18 -->
 
