@@ -280,7 +280,8 @@ pre code {
 .stagger-item:nth-child(6) { animation-delay: 250ms; }
 .stagger-item:nth-child(7) { animation-delay: 300ms; }
 .stagger-item:nth-child(8) { animation-delay: 350ms; }
-.stagger-item:nth-child(9) { animation-delay: 350ms; }
+.stagger-item:nth-child(9)  { animation-delay: 350ms; }
+.stagger-item:nth-child(10) { animation-delay: 400ms; }
 
 @keyframes fadeInUp {
   to { opacity: 1; transform: translateY(0); }

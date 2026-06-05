@@ -1,0 +1,620 @@
+---
+import BlockLayout from '../layouts/BlockLayout.astro';
+
+const sections = [
+  { id: "radar",      label: "Radar del examen"      },
+  { id: "formato",    label: "Formato y reglas"       },
+  { id: "ejercicios", label: "Ejercicios tipo examen" },
+];
+---
+
+<BlockLayout
+  title="Repaso final"
+  blockNumber={10}
+  blockName="Repaso final"
+  sections={sections}
+>
+
+<header class="block-header">
+  <span class="block-number">10</span>
+  <h1>Repaso final</h1>
+  <p class="block-lead">Todo lo que necesitas para mañana. Sin relleno.</p>
+</header>
+
+<!-- =========================================================== -->
+<!-- 1. RADAR DEL EXAMEN                                         -->
+<!-- =========================================================== -->
+<section id="radar" class="content-section">
+  <h2>Radar del examen</h2>
+  <p>
+    Basado en la tutoría con el profesor. Lo confirmado es confirmado;
+    lo probable se infiere de sus ejemplos y énfasis durante la sesión.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Tema</th>
+        <th>Probabilidad</th>
+        <th>Lo da el profesor</th>
+        <th>Lo escribes tú</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Controlador (servlet)</td>
+        <td><span class="badge badge-prob-alta">100% seguro</span></td>
+        <td>Interfaz <code>CatalogoDAO</code>, clase <code>Articulo</code></td>
+        <td>El servlet completo: <code>doGet</code>, <code>doPost</code>, mapeo</td>
+      </tr>
+      <tr>
+        <td>JavaScript + DOM</td>
+        <td><span class="badge badge-prob-alta">100% seguro</span></td>
+        <td>HTML de partida ya escrito</td>
+        <td>Todo el código JavaScript</td>
+      </tr>
+      <tr>
+        <td>Filtro de autenticación</td>
+        <td><span class="badge badge-prob-alta">Muy probable</span></td>
+        <td>—</td>
+        <td><code>doFilter()</code> completo con lógica de sesión</td>
+      </tr>
+      <tr>
+        <td>Flujo de petición HTTP</td>
+        <td><span class="badge badge-prob-alta">Muy probable</span></td>
+        <td>El contexto: qué filtro y controlador hay</td>
+        <td>Descripción exacta paso a paso</td>
+      </tr>
+      <tr>
+        <td>Patrón PRG (teoría)</td>
+        <td><span class="badge badge-prob-alta">Alta</span></td>
+        <td>—</td>
+        <td>Explicación + justificación (~media página)</td>
+      </tr>
+      <tr>
+        <td>Vista JSP o Thymeleaf</td>
+        <td><span class="badge badge-prob-alta">Alta</span></td>
+        <td>HTML estático de partida</td>
+        <td>Directiva taglib + EL + JSTL</td>
+      </tr>
+      <tr>
+        <td>Error: recurso no encontrado</td>
+        <td><span class="badge badge-prob-media">Media</span></td>
+        <td>El escenario planteado</td>
+        <td>Razonamiento + código</td>
+      </tr>
+      <tr>
+        <td>CSS</td>
+        <td><span class="badge badge-prob-baja">No entra</span></td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>SQL / queries</td>
+        <td><span class="badge badge-prob-baja">No entra</span></td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Configuración DataSource</td>
+        <td><span class="badge badge-prob-baja">No entra</span></td>
+        <td>Lo proporciona el profesor</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Lógica de negocio</td>
+        <td><span class="badge badge-prob-baja">No entra</span></td>
+        <td>La interfaz con los métodos</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Vue 3 en profundidad</td>
+        <td><span class="badge badge-prob-baja">No entra</span></td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Internacionalización (i18n)</td>
+        <td><span class="badge badge-prob-baja">No entra</span></td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Tecnología: libre vs fijada</h3>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Decisión</th>
+        <th>Opciones</th>
+        <th>Condición</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Framework servidor</td>
+        <td>Jakarta EE <strong>o</strong> Spring</td>
+        <td>Libre. Si usas Spring, explica qué pasos hace Spring que tú no haces explícitamente (ej: cómo mapea <code>@RequestParam</code> de la URL al método)</td>
+      </tr>
+      <tr>
+        <td>Tecnología de vista</td>
+        <td>JSP + JSTL <strong>o</strong> Thymeleaf</td>
+        <td>Libre. Indicar cuál se usa</td>
+      </tr>
+      <tr>
+        <td>Sintaxis</td>
+        <td>Pseudocódigo coherente aceptado</td>
+        <td>Nombres de anotaciones incorrectos <strong>sí</strong> penalizan (<code>@GetMap</code> en lugar de <code>@GetMapping</code>). Olvidar un punto y coma, no.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- =========================================================== -->
+<!-- 2. FORMATO Y REGLAS                                         -->
+<!-- =========================================================== -->
+<section id="formato" class="content-section">
+  <h2>Formato y reglas</h2>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Aspecto</th>
+        <th>Detalle</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Duración</td>
+        <td>3 horas</td>
+      </tr>
+      <tr>
+        <td>Ficha de ayuda</td>
+        <td>No hay. Años anteriores sí; este año el profesor lo confirmó explícitamente</td>
+      </tr>
+      <tr>
+        <td>Tipo test</td>
+        <td>No hay. Todo es desarrollo escrito</td>
+      </tr>
+      <tr>
+        <td>Preguntas de teoría</td>
+        <td>Cortas de desarrollo, media página máximo. Siempre aplicadas a la práctica. Ejemplo literal del profesor: <em>"explica el patrón PRG y por qué es importante"</em></td>
+      </tr>
+      <tr>
+        <td>Preguntas mixtas</td>
+        <td>Pueden combinar implementación y teoría. Ejemplo: <em>"implementa este controlador y explica qué responsabilidades MVC tiene cada parte"</em></td>
+      </tr>
+      <tr>
+        <td>Nota mínima</td>
+        <td>5 / 10 (igual que prácticas)</td>
+      </tr>
+      <tr>
+        <td>Distribución</td>
+        <td>Un poco menos de la mitad teoría; el resto práctica</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-key">
+    En el ejercicio de JavaScript proporciona el HTML de partida; no hay que crearlo desde cero.
+    En ejercicios de controlador proporciona la interfaz del DAO con sus métodos.
+    Las conexiones a base de datos también las da. Lo que nunca da: la lógica del filtro,
+    la lógica del controlador, el código JS, ni la conversión del HTML a JSP.
+  </div>
+
+  <div class="callout callout-warning">
+    Los nombres de anotaciones importan y penalizan si están mal.
+    <code>@WebServlet</code>, <code>@WebFilter</code>, <code>@GetMapping</code>, <code>@PostMapping</code>:
+    apréndetelos exactos. Los errores menores como un punto y coma olvidado no penalizan.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- 3. EJERCICIOS TIPO EXAMEN                                   -->
+<!-- =========================================================== -->
+<section id="ejercicios" class="content-section">
+  <h2>Ejercicios tipo examen</h2>
+  <p>
+    Sin soluciones. Los enunciados están construidos con el código real de las
+    prácticas y los patrones que el profesor mencionó en la tutoría.
+    Tres horas. Empieza por lo que dominas.
+  </p>
+
+  <!-- ── Ejercicio 1 ── -->
+  <h3>Ejercicio 1 — Filtro de autenticación</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">Muy probable</span>
+    <span class="badge">Filtros</span>
+    <span class="badge">~20 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>
+      Se dispone de una aplicación web Jakarta EE con las rutas públicas
+      <code>/auth/login</code>, <code>/auth/logout</code> y <code>/assets/*</code>.
+      El resto de rutas requieren autenticación. El usuario autenticado se almacena
+      en sesión con la clave <code>"usuario"</code>.
+    </p>
+    <p>
+      <strong>a)</strong> Implementa el método <code>doFilter()</code> de la clase
+      <code>AuthFilter</code>. Si el usuario no está autenticado, redirige a
+      <code>/auth/login</code> pasando la ruta solicitada como parámetro <code>next</code>
+      en la URL (ej: <code>/auth/login?next=/catalogue</code>). Si está autenticado,
+      continúa la cadena de filtros.
+    </p>
+    <p>
+      <strong>b)</strong> ¿Por qué se usa <code>httpRequest.getSession(false)</code>
+      y no <code>getSession(true)</code> al comprobar si hay sesión activa?
+      ¿Qué problema concreto causaría usar <code>getSession(true)</code>?
+    </p>
+    <p>
+      <strong>c)</strong> ¿Qué ocurre si en el bloque del usuario autenticado olvidas
+      llamar a <code>chain.doFilter(request, response)</code>?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    Filtros en <a href="/servlets-jsp#filtros">/servlets-jsp#filtros</a>
+    · Implementación real comentada en <a href="/practicas#filtro-auth">/practicas#filtro-auth</a>
+  </div>
+
+  <!-- ── Ejercicio 2 ── -->
+  <h3>Ejercicio 2 — Controlador con doGet, doPost y PRG</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">Alta</span>
+    <span class="badge">Servlets + PRG</span>
+    <span class="badge">~30 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>
+      Se te proporciona la interfaz <code>CatalogoDAO</code> con los métodos:
+      <code>findAll()</code>, <code>findOneByCodigo(String codigo)</code> y
+      <code>modificarArticulo(Articulo a)</code>, todos lanzando
+      <code>ExcepcionDeAplicacion</code>.
+      La clase <code>Articulo</code> tiene los campos <code>codigo</code>,
+      <code>nombre</code>, <code>pvp</code>, <code>tipo</code>,
+      <code>fabricante</code> y <code>descripcion</code> con sus getters y setters.
+    </p>
+    <p>Implementa un servlet mapeado en <code>/articulo/editar</code>:</p>
+    <p>
+      <strong>a)</strong> <code>doGet</code>: lee el parámetro <code>codigo</code>,
+      busca el artículo con <code>findOneByCodigo</code> y lo pasa a la vista
+      <code>editar-articulo.jsp</code> mediante <code>setAttribute</code> +
+      <code>forward</code>. Gestiona el caso en que <code>findOneByCodigo</code>
+      devuelva <code>null</code>.
+    </p>
+    <p>
+      <strong>b)</strong> <code>doPost</code>: lee los parámetros del formulario,
+      construye un <code>Articulo</code> con los valores recibidos y llama a
+      <code>modificarArticulo()</code>. Aplica el patrón PRG: redirige al listado
+      general (<code>/catalogue</code>) tras guardar correctamente.
+    </p>
+    <p>
+      <strong>c)</strong> Explica por qué el PRG es necesario en el <code>doPost</code>.
+      ¿Qué problema concreto ocurre si el usuario pulsa F5 tras un POST que no hace redirect?
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    PRG en <a href="/servlets-jsp#patrones-prg">/servlets-jsp#patrones-prg</a>
+    · Ejemplo real en <a href="/practicas#patron-prg">/practicas#patron-prg</a>
+  </div>
+
+  <!-- ── Ejercicio 3 ── -->
+  <h3>Ejercicio 3 — Vista JSP con JSTL</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">Alta</span>
+    <span class="badge">JSP / JSTL</span>
+    <span class="badge">~15 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>El controlador ejecuta antes del <code>forward</code>:</p>
+    <div class="code-block">
+      <div class="code-header">java</div>
+      <pre><code>request.setAttribute("articulos", catalogoDAO.findAll());</code></pre>
+    </div>
+    <p>Se te proporciona este HTML estático de partida:</p>
+    <div class="code-block">
+      <div class="code-header">html</div>
+      <pre><code>&lt;!-- article-list.jsp (HTML de partida) --&gt;
+&lt;p&gt;Se han encontrado X artículos&lt;/p&gt;
+&lt;div id="t_catalogo"&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Código&lt;/th&gt;
+        &lt;th&gt;Nombre&lt;/th&gt;
+        &lt;th&gt;PVP&lt;/th&gt;
+        &lt;th&gt;Tipo&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;td&gt;ART001&lt;/td&gt;
+        &lt;td&gt;Teclado mecánico&lt;/td&gt;
+        &lt;td&gt;89.99&lt;/td&gt;
+        &lt;td&gt;Periférico&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;
+&lt;p&gt;No se encontraron artículos.&lt;/p&gt;</code></pre>
+    </div>
+    <p>
+      <strong>a)</strong> Añade la directiva taglib necesaria para usar JSTL Core.
+    </p>
+    <p>
+      <strong>b)</strong> Sustituye los datos hardcodeados de la fila por expresiones
+      EL que lean de cada <code>Articulo</code> del atributo <code>"articulos"</code>.
+      Usa la etiqueta adecuada para iterar la lista.
+    </p>
+    <p>
+      <strong>c)</strong> Muestra el recuento real de artículos en el párrafo superior
+      usando una expresión EL (igual que en el JSP de clientes real:
+      <code>$&#123;clientes.size()&#125;</code>).
+    </p>
+    <p>
+      <strong>d)</strong> Usa <code>&lt;c:if&gt;</code> para que la tabla solo aparezca cuando la
+      lista tiene elementos, y el párrafo "No se encontraron artículos" solo aparezca
+      cuando está vacía.
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    JSP y JSTL en <a href="/servlets-jsp#el-jstl">/servlets-jsp#el-jstl</a>
+  </div>
+
+  <!-- ── Ejercicio 4 ── -->
+  <h3>Ejercicio 4 — Flujo completo de una petición</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">Muy probable</span>
+    <span class="badge">Arquitectura</span>
+    <span class="badge">~20 min</span>
+  </p>
+  <p class="exercise-note">
+    El profesor describió este escenario exacto como ejemplo de pregunta durante la tutoría.
+  </p>
+
+  <div class="enunciado">
+    <p>Una aplicación tiene:</p>
+    <ul>
+      <li><code>AuthFilter</code> mapeado a <code>/*</code>. Rutas públicas:
+        <code>/auth/login</code>, <code>/auth/logout</code>, <code>/assets/*</code>.
+        Sesión: clave <code>"usuario"</code>.</li>
+      <li><code>CatalogueController</code> mapeado a <code>/catalogue</code> con <code>doGet</code>.</li>
+      <li>Vista <code>article-list.jsp</code>.</li>
+    </ul>
+    <p>
+      Describe el recorrido <strong>exacto y completo</strong> de
+      <code>GET /catalogue?p=1</code> en cada escenario:
+    </p>
+    <p>
+      <strong>a)</strong> El usuario <strong>tiene</strong> sesión activa con
+      <code>"usuario"</code> establecido.
+    </p>
+    <p>
+      <strong>b)</strong> El usuario <strong>no tiene</strong> sesión (primera visita
+      o sesión expirada).
+    </p>
+    <p>
+      Para cada escenario: qué clases intervienen, en qué orden, qué métodos se llaman,
+      qué objetos participan y qué respuesta HTTP recibe el navegador
+      (código de estado + contenido o redirección).
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    Filtros en <a href="/servlets-jsp#filtros">/servlets-jsp#filtros</a>
+    · Arquitectura MVC en <a href="/arquitectura#patron-mvc">/arquitectura#patron-mvc</a>
+  </div>
+
+  <!-- ── Ejercicio 5 ── -->
+  <h3>Ejercicio 5 — JavaScript y manipulación del DOM</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-alta">100% seguro</span>
+    <span class="badge">JavaScript</span>
+    <span class="badge">~25 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>Se te proporciona el siguiente HTML de partida:</p>
+    <div class="code-block">
+      <div class="code-header">html</div>
+      <pre><code>&lt;input type="text" id="filtro" placeholder="Buscar artículo..." /&gt;
+&lt;div id="catalogo"&gt;
+  &lt;div class="articulo-card" data-codigo="ART001"&gt;
+    &lt;h3&gt;Teclado mecánico&lt;/h3&gt;
+    &lt;p&gt;89.99 €&lt;/p&gt;
+    &lt;button class="btn-detalle"&gt;Ver detalle&lt;/button&gt;
+    &lt;button class="btn-eliminar"&gt;Eliminar&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="articulo-card" data-codigo="ART002"&gt;
+    &lt;h3&gt;Ratón inalámbrico&lt;/h3&gt;
+    &lt;p&gt;34.99 €&lt;/p&gt;
+    &lt;button class="btn-detalle"&gt;Ver detalle&lt;/button&gt;
+    &lt;button class="btn-eliminar"&gt;Eliminar&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div id="detalle"&gt;&lt;/div&gt;</code></pre>
+    </div>
+    <p>
+      <strong>a)</strong> Al pulsar <strong>"Eliminar"</strong> en una tarjeta, esa tarjeta
+      debe desaparecer del DOM. Usa <strong>delegación de eventos</strong> registrando el
+      listener en <code>#catalogo</code>, no en cada botón individual.
+      ¿Por qué es preferible la delegación?
+    </p>
+    <p>
+      <strong>b)</strong> Al pulsar <strong>"Ver detalle"</strong>, muestra en
+      <code>&lt;div id="detalle"&gt;</code> el código (atributo <code>data-codigo</code>)
+      y el nombre del artículo de esa tarjeta.
+    </p>
+    <p>
+      <strong>c)</strong> Añade un listener al input <code>#filtro</code> que oculte en
+      tiempo real las tarjetas cuyo nombre no contenga el texto escrito
+      (sin distinguir mayúsculas/minúsculas).
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    DOM en <a href="/javascript#dom">/javascript#dom</a>
+    · Eventos y delegación en <a href="/javascript#propagacion">/javascript#propagacion</a>
+  </div>
+
+  <!-- ── Ejercicio 6 ── -->
+  <h3>Ejercicio 6 — Gestión de error: recurso no encontrado</h3>
+  <p class="exercise-meta">
+    <span class="badge badge-prob-media">Media-alta</span>
+    <span class="badge">Servlets</span>
+    <span class="badge">~15 min</span>
+  </p>
+
+  <div class="enunciado">
+    <p>
+      Un controlador recibe <code>GET /articulo/editar?codigo=ART999</code>.
+      El parámetro llega correctamente (no es null ni vacío). Sin embargo,
+      <code>catalogoDAO.findOneByCodigo("ART999")</code> devuelve <code>null</code>
+      porque ese código no existe en la base de datos.
+    </p>
+    <p>
+      <strong>a)</strong> Describe dos enfoques distintos para gestionar este caso
+      y redirigir al usuario a una página de error.
+    </p>
+    <p>
+      <strong>b)</strong> ¿Cuál elegirías y por qué? ¿Qué ventaja tiene el otro enfoque?
+    </p>
+    <p>
+      <strong>c)</strong> Escribe el fragmento de código del <code>doGet</code> para el
+      enfoque que hayas elegido.
+    </p>
+  </div>
+
+  <div class="callout callout-relation">
+    Manejo de errores en <a href="/servlets-jsp#request-response">/servlets-jsp#request-response</a>
+  </div>
+</section>
+
+</BlockLayout>
+
+<style>
+  .block-header {
+    margin-bottom: var(--space-7);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .block-number {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--color-text-3);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: var(--space-3);
+  }
+
+  .block-lead {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    color: var(--color-text-2);
+    line-height: var(--leading-loose);
+    max-width: var(--measure);
+    margin-bottom: 0;
+  }
+
+  .content-section {
+    margin-bottom: var(--space-8);
+  }
+
+  .content-section h2 {
+    margin-bottom: var(--space-5);
+  }
+
+  .content-section h3 {
+    margin-top: var(--space-7);
+    margin-bottom: var(--space-3);
+  }
+
+  .content-section p {
+    margin-bottom: var(--space-4);
+  }
+
+  .content-section ul {
+    margin-bottom: var(--space-4);
+    padding-left: var(--space-5);
+  }
+
+  .content-section ul li {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    margin-bottom: var(--space-2);
+    max-width: var(--measure);
+  }
+
+  /* Fila de badges del ejercicio */
+  .exercise-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    margin-bottom: var(--space-4);
+    max-width: none;
+  }
+
+  /* Nota editorial bajo los badges */
+  .exercise-note {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-3);
+    margin-bottom: var(--space-4);
+    max-width: var(--measure);
+  }
+
+  /* Bloque de código dentro del enunciado */
+  .enunciado .code-block {
+    margin: var(--space-4) 0;
+  }
+
+  .code-block {
+    border: 1px solid var(--color-code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: var(--space-5) 0;
+  }
+
+  .code-header {
+    background: var(--color-surface-2);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-2);
+    border-bottom: 1px solid var(--color-code-border);
+  }
+
+  .code-block pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-code-bg);
+    overflow-x: auto;
+  }
+
+  .code-block pre code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: var(--leading-loose);
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-text);
+  }
+
+  /* Enunciado: párrafos sin max-width para ajustarse al bloque */
+  .enunciado p {
+    max-width: none;
+  }
+</style>
